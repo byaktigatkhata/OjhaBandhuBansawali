@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>सदस्य थप्ने</title>
+    <link rel="icon" type="image/x-icon" href="../../ojhag.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="AddMemberStyle.css" />
+</head>
+<body>
+<div class="container" id="app">
+    <h1><i class="fas fa-user-plus"></i>परिवारका सदस्यहरू थप्नुहोस्</h1>
+
+    <div class="full-width form-group">
+        <div class="dropdown-row" id="genDropdownsContainer">
+            <!-- populated by JS -->
+        </div>
+        <div id="ActionButtonBox">
+            <button type="button" id="toggleAddFormBtn" class="action-btn action-btn-magenta">
+                <i class="fas fa-user-plus"></i> नयाँ सदस्य थप्नुहोस्
+            </button>
+            <button type="button" id="addSpouseBtn" class="action-btn action-btn-green">
+                <i class="fas fa-ring"></i> श्रीमान/श्रीमती थप्नुहोस्
+            </button>
+            <button type="button" id="editMemberBtn" class="action-btn action-btn-blue">
+                <i class="fas fa-edit"></i> छानिएको सदस्य एडिट गर्नुहोस्
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         PANEL 1: Add Member Form (hidden by default)
+         ============================================================ -->
+    <form id="addMemberForm" class="inline-panel" enctype="multipart/form-data">
+        <div class="panel-header">
+            <h2><i class="fas fa-user-plus"></i> नयाँ सदस्यको विवरण भर्नुहोस्</h2>
+            <button type="button" class="panel-close-btn" data-close="addMemberForm" title="बन्द गर्नुहोस्">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="form-group">
+            <div id="CodeDisplayContainer">
+                <i class="fas fa-code"></i>
+                <input type="text" id="personalCode" readonly value="K1" />
+                <span id="genBadge">पुस्ता 1</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-book"></i> पुरा नामः</label>
+            <input type="text" id="fullName" placeholder="जस्तोः रामप्रसाद ओझा" required />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-venus-mars"></i> लिङ्गः</label>
+            <select id="gender">
+                <option value="M">पुरूष</option>
+                <option value="F">महिला</option>
+                <option value="O">अन्य</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-map-pin"></i> ठेगानाः</label>
+            <input type="text" id="address" placeholder="वर्तमान/अन्तिम स्थायी ठेगाना" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-phone"></i> मोबाइल नंः</label>
+            <input type="tel" id="mobile" placeholder="98XXXXXXXX" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-envelope"></i> इमेल</label>
+            <input type="email" id="email" placeholder="name@example.com" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-male"></i> बाबुको नामः</label>
+            <input type="text" id="father" placeholder="बाबुको पुरा नाम" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-female"></i> आमाको पुरा नामः</label>
+            <input type="text" id="mother" placeholder="आमाको पुरा नाम" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-ring"></i> श्रीमान/श्रीमतीको नामः</label>
+            <input type="text" id="spouse" placeholder="श्रीमान/श्रीमतीको नाम" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-calendar-alt"></i> जन्म मिति (बि.सं.)</label>
+            <input type="text" id="dob" placeholder="e.g. 2045-03-12" />
+        </div>
+
+        <div class="form-group full-width">
+            <label><i class="fas fa-child"></i> छोराहरूः</label>
+            <input type="text" id="sonsInput" placeholder="छोराहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
+        </div>
+
+        <div class="form-group full-width">
+            <label><i class="fas fa-child"></i> छोरीहरूः</label>
+            <input type="text" id="daughtersInput" placeholder="छोरीहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-briefcase"></i> पेशाः</label>
+            <input type="text" id="profession" placeholder="खेती, ब्यापार इत्यादि" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-graduation-cap"></i> शैक्षिक योग्यताः</label>
+            <input type="text" id="qualification" placeholder="e.g. M.A. " />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-sort-numeric-up"></i> स्थानः</label>
+            <input type="text" id="position" placeholder="जेठो छोरो, साइँली बुहारी इत्यादि" />
+        </div>
+
+        <div class="form-group full-width">
+            <label><i class="fas fa-home"></i> विस्तृत ठेगानाः</label>
+            <textarea id="detailAddress" rows="2" placeholder="बसाइँ सराइ लगायत ठेगानाको इतिहास ..."></textarea>
+        </div>
+
+        <div class="form-group full-width">
+            <label><i class="fas fa-tools"></i> विस्तृत व्यवसायः</label>
+            <textarea id="detailProfession" rows="2" placeholder="व्यवसाय सम्बन्धि सम्पूर्ण जानकारी ..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-book-open"></i> जीवन कथाः</label>
+            <textarea id="lifeStory" rows="2" placeholder="संक्षिप्त जीवन कथा ..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति / उमेर</label>
+            <input type="text" id="dodAge" placeholder="मृत्यु भैसकेको भए मिति, जीवित भए उमेर लेख्नुहोस्" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-image"></i> फोटो (लम्बाइ चौडाइको अनुपात 3:4 हुनुपर्नेछ)</label>
+            <div class="photo-upload-area">
+                <input type="file" id="photoFile" accept="image/*" style="display:none;" />
+                <button type="button" id="uploadToCloudinaryBtn" class="photo-select-btn">
+                    <i class="fas fa-cloud-upload-alt"></i> फोटो छान्नुहोस्
+                </button>
+                <div id="photoFileNameDisplay" class="photo-file-name">कुनै फोटो छानिएको छैन</div>
+                <img id="photoPreview" class="photo-preview" src="" alt="preview" style="display:none;" />
+            </div>
+            <div id="uploadStatus" style="font-size:0.85rem; color:#2c5f2d;"></div>
+            <input type="hidden" id="photoUrl" value="" />
+            <input type="hidden" id="publicId" value="" />
+        </div>
+
+        <div id="ButtonBox">
+            <button type="reset" id="btnReset"><i class="fas fa-undo-alt"></i> रिसेट गर्नुहोस्</button>
+            <button type="submit" id="btnAddMember"><i class="fas fa-save"></i> सदस्य थप्नुहोस्</button>
+        </div>
+        <div id="formFeedback" style="margin-top: 18px; font-weight: 500;"></div>
+    </form>
+
+    <!-- ============================================================
+         PANEL 2: Add Spouse (was a modal, now inline)
+         ============================================================ -->
+    <div id="spouseModal" class="inline-panel">
+        <div class="panel-header">
+            <h2><i class="fas fa-ring"></i> <span id="spouseModalTitle">श्रीमान/श्रीमती थप्नुहोस्</span></h2>
+            <button type="button" class="panel-close-btn" data-close="spouseModal" title="बन्द गर्नुहोस्">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="spouseForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> <span id="spouseOfLabel">कस्को श्रीमान/श्रीमती</span></label>
+                    <div id="spouseOfDisplay" class="spouse-of-display">-</div>
+                    <input type="hidden" id="spouseOf" value="" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-qrcode"></i> श्रीमान/श्रीमतीको कोड</label>
+                    <div id="spouseCodeDisplay">K1M</div>
+                    <input type="hidden" id="spouseCode" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> पुरा नामः *</label>
+                    <input type="text" id="spouseFullName" placeholder="श्रीमान/श्रीमतीको पुरा नाम" required />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-venus-mars"></i> लिङ्गः</label>
+                    <select id="spouseGender">
+                        <option value="M">पुरूष</option>
+                        <option value="F">महिला</option>
+                        <option value="O">अन्य</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-pin"></i> स्थायी ठेगानाः</label>
+                    <input type="text" id="spouseAddress" placeholder="हालको/अन्तिम स्थायी ठेगाना लेख्नुहोस्" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> मोबाइल नम्बरः</label>
+                    <input type="tel" id="spouseMobile" placeholder="जस्तोः 9808975521" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> इमेल ठेगानाः</label>
+                    <input type="email" id="spouseEmail" placeholder="जस्तोः name@domain.com" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> जन्म मिति (बि.सं. मा)</label>
+                    <input type="text" id="spouseDob" placeholder="जस्तोः 2045-03-12" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-briefcase"></i> ब्यवशाय</label>
+                    <input type="text" id="spouseProfession" placeholder="जस्तोः खेती, ब्यापार ..." />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> फोटो छान्नुहोस्ः</label>
+                    <div class="photo-upload-area">
+                        <input type="file" id="spousePhoto" accept="image/*" style="display:none;" />
+                        <button type="button" id="spousePhotoBtn" class="photo-select-btn">
+                            <i class="fas fa-cloud-upload-alt"></i> फोटो छान्नुहोस्
+                        </button>
+                        <div id="spousePhotoFileName" class="photo-file-name">कुनै फोटो छानिएको छैन</div>
+                        <img id="spousePhotoPreview" class="photo-preview" src="" alt="preview" style="display:none;" />
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" id="closeSpouseModalBtn">रद्ध गर्नुहोस्</button>
+                <button type="submit" id="addSpouseModalBtn"><i class="fas fa-save"></i> श्रीमान/श्रीमती थप्नुहोस्</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ============================================================
+         PANEL 3: Edit Member (was a modal, now inline)
+         ============================================================ -->
+    <div id="editModal" class="inline-panel">
+        <div class="panel-header">
+            <h2><i class="fas fa-edit"></i> सदस्य एडिट गर्नुहोस्</h2>
+            <button type="button" class="panel-close-btn" data-close="editModal" title="बन्द गर्नुहोस्">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class="fas fa-qrcode"></i> ब्यक्तिगत कोडः</label>
+                    <input type="text" id="editCode" readonly style="background:#ede7de; font-weight:600;" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> पुरा नामः *</label>
+                    <input type="text" id="editFullName" required />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-venus-mars"></i> लिङ्गः</label>
+                    <select id="editGender">
+                        <option value="M">पुरूष</option>
+                        <option value="F">महिला</option>
+                        <option value="O">अन्य</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-pin"></i> हालको/अन्तिम स्थायी ठेगानाः</label>
+                    <input type="text" id="editAddress" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> मोबाइल नम्बरः</label>
+                    <input type="tel" id="editMobile" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> इमेल ठेगानाः</label>
+                    <input type="email" id="editEmail" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-male"></i> बाबुको नामः</label>
+                    <input type="text" id="editFather" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-female"></i> आमाको नामः</label>
+                    <input type="text" id="editMother" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-ring"></i> श्रीमान/श्रीमतीको नामः</label>
+                    <input type="text" id="editSpouse" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> जन्म मिति (बि.सं. मा)</label>
+                    <input type="text" id="editDob" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-child"></i> छोराहरूः</label>
+                    <input type="text" id="editSons" placeholder="छोराहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-child"></i> छोरीहरूः</label>
+                    <input type="text" id="editDaughters" placeholder="छोरीहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-briefcase"></i> ब्यवशायः</label>
+                    <input type="text" id="editProfession" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-graduation-cap"></i> शैक्षिक योग्यता</label>
+                    <input type="text" id="editQualification" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-sort-numeric-up"></i> परिवारमा स्थानः</label>
+                    <input type="text" id="editPosition" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-home"></i> विस्तृत ठेगानाः</label>
+                    <textarea id="editDetailAddress" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tools"></i> विस्तृत व्यवशायः</label>
+                    <textarea id="editDetailProfession" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-book-open"></i> जीवन कथा</label>
+                    <textarea id="editLifeStory" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति/उमेर</label>
+                    <input type="text" id="editDodAge" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> फोटो छान्नुहोस्</label>
+                    <div class="edit-photo-area">
+                        <div class="current-photo" id="editCurrentPhoto">
+                            <img id="editPhotoPreview" src="" alt="Current photo" />
+                            <span class="file-name" id="editPhotoFileName">कुनै फोटो छानिएको छैन</span>
+                        </div>
+                        <div class="photo-upload-area">
+                            <input type="file" id="editPhotoFile" accept="image/*" style="display:none;" />
+                            <button type="button" id="editPhotoBtn" class="photo-select-btn">
+                                <i class="fas fa-cloud-upload-alt"></i> नयाँ फोटो छान्नुहोस्
+                            </button>
+                            <div id="editPhotoFileNameDisplay" class="photo-file-name">कुनै फोटो छानिएको छैन</div>
+                        </div>
+                        <div id="editUploadStatus" style="font-size:0.85rem; color:#2c5f2d;"></div>
+                        <div id="editDeleteStatus" style="font-size:0.85rem; margin-top:5px;"></div>
+                        <input type="hidden" id="editPhotoUrl" value="" />
+                        <input type="hidden" id="editPublicId" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" id="closeEditModalBtn">रद्ध गर्नुहोस्</button>
+                <button type="submit" id="uploadMemberEditModalBtn"><i class="fas fa-save"></i> सदस्य अपडेट गर्नुहोस्</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="FooterBox">
+        <nav id="FooterPublicLinks">
+            <a href="../../index.html"><i class="fas fa-house"></i> गृह पृष्ठ</a>
+            <a href="../../SearchPage/SearchIndex.html"><i class="fas fa-search"></i> खोज्नुहोस्</a>
+            <a href="../../RequestPage/RequestIndex.html"><i class="fas fa-chalkboard"></i> अनुरोध पठाउनुहोस्</a>
+        </nav>
+        <nav id="FooterPrivateLinks">
+            <a href="../ViewRequestPage/ViewRequestIndex.html"><i class="fas fa-inbox"></i> अनुरोध हेर्नुहोस्</a>
+            <a href="../AdminDashboardPage/AdminDashboardIndex.html"><i class="fas fa-user-plus"></i> एडमिन ड्यासबोर्ड</a>
+            <a href="../CreateNoticePage/CreateNoticeIndex.html"><i class="fas fa-bullhorn"></i> सूचना सिर्जना गर्नुहोस्</a>
+        </nav>
+        <p id="copyright">© <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान, दमक</a></p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../SupabaseConfig.js"></script>
+<script src="PhotoCropper.js"></script>
+<script src="AddMemberScript.js"></script>
+
+</body>
+</html>

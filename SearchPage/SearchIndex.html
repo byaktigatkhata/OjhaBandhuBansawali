@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>खोजी पेज</title>
+    <link rel="icon" type="image/x-icon" href="../ojhag.png">
+    <link rel="stylesheet" href="SearchStyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../SupabaseConfig.js"></script>
+    <script src="SearchScript.js"></script>
+</head>
+<body>
+    <div id="MainBody">
+        <div id="MainHead">ओझा बन्धु वंशावली</div>
+        <div id="SubHead">(काँशीनाथ ओझाका सन्तानहरू)</div>
+        <div id="SubHead2">आफुभन्दा पहिलेका प्रत्येक पुस्ताका पुर्खाहरू रोज्नुहोस्</div>
+
+        <div id="DropDownBox">
+            <div class="DropDownClass">पहिलो पुस्ताः <select id="gen-1"><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">दोस्रो पुस्ताः <select id="gen-2" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">तेस्रो पुस्ताः <select id="gen-3" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">चौथो पुस्ताः <select id="gen-4" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">पाचौँ पुस्ताः <select id="gen-5" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">छैटौँ पुस्ताः <select id="gen-6" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">सातौँ पुस्ताः <select id="gen-7" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">आठौँ पुस्ताः <select id="gen-8" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">नवौं पुस्ताः <select id="gen-9" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">दशौं पुस्ताः <select id="gen-10" disabled><option value="">छान्नुहोस्</option></select></div>
+        </div>
+
+        <!-- ============================================================
+            VIEW TOGGLE BUTTONS
+            ============================================================ -->
+        <div id="ViewToggleBox">
+            <button type="button" id="btnShortDescription" class="view-toggle-btn">
+                <i class="fas fa-list"></i> संक्षिप्त विवरण
+            </button>
+            <button type="button" id="btnDetailDescription" class="view-toggle-btn">
+                <i class="fas fa-id-card-alt"></i> विस्तृत विवरण
+            </button>
+            <button type="button" id="btnShowFamily" class="view-toggle-btn view-toggle-family">
+                <i class="fas fa-users"></i> परिवार
+            </button>
+            <button type="button" id="btnShowAnsestors" class="view-toggle-btn view-toggle-ancestor">
+                <i class="fas fa-sitemap"></i> वंशावली
+            </button>
+        </div>
+
+        <!-- ============================================================
+             PANEL 1: SHORT DESCRIPTION (hidden by default)
+             ============================================================ -->
+        <div id="DescriptionBoxWrapper" class="search-panel">
+            <div id="DescriptionBox" class="capture-area">
+                <div id="DescriptionArea">
+                    <div>ब्यक्तिगत कोड: <span id="code-output">-</span></div>
+                    <div>नामः <span id="name-output">-</span></div>
+                    <div>लिङ्ग: <span id="gender-output">-</span></div>
+                    <div>ठेगाना: <span id="address-output">-</span></div>
+                    <div>जन्म मिति: <span id="birth-date-output">-</span></div>
+                    <div>बुबाको नाम: <span id="father-output">-</span></div>
+                    <div>आमाको नाम: <span id="mother-output">-</span></div>
+                    <div>मोबाइल नम्बर: <span id="mobile-output">-</span></div>
+                    <div>इमेल ठेगाना: <span id="email-output">-</span></div>
+                    <div>श्रीमान/श्रीमतीको नाम: <span id="spouse-output">-</span></div>
+                    <div>ब्यवसाय: <span id="occupation-output">-</span></div>
+                    <div>शैक्षिक योग्यता: <span id="education-output">-</span></div>
+                    <div>पारिवारिक स्थान: <span id="position-output">-</span></div>
+                    <div>मृत्यु मिति/उमेर: <span id="dod-output">-</span></div>
+                    <div>छोराहरू: <span id="sons-output">-</span></div>
+                    <div>छोरीहरू: <span id="daughters-output">-</span></div>
+                </div>
+                <div id="MemberPhotoArea">
+                    <div id="MemberPhotoBox">
+                        <img id="MemberPhoto" src="../no_pic.png" alt="Member Photo">
+                    </div>
+                    <button type="button" id="btnSaveImage" class="save-btn-icon" title="तस्वीर सुरक्षित गर्नुहोस्">
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             PANEL 2: DETAIL PANEL (was modal, now inline; hidden by default)
+             ============================================================ -->
+        <div id="detailPanel" class="search-panel">
+            <div class="detail-panel-header">
+                <h2><i class="fas fa-user-circle"></i> विस्तृत जानकारी</h2>
+                <button type="button" id="btnSaveDetailImage" class="save-btn-icon" title="तस्वीर सुरक्षित गर्नुहोस्">
+                    <i class="fas fa-save"></i>
+                </button>
+            </div>
+
+            <div id="modalCaptureArea" class="capture-area">
+                <div id="detailContent">
+
+                    <!-- HERO SECTION -->
+                    <div id="detailHero">
+                        <div id="detailPhotoSection">
+                            <img id="detail-photo" src="../no_pic.png" alt="Member Photo">
+                        </div>
+                        <div id="detailHeroText">
+                            <div id="detail-name-hero">-</div>
+                            <div id="detail-code-hero"><i class="fas fa-qrcode"></i> <span id="detail-code">-</span></div>
+                            <div id="detail-gender-hero"><i class="fas fa-venus-mars"></i> <span id="detail-gender">-</span></div>
+                        </div>
+                    </div>
+
+                    <!-- FAMILY -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">
+                            <i class="fas fa-users"></i> पारिवारिक जानकारी
+                        </div>
+                        <div class="detail-grid-single">
+                            <div class="detail-row"><strong>बुबाको नाम:</strong> <span id="detail-father">-</span></div>
+                            <div class="detail-row"><strong>आमाको नाम:</strong> <span id="detail-mother">-</span></div>
+                            <div class="detail-row"><strong>श्रीमान/श्रीमती:</strong> <span id="detail-spouse">-</span></div>
+                            <div class="detail-row"><strong>छोराहरू:</strong> <span id="detail-sons">-</span></div>
+                            <div class="detail-row"><strong>छोरीहरू:</strong> <span id="detail-daughters">-</span></div>
+                            <div class="detail-row"><strong>पारिवारिक स्थान:</strong> <span id="detail-position">-</span></div>
+                        </div>
+                    </div>
+
+                    <!-- CONTACT -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">
+                            <i class="fas fa-address-book"></i> सम्पर्क तथा ठेगाना
+                        </div>
+                        <div class="detail-grid-single">
+                            <div class="detail-row"><strong>ठेगाना:</strong> <span id="detail-address">-</span></div>
+                            <div class="detail-row"><strong>विस्तृत ठेगाना:</strong> <span id="detail-detailAddress">-</span></div>
+                            <div class="detail-row"><strong>मोबाइल नम्बर:</strong> <span id="detail-mobile">-</span></div>
+                            <div class="detail-row"><strong>इमेल ठेगाना:</strong> <span id="detail-email">-</span></div>
+                        </div>
+                    </div>
+
+                    <!-- PERSONAL -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">
+                            <i class="fas fa-id-card"></i> व्यक्तिगत विवरण
+                        </div>
+                        <div class="detail-grid-single">
+                            <div class="detail-row"><strong>जन्म मिति:</strong> <span id="detail-dob">-</span></div>
+                            <div class="detail-row"><strong>मृत्यु मिति/उमेर:</strong> <span id="detail-dod">-</span></div>
+                            <div class="detail-row"><strong>शैक्षिक योग्यता:</strong> <span id="detail-education">-</span></div>
+                        </div>
+                    </div>
+
+                    <!-- PROFESSION -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">
+                            <i class="fas fa-briefcase"></i> पेशा तथा व्यवसाय
+                        </div>
+                        <div class="detail-grid-single">
+                            <div class="detail-row"><strong>व्यवसाय:</strong> <span id="detail-occupation">-</span></div>
+                            <div class="detail-row detail-multiline">
+                                <strong>विस्तृत व्यवसाय:</strong>
+                                <span id="detail-detailProfession">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LIFE STORY -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">
+                            <i class="fas fa-book-open"></i> जीवन कथा
+                        </div>
+                        <div id="detail-lifeStory" class="detail-story-box">-</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================
+             PANEL 3: FAMILY BOX (hidden by default)
+             ============================================================ -->
+        <div id="FamilyBox" class="search-panel">
+            <div class="family-panel-header">
+                <h2><i class="fas fa-users"></i> परिवारको विवरण</h2>
+                <button type="button" id="btnSaveFamilyImage" class="save-btn-icon" title="तस्वीर सुरक्षित गर्नुहोस्">
+                    <i class="fas fa-save"></i>
+                </button>
+            </div>
+
+            <div id="familyCaptureArea" class="capture-area">
+                <div id="familyContent">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             PANEL 4: ANCESTORS BOX (hidden by default)
+             ============================================================ -->
+        <div id="AnsestorsBox" class="search-panel">
+            <div class="ancestor-panel-header">
+                <h2><i class="fas fa-sitemap"></i> वंशावली (काँशीनाथबाट)</h2>
+                <button type="button" id="btnSaveAncestorImage" class="save-btn-icon" title="तस्वीर सुरक्षित गर्नुहोस्">
+                    <i class="fas fa-save"></i>
+                </button>
+            </div>
+
+            <div id="ancestorCaptureArea" class="capture-area">
+                <div id="ancestorContent">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        <div id="FooterBox">
+            <div id="FooterLinks">
+                <a href="../index.html">गृह पृष्ठ</a>
+                <a href="../RequestPage/RequestIndex.html">तथ्य र विवरण सिफारिस</a>
+                <a href="../RequestPage/RequestIndex.html">विवरण संसोधन</a>
+                <a href="../AdminPage/LoginPage/LoginIndex.html">लगइन गर्नुहोस्</a>
+            </div>
+            <div id="FooterHeading">विस्तृत जानकारीको लागि सम्पर्क गर्नुहोस्</div>
+            <div id="FooterContacts">
+                <div>ईमेल: <a href="mailto:ojhagsoftware@gmail.com">ojhagsoftware@gmail.com</a></div>
+                <div>फोन: +977-9849926900</div>
+                <div>फेसबुक: <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान</a></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>सुझावहरू हेर्नुहोस्</title>
+    <link rel="icon" type="image/x-icon" href="../../ojhag.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="ViewRequestStyle.css" />
+</head>
+<body>
+    <div id="MainBody">
+        <h1 id="MainHeading"><i class="fas fa-list"></i> सुझावहरूको सूची</h1>
+        
+        <!-- Filters -->
+        <div id="FilterBox">
+            <div class="filter-group">
+                <label for="filterStatus">स्थिति:</label>
+                <select id="filterStatus">
+                    <option value="all">सबै</option>
+                    <option value="pending">पेन्डिङ</option>
+                    <option value="approved">स्वीकृत</option>
+                    <option value="rejected">अस्वीकृत</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterSearch">खोजी:</label>
+                <input type="text" id="filterSearch" placeholder="नाम वा कोडले खोज्नुहोस्..." />
+            </div>
+            <button id="btnRefresh"><i class="fas fa-sync-alt"></i> रिफ्रेस</button>
+        </div>
+
+        <!-- Table Container with scroll -->
+        <div id="TableContainer">
+            <table id="SuggestionTable">
+                <thead>
+                    <tr>
+                        <th>क्र.सं.</th>
+                        <th>सुझावकर्ता</th>
+                        <th>सुझावकर्ता कोड</th>
+                        <th>सदस्यको नाम</th>
+                        <th>स्थिति</th>
+                        <th>मिति</th>
+                        <th>कार्य</th>
+                    </tr>
+                </thead>
+                <tbody id="SuggestionTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding: 40px;">
+                            <i class="fas fa-spinner fa-spin"></i> लोड हुँदै...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="PaginationBox">
+            <button id="btnPrevPage" disabled><i class="fas fa-chevron-left"></i> अघिल्लो</button>
+            <span id="pageInfo">पृष्ठ १ / १</span>
+            <button id="btnNextPage" disabled>पछिल्लो <i class="fas fa-chevron-right"></i></button>
+        </div>
+    
+    <!-- EDIT MODAL: Edit Suggestion Data -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> सुझाव एडिट गर्नुहोस्</h2>
+                <span class="close" id="closeEditModal">&times;</span>
+            </div>
+            <form id="editSuggestionForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-code"></i> सदस्य कोड</label>
+                        <input type="text" id="editMemberCode" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-book"></i> पुरा नाम *</label>
+                        <input type="text" id="editFullName" required />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-venus-mars"></i> लिङ्ग</label>
+                        <select id="editGender">
+                            <option value="M">पुरूष</option>
+                            <option value="F">महिला</option>
+                            <option value="O">अन्य</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-pin"></i> ठेगाना</label>
+                        <input type="text" id="editAddress" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> मोबाइल</label>
+                        <input type="tel" id="editMobile" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> इमेल</label>
+                        <input type="email" id="editEmail" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-male"></i> बाबुको नाम</label>
+                        <input type="text" id="editFather" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-female"></i> आमाको नाम</label>
+                        <input type="text" id="editMother" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-ring"></i> श्रीमान/श्रीमती</label>
+                        <input type="text" id="editSpouse" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-alt"></i> जन्म मिति</label>
+                        <input type="text" id="editDob" placeholder="बि.सं. मा" />
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-child"></i> छोराहरू</label>
+                        <input type="text" id="editSons" placeholder="अल्पविराम (,) ले छुट्याउनुहोस्" />
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-child"></i> छोरीहरू</label>
+                        <input type="text" id="editDaughters" placeholder="अल्पविराम (,) ले छुट्याउनुहोस्" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-briefcase"></i> पेशा</label>
+                        <input type="text" id="editProfession" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-graduation-cap"></i> शैक्षिक योग्यता</label>
+                        <input type="text" id="editQualification" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-sort-numeric-up"></i> परिवारमा स्थान</label>
+                        <input type="text" id="editPosition" />
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-home"></i> विस्तृत ठेगाना</label>
+                        <textarea id="editDetailAddress" rows="2"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-tools"></i> विस्तृत व्यवसाय</label>
+                        <textarea id="editDetailProfession" rows="2"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-book-open"></i> जीवन कथा</label>
+                        <textarea id="editLifeStory" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति / उमेर</label>
+                        <input type="text" id="editDodAge" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-image"></i> फोटो</label>
+                        <div class="photo-upload-area">
+                            <input type="file" id="editPhotoFile" accept="image/*" style="display:none;" />
+                            <button type="button" id="editPhotoBtn" class="photo-select-btn">
+                                <i class="fas fa-cloud-upload-alt"></i> नयाँ फोटो छान्नुहोस्
+                            </button>
+                            <div id="editPhotoFileNameDisplay" class="photo-file-name">कुनै फोटो छानिएको छैन</div>
+                            <img id="editPhotoPreview" class="photo-preview" src="" alt="preview" style="display:none;" />
+                        </div>
+                        <div id="editUploadStatus" style="font-size:0.85rem; color:#2c5f2d;"></div>
+                        <input type="hidden" id="editPhotoUrl" value="" />
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" id="closeEditModalBtn" class="btn-close">रद्द गर्नुहोस्</button>
+                    <button type="submit" id="saveEditBtn" class="btn-success"><i class="fas fa-save"></i> सुझाव अपडेट गर्नुहोस्</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Footer Part -->
+     <div id="FooterBox">
+        <nav id="FooterPublicLinks">
+            <a href="../../index.html"><i class="fas fa-house"></i> गृह पृष्ठ</a>
+            <a href="../../SearchPage/SearchIndex.html"><i class="fas fa-search"></i>विवरण खोज्नुहोस्</a>
+            <a href="../../RequestPage/RequestIndex.html"><i class="fas fa-chalkboard"></i> तथ्य र विवरण पठाउनुहोस्</a>
+        </nav>
+        <nav id="FooterPrivateLinks">
+            <a href="../CreateNoticePage/CreateNoticeIndex.html"><i class="fas fa-inbox"></i> सुचना तयार गर्नुहोस्</a>
+            <a href="../AdminDashboardPage/AdminDashboardIndex.html"><i class="fas fa-user-plus"></i> एडमिन ड्यासबोर्ड</a>
+            <a href="../AddMemberPage/AddMemberIndex.html"><i class="fas fa-user-plus"></i> सदस्य थप्नुहोस्</a>
+        </nav>        
+        <p id="copyright">© <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान, दमक</a></p>
+    </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../SupabaseConfig.js"></script>
+    <script src="ViewRequestScript.js"></script>
+</body>
+</html>

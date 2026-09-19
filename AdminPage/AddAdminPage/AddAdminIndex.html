@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Admin</title>
+    <link rel="icon" type="image/x-icon" href="../../ojhag.png">    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="AddAdminStyle.css">
+</head>
+<body>
+    <div id="MainBody">
+        <nav id="NavigationBar">
+            <div id="LogoBox"><img src="../../ojhag.png" alt="Ojha Logo"><span> एडमिन ब्यवस्थापन पेज</span></div>
+            <div id="NavButtonBox">
+                <button id="btnBackToDashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Back</button>
+                <button id="btnLogout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </nav>
+        <div id="FormContainer">       
+            <div id="FormHeader">
+                <h2><i class="fas fa-user-cog"></i> Add New Admin</h2>
+                <span id="currentUserRole"></span>
+            </div>            
+            <form id="addAdminForm">
+                <div class="FormGroups">
+                    <label for="adminName"><i class="fas fa-user"></i> Full Name <span class="required">*</span></label>
+                    <input type="text" id="adminName" placeholder="नयाँ एडमिनको पुरा नाम लेख्नुहोस्" required>
+                </div>
+                <div class="FormGroups">
+                    <label for="adminEmail"><i class="fas fa-envelope"></i> Email <span class="required">*</span></label>
+                    <input type="email" id="adminEmail" placeholder="नयाँ एडमिनको ईमेल लेख्नुहोस्" required>
+                </div>
+                <div class="FormGroups">
+                    <label for="adminRole"><i class="fas fa-user-tag"></i>Select Role <span class="required">*</span></label>
+                    <select id="adminRole" required>
+                        <option value="AdminEditor">Admin Editor</option>
+                        <option value="AdminManager">Admin Manager</option>
+                    </select>
+                </div>
+                <div class="FormGroups">
+                    <label for="adminStatus"><i class="fas fa-toggle-on"></i> Select Status</label>
+                    <select id="adminStatus">
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+                <div id="ButtonBox">
+                    <button type="submit" id="btnAddAdmin" class="btn-primary"><i class="fas fa-plus-circle"></i> Add Admin</button>
+                    <button type="reset" id="btnReset" class="btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Admin List -->
+        <div class="card list-card">
+            <div class="card-header">
+                <h2><i class="fas fa-users-cog"></i> Admin List</h2>
+                <div class="list-controls">
+                    <div class="search-box"><i class="fas fa-search"></i>
+                        <input type="text" id="searchAdmins" placeholder="Search admins...">
+                    </div>
+                    <button id="btnRefresh" class="btn-refresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="adminTable">
+                    <thead>
+                        <tr>
+                            <th>S.N.</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <tr>
+                            <td colspan="7" class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading admins...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info" id="pageInfo">Page 1 / 1</div>
+                <div class="pagination-controls">
+                    <button id="btnPrevPage" class="btn-page" disabled><i class="fas fa-chevron-left"></i> Previous</button>
+                    <button id="btnNextPage" class="btn-page" disabled> Next <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="FooterBox">
+            <nav id="FooterPublicLinks">
+                <a href="../../index.html"><i class="fas fa-house"></i> गृह पृष्ठ</a>
+                <a href="../../SearchPage/SearchIndex.html"><i class="fas fa-search"></i> खोज्नुहोस्</a>
+                <a href="../../RequestPage/RequestIndex.html"><i class="fas fa-chalkboard"></i> अनुरोध पठाउनुहोस्</a>
+            </nav>
+            <nav id="FooterPrivateLinks">
+                <a href="../ViewRequestPage/ViewRequestIndex.html"><i class="fas fa-inbox"></i> अनुरोध हेर्नुहोस्</a>
+                <a href="../AddMemberPage/AddMemberIndex.html"><i class="fas fa-user-plus"></i> सदस्य थप्नुहोस्</a>
+                <a href="../CreateNoticePage/CreateNoticeIndex.html"><i class="fas fa-bullhorn"></i> सूचना सिर्जना गर्नुहोस्</a>
+                <a href="../AdminDashboardPage/AdminDashboardIndex.html"><i class="fas fa-bullhorn"></i> एडमिन ड्यासबोर्ड</a>
+            </nav>        
+            <p id="copyright">© <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान, दमक</a></p>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Admin</h3>
+                <button class="modal-close" id="closeEditModal"><i class="fas fa-times"></i> </button>
+            </div>
+            <div class="modal-body">
+                <form id="editAdminForm">
+                    <input type="hidden" id="editUserId">                    
+                    <div class="form-group">
+                        <label for="editAdminName"><i class="fas fa-user"></i> Full Name <span class="required">*</span></label>
+                        <input type="text" id="editAdminName" required>
+                    </div>                    
+                    <div class="form-group">
+                        <label for="editAdminEmail"><i class="fas fa-envelope"></i> Email <span class="required">*</span></label>
+                        <input type="email" id="editAdminEmail" required>
+                    </div>                    
+                    <div class="form-group">
+                        <label for="editAdminRole"><i class="fas fa-user-tag"></i> Role <span class="required">*</span></label>
+                        <select id="editAdminRole" required>
+                            <option value="AdminEditor">Admin Editor</option>
+                            <option value="AdminManager">Admin Manager</option>
+                        </select>
+                    </div>                    
+                    <div class="form-group">
+                        <label for="editAdminStatus"><i class="fas fa-toggle-on"></i> Status</label>
+                        <select id="editAdminStatus">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>                    
+                    <div class="form-actions">
+                        <button type="submit" id="btnUpdateAdmin" class="btn-primary"><i class="fas fa-save"></i> Update Admin</button>
+                        <button type="button" id="closeEditModalBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-3x"></i>
+            <p>Processing...</p>
+        </div>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../SupabaseConfig.js"></script>
+    <script src="AddAdminScript.js"></script>
+</body>
+</html>

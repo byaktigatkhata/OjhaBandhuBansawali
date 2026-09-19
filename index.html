@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ओझा वंशावली</title>
+    <link rel="icon" type="image/x-icon" href="ojhag.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="HomeStyle.css">
+</head>
+<body>
+    <div id="MainBody">
+        <div id="MainHeadBox">
+            <img src="ojhag.png" alt="ओझा बन्धु वंशावली">
+            <div class="MainHead">ओझा बन्धु वंशावली</div>
+        </div>
+        <div id="MainDescription">ओझा बन्धुहरूको वंशावली संकलन तथा विवरण हेर्ने, खोज्ने सुविधाको लागि यो सफ्टवेयर तयार पारिएको हो ।
+             यस सम्बन्धमा तपाइँको प्रतिक्रिया र सुझावहरू तलको इमेल ठेगानामा पठाएर सहयोग गर्नुहुनेछ भन्ने विस्वास सहित यो सफ्टवेयर तयार पारिएको हो ।
+              तपाइँका सबै किसिमका सहयोगहरूलाई हामी सदा स्वागत गर्नेछौं ।</div>
+
+        <!-- ============================================================
+        NOTICE SECTION
+        ============================================================ -->
+        <section id="noticeSection">
+            <h2><i class="fas fa-bullhorn"></i> सूचना तथा समाचार</h2>
+            <div id="noticeGrid">
+                <!-- Notices will be loaded here by JavaScript -->
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="paginationControls" style="display: none;">
+                <button id="prevPageBtn" class="page-nav-btn" aria-label="Previous page">
+                    <i class="fas fa-chevron-left"></i> अघिल्लो
+                </button>
+                <div id="pageNumbers" class="page-numbers"></div>
+                <button id="nextPageBtn" class="page-nav-btn" aria-label="Next page">
+                    पछिल्लो <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Page info -->
+            <div id="pageInfo" class="page-info"></div>
+        </section>
+
+        <div id="buttonBox">
+            <button onclick="location.href='SearchPage/SearchIndex.html'">आफुलाई खोज्नुहोस्</button>
+            <button onclick="location.href='RequestPage/RequestIndex.html'">तथ्य र विवरण सिफारिस</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    NOTICE POPUP
+    ============================================================ -->
+    <div id="noticePopup" class="notice-popup" style="display: none;">
+        <div class="popup-content">
+            <button class="popup-close" id="closePopup"><i class="fas fa-times"></i></button>
+            <div id="popupMedia" class="popup-media"></div>
+            <div class="popup-body">
+                <h2 id="popupTitle"></h2>
+                <div id="popupContent" class="popup-text"></div>
+                <div class="popup-meta">
+                    <span id="popupDate"><i class="far fa-calendar-alt"></i></span>
+                    <span id="popupAuthor"><i class="fas fa-user"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="FooterBox">
+        <div id="FooterLinks">
+            <a href="SearchPage/SearchIndex.html">खोज्नुहोस्</a>
+            <a href="RequestPage/RequestIndex.html">तथ्य र विवरण सिफारिस</a>
+            <a href="RequestPage/RequestIndex.html">विवरण संसोधन</a>
+            <a href="AdminPage/LoginPage/LoginIndex.html">लगइन गर्नुहोस्</a>
+        </div>
+        <div id="FooterHeading">विस्तृत जानकारीको लागि सम्पर्क गर्नुहोस्</div>
+        <div id="FooterContacts">
+            <div>ईमेल: <a href="mailto:ojhagsoftware@gmail.com">ojhagsoftware@gmail.com</a></div>
+            <div>फोन: +977-9849926900</div>
+            <div>फेसबुक: <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान</a></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="SupabaseConfig.js"></script>
+    <script src="DocumentReader.js"></script>
+    <script src="HomeScript.js"></script>
+</body>
+</html>

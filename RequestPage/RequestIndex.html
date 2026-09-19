@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>सदस्य सुझाव</title>
+    <link rel="icon" type="image/x-icon" href="../ojhag.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="RequestStyle.css" />
+</head>
+<body>
+    <div id="MainBody">
+        <h1 id="MainHeading1"><i class="fas fa-user-plus"></i>ओझा बन्धु वंशावली</h1>
+        <h1 id="MainHeading2"><i class="fas fa-edit"></i>सुझाव फारम</h1>
+        
+        <div id="FillerDataBox">
+            <div id="IsRegisteredBox">
+                तपाइँले आफ्नो नाम दर्ता गरी सक्नुभयो ? 
+                <select id="isRegisteredSelect">
+                    <option selected disabled>छान्नुहोस्</option>
+                    <option value="yes">गरी सकेँ</option>
+                    <option value="no">गरेको छैँन</option>
+                </select>
+            </div>
+            <div id="FillerIdentificationBox" style="display:none;">
+                <div id="FillerIDHead">तपाइँको विवरण भर्नुहोस्</div>
+                <div id="GenSelectBox">पुस्ता छान्नुहोस्
+                    <select id="fillerGenerationSelect">
+                        <option selected disabled>छान्नुहोस्</option>
+                        <option value="1">पहिलो पुस्ता</option>
+                        <option value="2">दोस्रो पुस्ता</option>
+                        <option value="3">तेस्रो पुस्ता</option>
+                        <option value="4">चौथो पुस्ता</option>
+                        <option value="5">पाँचौं पुस्ता</option>
+                        <option value="6">छैटौं पुस्ता</option>
+                        <option value="7">सातौं पुस्ता</option>
+                        <option value="8">आठौं पुस्ता</option>
+                        <option value="9">नवौं पुस्ता</option>
+                        <option value="10">दसौं पुस्ता</option>
+                    </select>
+                </div>
+                <div id="CodeFillingBox">
+                    <div id="CodeFillerLabel">आफ्नो ब्यक्तिगत कोड भर्नुहोस्ः</div>
+                    <input type="text" id="fillerCode" placeholder="आफ्नो ब्यक्तिगत कोड । जस्तो K3.5.M2" />                    
+                </div>
+                <div id="FillerNameBox" style="display:none;">
+                    <div id="FillerNameLabel">यो तपाइँ हो ?</div>
+                    <div id="FillerName"></div>
+                    <div id="FillerPhotoBox"><img id="FillerPhoto" src="" alt="Photo" style="display:none;" /></div>
+                </div>
+                <button id="btnConfirmFiller" style="display:none;">पुष्टि गर्नुहोस्</button>
+                <div id="IsMemberRegisteredBox" style="display:none;">
+                    विवरण भर्नुपर्ने मानिस सदस्यको रुपमा दर्ता भैसक्नुभएको छ ? 
+                    <select id="isMemberRegisteredSelect">
+                        <option selected disabled>छान्नुहोस्</option>
+                        <option value="yes">भैसकेको छ </option>
+                        <option value="no">भएको छैँन</option>
+                    </select>
+                </div> 
+            </div> 
+        </div>        
+                
+        <div id="SuggestMemberContainer" style="display:none;">
+            <div id="SuggestMemberContainerHeading">आफन्तको विवरण भर्नुहोस्</div>
+            <form id="addMemberForm" enctype="multipart/form-data">      
+                <div id="MemberPersonalCodeBox" class="form-group" style="display:none;">
+                    <label><i class="fas fa-code"></i> ब्यक्तिगत कोड</label>
+                    <select id="MemberPersonalCodeSelect">
+                        <option selected disabled>छान्नुहोस्</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-book"></i> पुरा नाम (नेपालीमा)</label>
+                    <input type="text" id="fullName" placeholder="जस्तोः रामप्रसाद ओझा" required />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-book"></i> Full Name (English)</label>
+                    <input type="text" id="fullNameEn" placeholder="e.g. Ram Prasad Ojha"/>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-venus-mars"></i> लिङ्गः</label>
+                    <select id="gender">
+                        <option value="M">पुरूष</option>
+                        <option value="F">महिला</option>
+                        <option value="O">अन्य</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-pin"></i> स्थायी ठेगानाः</label>
+                    <input type="text" id="address" placeholder="वर्तमान/अन्तिम स्थायी ठेगाना" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> मोबाइल नंः</label>
+                    <input type="tel" id="mobile" placeholder="98XXXXXXXX" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> इमेल ठेगानाः</label>
+                    <input type="email" id="email" placeholder="name@example.com" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-male"></i> बाबुको नामः</label>
+                    <input type="text" id="father" placeholder="बाबुको पुरा नाम" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-female"></i> आमाको पुरा नामः</label>
+                    <input type="text" id="mother" placeholder="आमाको पुरा नाम" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-ring"></i> श्रीमान/श्रीमतीको नामः</label>
+                    <input type="text" id="spouse" placeholder="श्रीमान/श्रीमतीको नाम" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> जन्म मिति (बि.सं.)</label>
+                    <input type="text" id="dob" placeholder="e.g. 2045-03-12" />
+                </div>
+                <div class="form-group full-width">
+                    <label><i class="fas fa-child"></i> छोराहरूः</label>
+                    <input type="text" id="sonsInput" placeholder="छोराहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
+                </div>
+                <div class="form-group full-width">
+                    <label><i class="fas fa-child"></i> छोरीहरूः</label>
+                    <input type="text" id="daughtersInput" placeholder="छोरीहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-briefcase"></i> पेशाः</label>
+                    <input type="text" id="profession" placeholder="खेती, ब्यापार इत्यादि" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-graduation-cap"></i> शैक्षिक योग्यताः</label>
+                    <input type="text" id="qualification" placeholder="e.g. M.A. " />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-sort-numeric-up"></i> परिवारमा स्थानः</label>
+                    <input type="text" id="position" placeholder="जेठो छोरो, साइँली बुहारी इत्यादि" />
+                </div>
+                <div class="form-group full-width">
+                    <label><i class="fas fa-home"></i> विस्तृत ठेगानाः</label>
+                    <textarea id="detailAddress" rows="2" placeholder="बसाइँ सराइ लगायत ठेगानाको इतिहास ..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label><i class="fas fa-tools"></i> विस्तृत व्यवसायः</label>
+                    <textarea id="detailProfession" rows="2" placeholder="व्यवसाय सम्बन्धि सम्पूर्ण जानकारी ..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-book-open"></i> जीवन कथाः</label>
+                    <textarea id="lifeStory" rows="2" placeholder="संक्षिप्त जीवन कथा ..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति / उमेर</label>
+                    <input type="text" id="dodAge" placeholder="मृत्यु भैसकेको भए मिति, जीवित भए उमेर लेख्नुहोस्" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> फोटो (अनुपात 3:4, अधिकतम 1MB) - पासपोर्ट साइज</label>
+                    <div class="photo-upload-area">
+                        <input type="file" id="photoFile" accept="image/*" style="display:none;" />
+                        <button type="button" id="uploadToCloudinaryBtn" style="padding:6px 18px;">
+                            <i class="fas fa-cloud-upload-alt"></i> फोटो छान्नुहोस्
+                        </button>
+                        <div id="photoFileNameDisplay" class="photo-file-name">कुनै फोटो छानिएको छैन</div>
+                        <img id="photoPreview" class="photo-preview" src="" alt="preview" style="display:none;" />
+                    </div>
+                    <div id="uploadStatus" style="font-size:0.85rem; color:#2c5f2d;"></div>
+                    <input type="hidden" id="photoUrl" value="" />
+                    <input type="hidden" id="publicId" value="" />
+                </div>
+                <div id="ButtonBox">
+                    <button type="reset" id="btnReset"><i class="fas fa-undo-alt"></i> रिसेट गर्नुहोस्</button>
+                    <button type="submit" id="btnAddSuggestion"><i class="fas fa-save"></i> सुझाव पठाउनुहोस्</button>
+                </div>
+            </form>
+            <div id="formFeedback" style="margin-top: 18px; font-weight: 500;"></div>
+        </div>
+        <div id="FooterBox">
+            <div id="FooterLinks">
+                <a href="../index.html">गृह पृष्ठ</a>
+                <a href="../SearchPage/SearchIndex.html">खोज्नुहोस्</a>
+                <a href="../RequestPage/RequestIndex.html">तथ्य र विवरण सिफारिस</a>
+                <a href="../AdminPage/LoginPage/LoginIndex.html">लगइन गर्नुहोस्</a>
+            </div>
+            <div id="FooterHeading">विस्तृत जानकारीको लागि सम्पर्क गर्नुहोस्</div>
+            <div id="FooterContacts">
+                <div>ईमेल: <a href="mailto:ojhagsoftware@gmail.com">ojhagsoftware@gmail.com</a></div>
+                <div>फोन: +977-9849926900</div>
+                <div>फेसबुक: <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crop Modal -->
+    <div id="cropModal" class="crop-modal" style="display:none;">
+        <div class="crop-modal-content">
+            <div class="crop-modal-header">
+                <h2><i class="fas fa-crop-alt"></i> फोटो क्रप गर्नुहोस् (3:4 पासपोर्ट साइज)</h2>
+                <span class="crop-modal-close" id="cropModalClose">&times;</span>
+            </div>
+            <div class="crop-modal-body">
+                <div class="crop-container" id="cropContainer">
+                    <div class="crop-image-wrapper">
+                        <img id="cropImage" src="" alt="Crop Image" />
+                        <div class="crop-overlay" id="cropOverlay">
+                            <div class="crop-box" id="cropBox">
+                                <div class="crop-handle crop-handle-nw" data-handle="nw"></div>
+                                <div class="crop-handle crop-handle-n" data-handle="n"></div>
+                                <div class="crop-handle crop-handle-ne" data-handle="ne"></div>
+                                <div class="crop-handle crop-handle-e" data-handle="e"></div>
+                                <div class="crop-handle crop-handle-se" data-handle="se"></div>
+                                <div class="crop-handle crop-handle-s" data-handle="s"></div>
+                                <div class="crop-handle crop-handle-sw" data-handle="sw"></div>
+                                <div class="crop-handle crop-handle-w" data-handle="w"></div>
+                                <div class="crop-grid"></div>
+                                <div class="crop-ratio-label">3:4</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="crop-controls">
+                    <button id="cropZoomIn" class="crop-btn" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+                    <button id="cropZoomOut" class="crop-btn" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+                    <button id="cropRotateLeft" class="crop-btn" title="Rotate Left"><i class="fas fa-undo-alt"></i></button>
+                    <button id="cropRotateRight" class="crop-btn" title="Rotate Right"><i class="fas fa-redo-alt"></i></button>
+                    <button id="cropReset" class="crop-btn" title="Reset"><i class="fas fa-home"></i></button>
+                </div>
+                <div class="crop-actions">
+                    <button id="cropCancel" class="crop-btn-secondary"><i class="fas fa-times"></i> रद्द गर्नुहोस्</button>
+                    <button id="cropConfirm" class="crop-btn-primary"><i class="fas fa-check"></i> क्रप गर्नुहोस्</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../SupabaseConfig.js"></script>
+    <script src="RequestScript.js"></script>
+</body>
+</html>

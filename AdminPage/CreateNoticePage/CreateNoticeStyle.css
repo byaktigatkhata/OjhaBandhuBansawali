@@ -1,0 +1,688 @@
+
+@font-face {
+    font-family: 'MySanskritFont';
+    src: url('../../Sanskrit-Text.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+body {
+    font-family: 'Segoe UI', Arial, sans-serif, 'MySanskritFont';
+    background: #aaa;
+    color: #000;
+    min-height: 100vh;
+}
+#MainBody{
+    width: 100%;
+}
+#NavigationBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: #555;
+    padding: 1rem 2rem;
+    position: sticky;
+    z-index: 100;
+}
+#NavigationHead {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+}
+#NavigationHead i {
+    color: #ff0;
+}
+#NavigationAction {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+#btnBackToDashboard{
+    padding: 8px 18px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    background: linear-gradient(180deg, #00c, #00f, #00c);
+    color: #fff;
+    gap: 10px;
+}
+#btnBackToDashboard:hover{
+    background: linear-gradient(180deg, #00a, #00c, #00a);
+    color: #ff0;
+}
+#btnLogout{
+    padding: 8px 18px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    background: linear-gradient(180deg, #c00, #f00, #c00);
+    color: #fff;
+    gap: 10px;
+}
+#btnLogout:hover{
+    background: linear-gradient(180deg, #a00, #c00, #a00);
+    color: #ff0;
+}
+#FormBox{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: #000 2px solid;
+}
+#FormTitleBox{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+    padding: 12px 18px;
+    margin: 12px 0;
+    box-shadow: 4px 4px 8px #000;
+}
+#FormTitleBox label{
+    width: 100%;
+    text-align: left;
+    padding: 12px;
+}
+#FormTitleBox input{
+    width: 100%;
+    font-size: 20px;
+    padding: 12px;
+    border: #000 2px solid;
+    border-radius: 8px;
+}
+#FormContentBox{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+    padding: 12px 18px;
+    margin: 12px 0;
+    box-shadow: 4px 4px 8px #000;
+}
+#FormContentBox label{
+    width: 100%;
+    text-align: left;
+    padding: 12px;
+}
+#FormContentBox textarea{
+    width: 100%;
+    font-size: 20px;
+    padding: 12px;
+    border: #000 2px solid;
+    border-radius: 8px;
+}
+#FormMediaTypeBox{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+    padding: 12px 18px;
+    margin: 12px 0;
+    box-shadow: 4px 4px 8px #000;
+}
+#FormMediaTypeBox label{
+    width: 100%;
+    text-align: left;
+    padding: 12px;
+}
+#FormMediaTypeBox select{
+    width: 100%;
+    font-size: 20px;
+    padding: 12px;
+    border: #000 2px solid;
+    border-radius: 8px;
+}
+
+#FooterBox {
+    font-family: 'MySanskritFont';
+    padding: 22px 25px;
+    background: #07351f;
+    text-align: center;
+}
+#FooterPublicLinks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    font-weight: bold;
+    gap: 50px;
+    padding: 12px 0;
+    margin-bottom: 12px;
+}
+#FooterPublicLinks a {
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+    transition: .2s;
+}
+#FooterPublicLinks a:hover {
+    color: #a8e6c3;
+    text-decoration: underline;
+}
+#FooterPrivateLinks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 50px;
+    padding: 12px 0;
+    margin-bottom: 12px;
+}
+#FooterPrivateLinks a {
+    color: #0ff;
+    font-size: 20px;
+    text-decoration: none;
+    transition: .2s;
+}
+#FooterPrivateLinks a:hover {
+    color: #ff0;
+    text-decoration: underline;
+}
+#copyright, #copyright a {
+    font-size: 16px;
+    color: #f0f;
+}
+
+/* ============================================================
+   FORM CONTAINER & LAYOUT
+   ============================================================ */
+#createNoticeForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ============================================================
+   FORM ACTIONS
+   ============================================================ */
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin: 20px 0;
+    width: 90%;
+}
+
+.btn-publish, .btn-draft, .btn-secondary, .btn-refresh, .btn-page {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    color: #fff;
+}
+
+.btn-publish {
+    background: linear-gradient(180deg, #0a7d32, #0c9e40, #0a7d32);
+}
+.btn-publish:hover { background: linear-gradient(180deg, #086627, #0a7d32, #086627); color: #ff0; }
+
+.btn-draft {
+    background: linear-gradient(180deg, #b8860b, #daa520, #b8860b);
+}
+.btn-draft:hover { background: linear-gradient(180deg, #9a7209, #b8860b, #9a7209); color: #ff0; }
+
+.btn-secondary {
+    background: linear-gradient(180deg, #555, #777, #555);
+}
+.btn-secondary:hover { background: linear-gradient(180deg, #444, #555, #444); color: #ff0; }
+
+.btn-refresh {
+    background: linear-gradient(180deg, #007bff, #0d6efd, #007bff);
+    font-size: 14px;
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+.btn-refresh:hover { background: linear-gradient(180deg, #0069d9, #0b5ed7, #0069d9); color: #ff0; }
+
+.btn-page {
+    background: linear-gradient(180deg, #555, #777, #555);
+    font-size: 14px;
+    padding: 6px 14px;
+    border-radius: 6px;
+}
+.btn-page:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-page:not(:disabled):hover { background: linear-gradient(180deg, #444, #555, #444); color: #ff0; }
+
+/* ============================================================
+   MEDIA SECTION
+   ============================================================ */
+#mediaSection {
+    width: 90%;
+    padding: 20px;
+    margin: 12px 0;
+    background: #f9f9f9;
+    border: 2px solid #000;
+    border-radius: 10px;
+    box-shadow: 4px 4px 8px #000;
+}
+
+.media-upload { width: 100%; }
+
+.upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    border: 2px dashed #888;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s ease;
+    text-align: center;
+    color: #555;
+}
+
+.upload-area:hover {
+    border-color: #007bff;
+    background: #f0f8ff;
+    color: #007bff;
+}
+
+.upload-area i { font-size: 40px; margin-bottom: 10px; }
+.upload-area p { font-size: 18px; margin-bottom: 6px; }
+.upload-hint { font-size: 14px; color: #888; }
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+.input-group i { font-size: 24px; }
+.input-group i.fa-youtube { color: #ff0000; }
+.input-group i.fa-facebook { color: #1877f2; }
+
+.media-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    padding: 6px;
+    background: transparent;
+}
+
+/* ============================================================
+   MEDIA PREVIEWS
+   ============================================================ */
+#imagePreview, #youtubePreview, #facebookPreview, #pdfPreview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+#imagePreviewImg {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+#imagePreview button, #pdfPreview button, #youtubePreview button, #facebookPreview button {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-left: auto;
+}
+
+#imagePreview button:hover, #pdfPreview button:hover,
+#youtubePreview button:hover, #facebookPreview button:hover {
+    background: #b02b2b;
+}
+
+.file-name, #imageFileName, #pdfFileName {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.video-preview, .fb-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* ============================================================
+   CARDS & TABLE
+   ============================================================ */
+.card {
+    width: 90%;
+    margin: 20px auto;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 10px;
+    box-shadow: 4px 4px 10px #000;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: #555;
+    color: #fff;
+}
+
+.card-header h2 {
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.card-header h2 i { color: #ff0; }
+
+.table-wrapper {
+    overflow-x: auto;
+    padding: 12px;
+}
+
+#noticesTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+}
+
+#noticesTable th {
+    background: #333;
+    color: #fff;
+    padding: 12px 10px;
+    text-align: left;
+    font-size: 16px;
+}
+
+#noticesTable td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    color: #222;
+}
+
+#noticesTable tbody tr:hover {
+    background: #f0f8ff;
+}
+
+.loading-row {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 18px;
+}
+
+/* ============================================================
+   STATUS & MEDIA BADGES
+   ============================================================ */
+.status-badge, .media-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.status-published {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-draft {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+}
+
+.media-badge {
+    background: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
+/* ============================================================
+   ACTION BUTTONS
+   ============================================================ */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit, .btn-delete {
+    border: none;
+    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-edit { background: #007bff; }
+.btn-edit:hover { background: #0056b3; }
+
+.btn-delete { background: #dc3545; }
+.btn-delete:hover { background: #a71d2a; }
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: #f5f5f5;
+    border-top: 1px solid #ddd;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pagination-info {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 10px;
+}
+
+/* ============================================================
+   EDIT MODE INDICATOR
+   ============================================================ */
+#editModeIndicator {
+    width: 90%;
+    margin: 12px auto;
+    background: #fff3cd;
+    color: #856404;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #ffc107;
+    flex-wrap: wrap;
+    font-size: 16px;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.15);
+}
+
+.required { color: #ff0000; }
+
+/* ============================================================
+   Loading Overlay
+   ============================================================ */
+.loading-overlay {
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-spinner {
+    text-align: center;
+    color: white;
+}
+
+.loading-spinner i {
+    color: #ffc107;
+}
+
+.loading-spinner p {
+    margin-top: 12px;
+    font-size: 1rem;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.8rem 1rem;
+    }
+
+    .nav-brand span {
+        font-size: 1rem;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        margin-left: 0;
+    }
+
+    #createNoticeForm {
+        padding: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-publish,
+    .btn-draft,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .table-wrapper {
+        padding: 0 1rem 1rem 1rem;
+    }
+
+    #noticesTable {
+        font-size: 0.8rem;
+    }
+
+    #noticesTable th,
+    #noticesTable td {
+        padding: 8px 10px;
+    }
+
+    .pagination-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card-header {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .media-section {
+        padding: 1rem;
+    }
+
+    .upload-area {
+        padding: 1.5rem;
+    }
+
+    .input-group {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+    }
+
+    .media-input {
+        width: 100%;
+    }
+
+    #imagePreviewImg {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-actions {
+        gap: 6px;
+    }
+
+    .btn-back span,
+    .btn-logout span {
+        display: none;
+    }
+}

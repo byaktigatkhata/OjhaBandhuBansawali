@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create Notice | OjhaBandhuBansawali Admin">
+    <title>Create Notice</title>
+    <link rel="icon" type="image/x-icon" href="../../ojhag.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="CreateNoticeStyle.css">
+</head>
+<body>
+    <div id="MainBody">
+        <div id="NavigationBar">
+            <div id="NavigationHead"><i class="fas fa-bullhorn"></i><span>सुचना तयार गर्नुहोस्</span></div>
+            <div id="NavigationAction">
+                <button id="btnBackToDashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Back</button>
+                <button id="btnLogout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <div id="FormBox">
+            <form id="createNoticeForm" novalidate>
+                <div id="FormTitleBox">
+                    <label id="FormTitle" for="noticeTitle"><i class="fas fa-address-card"></i> सुचनाको शिर्षक <span class="required">*</span></label>
+                    <input type="text" id="noticeTitle" placeholder="सुचनाको शिर्षक लेख्नुहोस्..." required>
+                </div>
+
+                <div id="FormMediaTypeBox">
+                    <label id="FormMediaType" for="mediaType"><i class="fas fa-photo-video"></i> संलग्न सामाग्रीको किसिम <span class="required">*</span></label>
+                    <select id="mediaType">
+                        <option value="none">None (Text Only)</option>
+                        <option value="text_image">Image with Text</option>
+                        <option value="image">Image Only</option>
+                        <option value="youtube">YouTube Video</option>
+                        <option value="facebook">Facebook Post</option>
+                        <option value="pdf">PDF Document</option>
+                    </select>
+                </div>
+
+                <!-- Content box is now toggleable -->
+                <div id="FormContentBox">
+                    <label id="FormContent" for="noticeContent"><i class="fas fa-address-card"></i> सुचनाको बिषयबस्तु <span class="required">*</span></label>
+                    <textarea id="noticeContent" rows="6" placeholder="सुचनाको विषयबस्तु यहाँ लेख्नुहोस्..." required></textarea>
+                </div>
+
+                <div id="mediaSection" style="display: none;">
+                    <!-- Image Upload (used for both 'image' and 'text_image') -->
+                    <div id="imageUpload" class="media-upload" style="display: none;">
+                        <div class="upload-area" id="imageUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload an image</p>
+                            <span class="upload-hint">Supported: JPG, PNG, GIF (Max 5MB)</span>
+                            <input type="file" id="imageFile" accept="image/*" style="display: none;">
+                        </div>
+                        <div id="imagePreview" style="display: none;">
+                            <img id="imagePreviewImg" src="#" alt="Preview">
+                            <button type="button" id="removeImageBtn"><i class="fas fa-times"></i></button>
+                            <span id="imageFileName"></span>
+                        </div>
+                    </div>
+
+                    <!-- YouTube URL -->
+                    <div id="youtubeUpload" style="display: none;">
+                        <div class="input-group"><i class="fab fa-youtube"></i>
+                            <input type="url" id="youtubeUrl" placeholder="Enter YouTube URL (e.g., https://www.youtube.com/watch?v=...)" class="media-input">
+                        </div>
+                        <div id="youtubePreview" style="display: none;">
+                            <div class="video-preview"><i class="fab fa-youtube fa-3x" style="color: #ff0000;"></i><span id="youtubeVideoId"></span></div>
+                            <button type="button" class="btn-remove" id="removeYoutubeBtn"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Facebook URL -->
+                    <div id="facebookUpload" class="media-upload" style="display: none;">
+                        <div class="input-group"><i class="fab fa-facebook"></i>
+                            <input type="url" id="facebookUrl" placeholder="Enter Facebook post URL" class="media-input">
+                        </div>
+                        <div id="facebookPreview" style="display: none;">
+                            <div class="fb-preview"><i class="fab fa-facebook fa-3x" style="color: #1877f2;"></i>
+                                <span class="fb-url-text">Facebook Post</span>
+                            </div>
+                            <button type="button" id="removeFacebookBtn"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- PDF Upload -->
+                    <div id="pdfUpload" style="display: none;">
+                        <div class="upload-area" id="pdfUploadArea"><i class="fas fa-file-pdf"></i><p>Click to upload a PDF</p>
+                            <span class="upload-hint">Supported: PDF (Max 10MB)</span>
+                            <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
+                        </div>
+                        <div id="pdfPreview" style="display: none;"><i class="fas fa-file-pdf fa-3x" style="color: #dc3545;"></i>
+                            <span id="pdfFileName" class="file-name"></span>
+                            <button type="button" class="btn-remove" id="removePdfBtn"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" id="btnPublish" class="btn-publish"><i class="fas fa-globe"></i> Publish Notice</button>
+                    <button type="button" id="btnSaveDraft" class="btn-draft"><i class="fas fa-save"></i> Save as Draft</button>
+                    <button type="reset" id="btnReset" class="btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card list-card">
+            <div class="card-header">
+                <h2><i class="fas fa-history"></i> Recent Notices</h2>
+                <button id="btnRefresh" class="btn-refresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+            <div class="table-wrapper">
+                <table id="noticesTable">
+                    <thead>
+                        <tr>
+                            <th>S.N.</th>
+                            <th>Title</th>
+                            <th>Media Type</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="noticesTableBody">
+                        <tr>
+                            <td colspan="6" class="loading-row">
+                                <i class="fas fa-spinner fa-spin"></i> Loading notices...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-container">
+                <div class="pagination-info" id="pageInfo">Page 1 / 1</div>
+                <div class="pagination-controls">
+                    <button id="btnPrevPage" class="btn-page" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <button id="btnNextPage" class="btn-page" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                <p>Processing...</p>
+            </div>
+        </div>
+
+        <div id="FooterBox">
+            <nav id="FooterPublicLinks">
+                <a href="../../index.html"><i class="fas fa-house"></i> गृह पृष्ठ</a>
+                <a href="../../SearchPage/SearchIndex.html"><i class="fas fa-search"></i> खोज्नुहोस्</a>
+                <a href="../../RequestPage/RequestIndex.html"><i class="fas fa-chalkboard"></i> अनुरोध पठाउनुहोस्</a>
+            </nav>
+            <nav id="FooterPrivateLinks">
+                <a href="../ViewRequestPage/ViewRequestIndex.html"><i class="fas fa-inbox"></i> अनुरोध हेर्नुहोस्</a>
+                <a href="../AdminDashboardPage/AdminDashboardIndex.html"><i class="fas fa-user-plus"></i> एडमिन ड्यासबोर्ड</a>
+                <a href="../AddMemberPage/AddMemberIndex.html"><i class="fas fa-user-plus"></i> सदस्य थप्नुहोस्</a>
+            </nav>
+            <p id="copyright">© <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान, दमक</a></p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../SupabaseConfig.js"></script>
+    <script src="CreateNoticeScript.js"></script>
+</body>
+</html>

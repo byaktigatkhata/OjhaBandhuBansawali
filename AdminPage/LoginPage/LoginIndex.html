@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="OjhaBandhuBansawali Admin Login">
+    <link rel="icon" type="image/x-icon" href="../../ojhag.png">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="LoginStyle.css">
+</head>
+<body>
+<main id="loginPage">
+        <section id="loginContainer">
+            <header id="loginHeader">
+                <div id="loginLogo">
+                    <img src="../../ojhag.png" alt="OjhaBandhuBansawali Logo">
+                </div>
+                <h1>OjhaBandhuBansawali</h1>
+                <h2>Admin Login</h2>
+                <p>
+                    कृपया आफ्नो Admin Account बाट Login गर्नुहोस्।
+                </p>
+            </header>
+            <form id="loginForm" autocomplete="on" novalidate>
+                <div class="formGroup">
+                    <label for="loginEmail"><i class="fas fa-envelope"></i>Email</label>
+                    <div class="inputWrapper"><i class="fas fa-envelope inputIcon"></i>
+                        <input type="email" id="loginEmail" name="email"placeholder="Enter your email" autocomplete="username" required>
+                    </div><small id="emailError" class="fieldError"></small>
+                </div>
+                <div class="formGroup">
+                    <label for="loginPassword"><i class="fas fa-lock"></i>Password</label>
+                    <div class="inputWrapper"><i class="fas fa-lock inputIcon"></i>
+                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                        <button type="button" id="togglePasswordBtn" aria-label="Show password" title="Show password">
+                            <i id="togglePasswordIcon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <small id="passwordError" class="fieldError"></small>
+                </div>
+                <div id="loginOptions">
+                    <label id="rememberMeLabel"><input type="checkbox" id="rememberMe" name="rememberMe">
+                        <span>Remember me</span>
+                    </label>
+                        <button type="button" id="forgotPasswordBtn">
+                            Forgot Password?
+                        </button>
+                </div>
+                <button type="submit" id="loginBtn"><i class="fas fa-right-to-bracket"></i><span id="loginBtnText">Login</span></button>
+                <div id="loginMessage" role="alert" aria-live="polite"></div>
+            </form>
+            <div id="FooterBox">
+                <nav id="FooterPublicLinks">
+                    <a href="../../index.html"><i class="fas fa-house"></i> गृह पृष्ठ</a>
+                    <a href="../../SearchPage/SearchIndex.html"><i class="fas fa-search"></i> खोज्नुहोस्</a>
+                    <a href="../../RequestPage/RequestIndex.html"><i class="fas fa-chalkboard"></i> अनुरोध पठाउनुहोस्</a>
+                </nav>
+                <nav id="FooterPrivateLinks">
+                    <a href="../ViewRequestPage/ViewRequestIndex.html"><i class="fas fa-inbox"></i> अनुरोध हेर्नुहोस्</a>
+                    <a href="../AdminDashboardPage/AdminDashboardIndex.html"><i class="fas fa-user-plus"></i> एडमिन ड्यासबोर्ड</a>
+                    <a href="../AddMemberPage/AddMemberIndex.html"><i class="fas fa-user-plus"></i> सदस्य थप्नुहोस्</a>
+                </nav>
+                <p id="copyright">© <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान, दमक</a></p>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../SupabaseConfig.js"></script>
+    <script src="LoginScript.js"></script>
+</body>
+</html>
