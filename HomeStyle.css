@@ -18,7 +18,7 @@ body {
 }
 
 #MainBody {
-    max-width: 80vw;
+    max-width: 90%;
     background-color: #fee;
     padding: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -735,102 +735,6 @@ body {
     border-radius: 8px;
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 768px) {
-    #paginationControls {
-        gap: 8px;
-        margin-top: 20px;
-    }
-
-    .page-nav-btn {
-        padding: 8px 12px;
-        font-size: 0.85rem;
-    }
-
-    .page-number-btn {
-        min-width: 38px;
-        height: 38px;
-        font-size: 0.9rem;
-    }
-
-    .page-ellipsis {
-        min-width: 22px;
-        height: 38px;
-    }
-
-    .page-info { font-size: 0.8rem; }
-
-    .popup-content { max-height: 98vh; border-radius: 8px; }
-    .popup-media { max-height: 75vh; min-height: 300px; }
-    .popup-media img { max-height: 75vh; }
-
-    .popup-close {
-        top: 10px;
-        right: 15px;
-        width: 35px;
-        height: 35px;
-        font-size: 1rem;
-    }
-
-    .popup-media .text-content {
-        padding: 20px;
-        font-size: 1rem;
-        max-height: 75vh;
-    }
-}
-
-@media (max-width: 480px) {
-    #noticeGrid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .notice-thumbnail { height: 200px; }
-    .notice-card.is-text-image .notice-thumbnail { height: 220px; }
-
-    #noticeSection h2 { font-size: 1.5rem; }
-
-    #paginationControls { gap: 6px; }
-
-    .page-nav-btn {
-        padding: 7px 10px;
-        font-size: 0.78rem;
-        gap: 4px;
-    }
-
-    .page-nav-btn i { font-size: 0.75rem; }
-
-    .page-number-btn {
-        min-width: 34px;
-        height: 34px;
-        font-size: 0.82rem;
-        border-width: 1.5px;
-    }
-
-    .page-ellipsis {
-        min-width: 18px;
-        height: 34px;
-        font-size: 1rem;
-    }
-
-    .popup-media { max-height: 65vh; min-height: 200px; }
-    .popup-media img { max-height: 65vh; }
-    .popup-media .text-content { padding: 15px; font-size: 0.9rem; max-height: 65vh; }
-
-    .popup-close {
-        top: 8px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
-        font-size: 0.9rem;
-    }
-}
-
-/* ============================================================
-   DOCUMENT READER MODAL OVERRIDES
-   ============================================================ */
 #pdfModal,
 #pictureViewer,
 #officeModal {
@@ -1119,51 +1023,252 @@ body {
     transform: scale(1.02);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
-
 .text-image-clearfix { clear: both; }
 
 /* ============================================================
    RESPONSIVE — TEXT-ONLY & TEXT_IMAGE POPUPS
    ============================================================ */
 @media (max-width: 768px) {
-    .text-only-scroll,
-    .text-image-scroll {
-        padding: 30px 28px 40px;
+        #MainBody {
+        max-width: 100%;
+        padding: 8px;
+        margin-top: 10px;
     }
-    .text-only-title,
-    .text-image-title {
-        font-size: 1.4rem;
+    #MainHeadBox {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 12px;
     }
-    .text-only-content,
-    .text-image-content {
-        font-size: 1rem;
-        line-height: 1.8;
+
+    .MainHead {
+        font-size: 32px;
+        }
+
+    #MainHeadBox img {
+        width: 80px;
+        height: auto;
+        margin-right: 0px;
     }
-    .text-image-float {
-        width: 150px;
-        max-height: 150px;
-        margin: 4px 14px 10px 0;
+
+    #MainDescription {
+        font-size: 16px;
+        padding: 0 10px;
+        margin-bottom: 20px;
     }
+
+    .content {
+        padding: 10px;
+        font-size: 16px;
+        text-indent: 10px;
+    }   
+
+    #buttonBox {
+        margin-top: 30px;
+    }
+
+    #buttonBox button {
+        width: 48%;
+        font-size: 18px;
+        padding: 10px 12px;
+  }
+    #FooterBox {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 12px;
+    }
+
+    #FooterLinks {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    #FooterLinks a {
+        color: #00bb00;
+        padding: 10px 30px;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    #FooterHeading {
+        font-size: 24px;        
+    }
+
+    #FooterContacts {
+        margin-top: 20px;
+        display: block;
+    }
+    #FooterContacts a {
+        font-size: 20px;
+        padding: 10px 30px;
+        color: #00bb00;
+        text-decoration: none;
+    }
+
+    #noticeSection {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    #noticeSection h2 {
+        font-size: 28px;
+        margin-bottom: 12px;
+        padding-bottom: 10px;        
+    }
+
+    #noticeSection h2 i {
+         color: #ffc107; 
+    }
+    #noticeGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        padding: 10px;
+        min-height: 150px;
+    }
+    .notice-thumbnail {
+        width: 100%;
+        height: 150px;
+    }
+    .notice-card.is-text-image .notice-thumbnail {
+        height: 160px;
+    }
+    .notice-thumbnail .no-image {
+        font-size: 24px;        
+    }
+
+    .notice-thumbnail .no-image span {
+        font-size: 18px;        
+    }
+    .notice-popup {
+        padding: 10px;
+    }
+
+    .popup-content {
+        max-width: 600px;        
+    }    
 }
 
 @media (max-width: 480px) {
-    .text-only-scroll,
-    .text-image-scroll {
-        padding: 22px 18px 30px;
+    #MainBody {
+        max-width: 90%;
+        padding: 6px;
+        margin-top: 8px;
     }
-    .text-only-title,
-    .text-image-title {
-        font-size: 1.2rem;
+    #MainHeadBox {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 10px;
     }
-    .text-only-content,
-    .text-image-content {
-        font-size: 0.95rem;
-        line-height: 1.7;
+    .MainHead {
+        font-size: 24px;
     }
-    .text-image-float {
-        width: 120px;
-        max-height: 120px;
-        margin: 4px 10px 8px 0;
-        border-radius: 8px;
+    #MainHeadBox img {
+        width: 60px;
+        height: auto;
+        margin-right: 0px;
+    }
+    #MainDescription {
+        font-size: 14px;
+        padding: 0 8px;
+        margin-bottom: 12px;
+    }
+    .content {
+        padding: 8px;
+        font-size: 14px;
+        text-indent: 8px;
+    }   
+
+    #buttonBox {
+        margin-top: 20px;
+        flex-direction: column;
+    }
+
+    #buttonBox button {
+        width: 90%;
+        font-size: 18px;
+        padding: 10px 12px;
+        margin: 10px 0;
+  }
+    #FooterBox {
+        width: 100%;
+        padding: 6px;
+        margin-bottom: 10px;
+    }
+
+    #FooterLinks {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    #FooterLinks a {
+        padding: 10px;
+        font-size: 20px;
+    }
+
+    #FooterHeading {
+        font-size: 24px;        
+    }
+
+    #FooterContacts {
+        margin: 20px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #FooterContacts a {
+        font-size: 20px;
+        color: #00bb00;
+        text-decoration: none;
+        padding: 20px 0;
+    }
+
+    #noticeSection {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    #noticeSection h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;        
+    }
+    #noticeGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+        padding: 10px;
+        min-height: 150px;
+    }
+    .notice-thumbnail {
+        width: 100%;
+        height: 100px;
+    }
+    .notice-card.is-text-image .notice-thumbnail {
+        height: 100px;
+    }
+    .notice-thumbnail .no-image {
+        font-size: 18px;        
+    }
+
+    .notice-thumbnail .no-image span {
+        font-size: 18px;        
+    }
+    .notice-popup {
+        padding: 8px;
+    }
+
+    .popup-content {
+        max-width: 400px;        
     }
 }
