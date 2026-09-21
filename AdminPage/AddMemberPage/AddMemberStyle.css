@@ -859,10 +859,6 @@ h1 i {
     color: #ffc107;
 }
 
-/* ============================================================
-   FORCE SINGLE-COLUMN LAYOUT in spouseModal & editModal
-   (match the natural single-column flow of addMemberForm)
-   ============================================================ */
 #spouseModal .form-grid,
 #editModal .form-grid {
     display: flex;
@@ -883,25 +879,556 @@ h1 i {
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE — TABLET & SMALL LAPTOP (≤ 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+    body {
+        padding: 1.5rem 0.75rem;
+    }
+    .container {
+        padding: 1.5rem 1.5rem;
+    }
+    h1 {
+        font-size: 2.2rem;
+        gap: 8px;
+        margin-bottom: 1.5rem;
+    }
+    .form-grid,
+    .inline-panel .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem 0;
+    }
+    .dropdown-row {
+        padding: 16px 16px;
+    }
+    .dropdown-row .gen-select {
+        min-width: 0;
+        flex: 1 1 45%;
+    }
+    .action-btn {
+        flex: 1 1 45%;
+        font-size: 1.15rem;
+        padding: 10px 14px;
+    }
+    #personalCode {
+        font-size: 2rem;
+    }
+    #genBadge {
+        font-size: 0.95rem;
+        padding: 8px 14px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 768px)
    ============================================================ */
 @media (max-width: 768px) {
-    .container { padding: 1rem; }
-    .form-grid { grid-template-columns: 1fr; }
-    .dropdown-row .gen-select { min-width: 200px; }
-    #ActionButtonBox { flex-direction: column; }
-    .action-btn { width: 100%; }
-    .inline-panel { padding: 14px 16px; }
-    .inline-panel .form-grid { grid-template-columns: 1fr; }
-    .panel-header h2 { font-size: 1.2rem; }
-    #ButtonBox { flex-direction: column; }
-    .btn-group { flex-direction: column; }
-    #closeSpouseModalBtn, #closeEditModalBtn,
-    #addSpouseModalBtn, #uploadMemberEditModalBtn { width: 100%; }
+    body {
+        padding: 1rem 0.5rem;
+    }
+    .container {
+        padding: 1.1rem 0.9rem;
+        border-radius: 10px;
+    }
+
+    /* ---- Headings ---- */
+    h1 {
+        font-size: 1.6rem;
+        gap: 6px;
+        margin-bottom: 1.1rem;
+        border-bottom-width: 2px;
+    }
+    h1 i {
+        font-size: 1.3rem;
+    }
+
+    /* ---- Form layout ---- */
+    .form-grid,
+    .inline-panel .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0.85rem 0;
+    }
+    .form-group {
+        gap: 8px;
+        padding: 8px;
+        margin: 2px 0;
+        border-radius: 10px;
+    }
+    .form-group label {
+        font-size: 1.05rem;
+        gap: 10px;
+    }
+    .form-group label i {
+        width: 16px;
+        font-size: 1rem;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 8px 10px;
+        font-size: 1.05rem;
+        border-radius: 10px;
+    }
+    .form-group textarea {
+        min-height: 55px;
+    }
+    .inline-hint {
+        font-size: 0.75rem;
+    }
+
+    /* ---- Dropdown row ---- */
+    .dropdown-row {
+        padding: 12px 12px;
+        gap: 10px;
+        border-radius: 14px;
+    }
+    .dropdown-row .gen-select {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    .gen-select label {
+        font-size: 1.05rem;
+        text-align: left;
+    }
+    .gen-select select {
+        font-size: 1.05rem;
+        padding: 8px;
+        border-radius: 10px;
+    }
+
+    /* ---- Action buttons (top) ---- */
+    #ActionButtonBox {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .action-btn {
+        flex: 1 1 100%;
+        width: 100%;
+        font-size: 1.05rem;
+        padding: 10px 12px;
+        border-radius: 14px;
+    }
+
+    /* ---- Inline panels ---- */
+    .inline-panel {
+        padding: 14px 14px;
+        margin-top: 14px;
+        border-radius: 12px;
+    }
+    .panel-header {
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+    }
+    .panel-header h2 {
+        font-size: 1.2rem;
+        gap: 8px;
+    }
+    .panel-header h2 i {
+        font-size: 1.1rem;
+    }
+    .panel-close-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+    }
+
+    /* ---- Code display ---- */
+    #CodeDisplayContainer {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 8px 12px;
+    }
+    #CodeDisplayContainer i {
+        width: auto;
+        font-size: 1.15rem;
+    }
+    #personalCode {
+        font-size: 1.5rem;
+        width: 100%;
+        padding: 6px;
+        letter-spacing: 1px;
+    }
+    #genBadge {
+        width: 100%;
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+
+    /* ---- Photo upload area ---- */
+    .photo-upload-area {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    #uploadToCloudinaryBtn,
+    .photo-select-btn {
+        width: 100%;
+        text-align: center;
+        font-size: 1.05rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+    .photo-file-name {
+        font-size: 0.95rem;
+        text-align: center;
+        padding: 8px 12px;
+        min-width: 0;
+    }
+
+    /* ---- Preview sizes: shrink and center ---- */
+    #photoPreview,
+    #editPhotoPreview {
+        width: 96px !important;
+        height: 128px !important;
+        max-width: 96px !important;
+        max-height: 128px !important;
+        margin: 0 auto;
+    }
+    #spousePhotoPreview,
+    .current-photo img {
+        width: 80px !important;
+        height: 107px !important;
+        max-width: 80px !important;
+        max-height: 80px !important;
+    }
+    .photo-preview {
+        width: 96px;
+        height: 128px;
+        max-width: 96px;
+        max-height: 128px;
+        margin: 0 auto;
+    }
+
+    /* ---- Bottom action buttons ---- */
+    #ButtonBox {
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 0;
+    }
+    #btnReset,
+    #btnAddMember {
+        width: 100%;
+        font-size: 1.05rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+    .btn-group {
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 14px;
+        margin-top: 14px;
+    }
+    #closeSpouseModalBtn,
+    #closeEditModalBtn,
+    #addSpouseModalBtn,
+    #uploadMemberEditModalBtn {
+        width: 100%;
+        font-size: 1.05rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+
+    /* ---- Spouse / edit panel bits ---- */
+    #spouseCodeDisplay {
+        font-size: 1.4rem;
+        padding: 6px 12px;
+    }
+    .spouse-of-display {
+        font-size: 1.15rem;
+        padding: 8px 12px;
+    }
+    .current-photo {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+    }
+    .current-photo .file-name {
+        font-size: 0.9rem;
+    }
+    .edit-photo-area {
+        gap: 8px;
+    }
+    .edit-photo-area input[type="file"] {
+        padding: 6px;
+        width: 100%;
+    }
+
+    /* ---- Sons / daughters tags ---- */
+    .tag {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+        gap: 6px;
+    }
+    .array-field {
+        gap: 6px;
+    }
+    .array-field input {
+        flex: 1 1 100%;
+    }
+    .array-field .add-btn {
+        flex: 1 1 100%;
+        text-align: center;
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    #addSonBtn,
+    #addDaughterBtn {
+        width: 100%;
+        font-size: 1.05rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+
+    /* ---- Info box + upload status ---- */
+    .info-box {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+    #uploadStatus {
+        font-size: 0.85rem;
+        text-align: center;
+    }
+    .generation-badge {
+        font-size: 0.7rem;
+        padding: 2px 10px;
+    }
+
+    /* ---- Footer ---- */
+    #FooterBox {
+        padding: 16px 14px;
+        margin-top: 16px;
+    }
+    #FooterPublicLinks,
+    #FooterPrivateLinks {
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 0;
+        margin-bottom: 8px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 1rem;
+    }
+    #copyright, #copyright a {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    /* ---- Cropper modal ---- */
+    .cropper-dialog {
+        max-width: 100%;
+        border-radius: 12px;
+    }
+    .cropper-header {
+        padding: 10px 14px;
+    }
+    .cropper-header h2 {
+        font-size: 1rem;
+        gap: 8px;
+    }
+    .cropper-close {
+        font-size: 24px;
+    }
+    .cropper-hint {
+        padding: 6px 14px;
+        font-size: 0.78rem;
+    }
+    .cropper-stage {
+        min-height: 280px;
+        max-height: 55vh;
+    }
+    .cropper-controls {
+        flex-direction: column;
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    .cropper-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 18px;
+        font-size: 0.95rem;
+    }
+
+    /* ---- Spouse / edit modal inner grid ---- */
+    #spouseModal .form-grid,
+    #editModal .form-grid {
+        gap: 12px;
+    }
 }
-@media (max-width: 600px) {
-    .cropper-dialog { max-width: 100%; }
-    .cropper-stage { min-height: 280px; max-height: 50vh; }
-    .cropper-controls { flex-direction: column-reverse; }
-    .cropper-btn { width: 100%; justify-content: center; }
+
+/* ============================================================
+   RESPONSIVE — SMALL PHONES (≤ 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+    body {
+        padding: 0.75rem 0.4rem;
+    }
+    .container {
+        padding: 0.9rem 0.75rem;
+        border-radius: 10px;
+    }
+
+    /* ---- Headings ---- */
+    h1 {
+        font-size: 1.25rem;
+        gap: 5px;
+        margin-bottom: 0.9rem;
+    }
+    h1 i {
+        font-size: 1.05rem;
+    }
+
+    /* ---- Form ---- */
+    .form-group {
+        padding: 6px;
+        gap: 6px;
+    }
+    .form-group label {
+        font-size: 0.95rem;
+        gap: 8px;
+    }
+    .form-group label i {
+        width: 14px;
+        font-size: 0.95rem;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 7px 9px;
+        font-size: 1rem;
+        border-radius: 9px;
+    }
+    .form-group textarea {
+        min-height: 50px;
+    }
+
+    /* ---- Dropdown row ---- */
+    .dropdown-row {
+        padding: 10px;
+        border-radius: 12px;
+    }
+    .gen-select label {
+        font-size: 0.95rem;
+    }
+    .gen-select select {
+        font-size: 1rem;
+        padding: 7px;
+    }
+
+    /* ---- Buttons ---- */
+    .action-btn {
+        font-size: 1rem;
+        padding: 9px 10px;
+        border-radius: 12px;
+    }
+    #btnReset,
+    #btnAddMember,
+    #addSonBtn,
+    #addDaughterBtn,
+    #closeSpouseModalBtn,
+    #closeEditModalBtn,
+    #addSpouseModalBtn,
+    #uploadMemberEditModalBtn {
+        font-size: 1rem;
+        padding: 9px 12px;
+        border-radius: 12px;
+    }
+
+    /* ---- Panels ---- */
+    .inline-panel {
+        padding: 12px 12px;
+        border-radius: 10px;
+    }
+    .panel-header h2 {
+        font-size: 1.05rem;
+    }
+    .panel-close-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+
+    /* ---- Code display ---- */
+    #CodeDisplayContainer {
+        padding: 6px 10px;
+        gap: 8px;
+        border-radius: 10px;
+    }
+    #CodeDisplayContainer i {
+        font-size: 1rem;
+    }
+    #personalCode {
+        font-size: 1.2rem;
+        padding: 4px;
+        letter-spacing: 0.5px;
+    }
+    #genBadge {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    /* ---- Photo previews ---- */
+    #photoPreview,
+    #editPhotoPreview,
+    .photo-preview {
+        width: 84px !important;
+        height: 112px !important;
+        max-width: 84px !important;
+        max-height: 112px !important;
+    }
+    #spousePhotoPreview,
+    .current-photo img {
+        width: 72px !important;
+        height: 96px !important;
+        max-width: 72px !important;
+        max-height: 96px !important;
+    }
+    #uploadToCloudinaryBtn,
+    .photo-select-btn {
+        font-size: 1rem;
+        padding: 9px 12px;
+        border-radius: 12px;
+    }
+    .photo-file-name {
+        font-size: 0.88rem;
+        padding: 6px 10px;
+    }
+
+    /* ---- Tags ---- */
+    .tag {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+
+    /* ---- Footer ---- */
+    #FooterBox {
+        padding: 14px 12px;
+        border-radius: 10px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 0.95rem;
+    }
+    #copyright, #copyright a {
+        font-size: 0.78rem;
+    }
+
+    /* ---- Cropper ---- */
+    .cropper-stage {
+        min-height: 220px;
+    }
+    .cropper-btn {
+        font-size: 0.9rem;
+        padding: 9px 14px;
+    }
+    .crop-handle {
+        width: 20px;
+        height: 20px;
+    }
+    .crop-nw { top: -10px; left: -10px; }
+    .crop-ne { top: -10px; right: -10px; }
+    .crop-sw { bottom: -10px; left: -10px; }
+    .crop-se { bottom: -10px; right: -10px; }
 }

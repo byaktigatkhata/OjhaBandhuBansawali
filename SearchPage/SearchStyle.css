@@ -1006,11 +1006,6 @@ body {
 .ancestor-originator .ancestor-card-mobile i {
     color: #b8864b;
 }
-/* ============================================================
-   FAMILY CARD — SPOUSE SUB-BLOCK
-   Shows बुहारी / ज्वाइँ / नाति बुहारी / नातिनी ज्वाइँ etc.
-   ============================================================ */
-
 /* Re-architect the family card to be vertical so main + spouse stack */
 .family-card {
     display: flex;
@@ -1137,7 +1132,7 @@ body {
 
     /* ---------- Dropdowns ---------- */
     #DropDownBox {
-        padding: 8px;
+        padding: 8px 0;
         gap: 6px;
     }
     .DropDownClass {
@@ -1151,7 +1146,7 @@ body {
     .DropDownClass select {
         width: 100%;
         font-size: 1rem;
-        padding: 8px;
+        padding: 10px;
     }
 
     /* ---------- View toggle buttons ---------- */
@@ -1498,7 +1493,7 @@ body {
 
     #DropDownBox { padding: 6px; }
     .DropDownClass { font-size: 0.9rem; padding: 4px 0; }
-    .DropDownClass select { font-size: 0.9rem; padding: 6px; }
+    .DropDownClass select { font-size: 0.9rem; padding: 10px; }
 
     .view-toggle-btn {
         padding: 8px 12px;

@@ -120,6 +120,7 @@ body {
     color: #333;
     line-height: 1.6;
     text-align: center;
+    font-size: 20px;
 }
 #ActionTitle {
     margin-bottom: 18px;
@@ -559,35 +560,6 @@ body {
         width: 100%;
         flex: none;
     }
-}
-
-@media (max-width: 480px) {
-    .modal-header {
-        padding: 0.8rem 1rem;
-    }
-
-    .modal-header h3 {
-        font-size: 1rem;
-    }
-
-    .modal-body {
-        padding: 1rem;
-    }
-
-    .form-group {
-        margin-bottom: 0.8rem;
-    }
-
-    .form-group input {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-    }
-}
-
-/* ============================================================
-   Responsive
-   ============================================================ */
-@media (max-width: 768px) {
     #dashboardHeader {
         flex-direction: column;
         align-items: stretch;
@@ -595,6 +567,7 @@ body {
     }
 
     #headerTitle {
+        flex-direction: column;
         justify-content: center;
     }
 
@@ -637,9 +610,30 @@ body {
         width: 100%;
         justify-content: center;
     }
+
 }
 
 @media (max-width: 480px) {
+    .modal-header {
+        padding: 0.8rem 1rem;
+    }
+
+    .modal-header h3 {
+        font-size: 1rem;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.8rem;
+    }
+
+    .form-group input {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
     #headerTitle h1 {
         font-size: 1.2rem;
     }
