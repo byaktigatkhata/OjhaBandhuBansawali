@@ -277,7 +277,6 @@ body {
     min-height: 200px;
 }
 
-/* Notice Card */
 .notice-card {
     background: #fff;
     border-radius: 12px;
@@ -1244,11 +1243,15 @@ body {
         padding-bottom: 8px;        
     }
     #noticeGrid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         padding: 10px;
         min-height: 150px;
+    }
+    .notice-card {
+    width: 90%;
     }
     .notice-thumbnail {
         width: 100%;
