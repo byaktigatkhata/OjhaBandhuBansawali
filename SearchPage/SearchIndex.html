@@ -23,10 +23,10 @@
             <div class="DropDownClass">दोस्रो पुस्ताः <select id="gen-2" disabled><option value="">छान्नुहोस्</option></select></div>
             <div class="DropDownClass">तेस्रो पुस्ताः <select id="gen-3" disabled><option value="">छान्नुहोस्</option></select></div>
             <div class="DropDownClass">चौथो पुस्ताः <select id="gen-4" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">पाचौँ पुस्ताः <select id="gen-5" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">छैटौँ पुस्ताः <select id="gen-6" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">सातौँ पुस्ताः <select id="gen-7" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">आठौँ पुस्ताः <select id="gen-8" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">पाचौं पुस्ताः <select id="gen-5" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">छैटौं पुस्ताः <select id="gen-6" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">सातौं पुस्ताः <select id="gen-7" disabled><option value="">छान्नुहोस्</option></select></div>
+            <div class="DropDownClass">आठौं पुस्ताः <select id="gen-8" disabled><option value="">छान्नुहोस्</option></select></div>
             <div class="DropDownClass">नवौं पुस्ताः <select id="gen-9" disabled><option value="">छान्नुहोस्</option></select></div>
             <div class="DropDownClass">दशौं पुस्ताः <select id="gen-10" disabled><option value="">छान्नुहोस्</option></select></div>
         </div>
@@ -50,41 +50,47 @@
         </div>
 
         <!-- ============================================================
-             PANEL 1: SHORT DESCRIPTION (hidden by default)
+             PANEL 1: SHORT DESCRIPTION
              ============================================================ -->
         <div id="DescriptionBoxWrapper" class="search-panel">
             <div id="DescriptionBox" class="capture-area">
-                <div id="DescriptionArea">
-                    <div>ब्यक्तिगत कोड: <span id="code-output">-</span></div>
-                    <div>नामः <span id="name-output">-</span></div>
-                    <div>लिङ्ग: <span id="gender-output">-</span></div>
-                    <div>ठेगाना: <span id="address-output">-</span></div>
-                    <div>जन्म मिति: <span id="birth-date-output">-</span></div>
-                    <div>बुबाको नाम: <span id="father-output">-</span></div>
-                    <div>आमाको नाम: <span id="mother-output">-</span></div>
-                    <div>मोबाइल नम्बर: <span id="mobile-output">-</span></div>
-                    <div>इमेल ठेगाना: <span id="email-output">-</span></div>
-                    <div>श्रीमान/श्रीमतीको नाम: <span id="spouse-output">-</span></div>
-                    <div>ब्यवसाय: <span id="occupation-output">-</span></div>
-                    <div>शैक्षिक योग्यता: <span id="education-output">-</span></div>
-                    <div>पारिवारिक स्थान: <span id="position-output">-</span></div>
-                    <div>मृत्यु मिति/उमेर: <span id="dod-output">-</span></div>
-                    <div>छोराहरू: <span id="sons-output">-</span></div>
-                    <div>छोरीहरू: <span id="daughters-output">-</span></div>
+                <div class="panel-title-bar panel-title-green">
+                    <i class="fas fa-list"></i>
+                    <span id="title-short">संक्षिप्त विवरण</span>
                 </div>
-                <div id="MemberPhotoArea">
-                    <div id="MemberPhotoBox">
-                        <img id="MemberPhoto" src="../no_pic.png" alt="Member Photo">
+                <div class="panel-flex-row">
+                    <div id="MemberPhotoArea">
+                        <div id="MemberPhotoBox">
+                            <img id="MemberPhoto" src="../no_pic.png" alt="Member Photo">
+                        </div>
+                        <button type="button" id="btnSaveImage" class="save-btn-icon" title="तस्वीर सुरक्षित गर्नुहोस्">
+                            <i class="fas fa-save"></i>
+                        </button>
                     </div>
-                    <button type="button" id="btnSaveImage" class="save-btn-icon" title="तस्वीर सुरक्षित गर्नुहोस्">
-                        <i class="fas fa-save"></i>
-                    </button>
+                    <div id="DescriptionArea">
+                        <div>ब्यक्तिगत कोड: <span id="code-output">-</span></div>
+                        <div>नामः <span id="name-output">-</span></div>
+                        <div>लिङ्ग: <span id="gender-output">-</span></div>
+                        <div>ठेगाना: <span id="address-output">-</span></div>
+                        <div>जन्म मिति: <span id="birth-date-output">-</span></div>
+                        <div>बुबाको नाम: <span id="father-output">-</span></div>
+                        <div>आमाको नाम: <span id="mother-output">-</span></div>
+                        <div>मोबाइल नम्बर: <span id="mobile-output">-</span></div>
+                        <div>इमेल ठेगाना: <span id="email-output">-</span></div>
+                        <div>श्रीमान/श्रीमतीको नाम: <span id="spouse-output">-</span></div>
+                        <div>ब्यवसाय: <span id="occupation-output">-</span></div>
+                        <div>शैक्षिक योग्यता: <span id="education-output">-</span></div>
+                        <div>पारिवारिक स्थान: <span id="position-output">-</span></div>
+                        <div>मृत्यु मिति/उमेर: <span id="dod-output">-</span></div>
+                        <div>छोराहरू: <span id="sons-output">-</span></div>
+                        <div>छोरीहरू: <span id="daughters-output">-</span></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- ============================================================
-             PANEL 2: DETAIL PANEL (was modal, now inline; hidden by default)
+             PANEL 2: DETAIL PANEL
              ============================================================ -->
         <div id="detailPanel" class="search-panel">
             <div class="detail-panel-header">
@@ -95,6 +101,11 @@
             </div>
 
             <div id="modalCaptureArea" class="capture-area">
+                <div class="panel-title-bar panel-title-red">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="title-detail">विस्तृत विवरण</span>
+                </div>
+
                 <div id="detailContent">
 
                     <!-- HERO SECTION -->
@@ -105,7 +116,7 @@
                         <div id="detailHeroText">
                             <div id="detail-name-hero">-</div>
                             <div id="detail-code-hero"><i class="fas fa-qrcode"></i> <span id="detail-code">-</span></div>
-                            <div id="detail-gender-hero"><i class="fas fa-venus-mars"></i> <span id="detail-gender">-</span></div>
+                            <div id="detail-dob-hero"><i class="fas fa-calendar-alt"></i> जन्म मिति: <span id="detail-dob-hero-value">-</span></div>
                         </div>
                     </div>
 
@@ -145,6 +156,7 @@
                         <div class="detail-grid-single">
                             <div class="detail-row"><strong>जन्म मिति:</strong> <span id="detail-dob">-</span></div>
                             <div class="detail-row"><strong>मृत्यु मिति/उमेर:</strong> <span id="detail-dod">-</span></div>
+                            <div class="detail-row"><strong>लिङ्ग:</strong> <span id="detail-gender">-</span></div>
                             <div class="detail-row"><strong>शैक्षिक योग्यता:</strong> <span id="detail-education">-</span></div>
                         </div>
                     </div>
@@ -174,8 +186,9 @@
                 </div>
             </div>
         </div>
+
         <!-- ============================================================
-             PANEL 3: FAMILY BOX (hidden by default)
+             PANEL 3: FAMILY BOX
              ============================================================ -->
         <div id="FamilyBox" class="search-panel">
             <div class="family-panel-header">
@@ -186,6 +199,10 @@
             </div>
 
             <div id="familyCaptureArea" class="capture-area">
+                <div class="panel-title-bar panel-title-orange">
+                    <i class="fas fa-users"></i>
+                    <span id="title-family">पारिवारिक विवरण</span>
+                </div>
                 <div id="familyContent">
                     <!-- Populated by JavaScript -->
                 </div>
@@ -193,7 +210,7 @@
         </div>
 
         <!-- ============================================================
-             PANEL 4: ANCESTORS BOX (hidden by default)
+             PANEL 4: ANCESTORS BOX
              ============================================================ -->
         <div id="AnsestorsBox" class="search-panel">
             <div class="ancestor-panel-header">
@@ -204,11 +221,16 @@
             </div>
 
             <div id="ancestorCaptureArea" class="capture-area">
+                <div class="panel-title-bar panel-title-purple">
+                    <i class="fas fa-sitemap"></i>
+                    <span id="title-ancestor">वंशावली (काँशीनाथबाट)</span>
+                </div>
                 <div id="ancestorContent">
                     <!-- Populated by JavaScript -->
                 </div>
             </div>
         </div>
+
         <div id="FooterBox">
             <div id="FooterLinks">
                 <a href="../index.html">गृह पृष्ठ</a>

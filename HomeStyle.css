@@ -15,8 +15,13 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 90vh;
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;    
 }
-
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 #MainBody {
     max-width: 90%;
     background-color: #fee;
@@ -1030,6 +1035,7 @@ body {
 @media (max-width: 768px) {
         #MainBody {
         max-width: 100%;
+        width: 100%;
         padding: 8px;
         margin-top: 10px;
     }
@@ -1076,10 +1082,10 @@ body {
   }
     #FooterBox {
         width: 100%;
+        max-width: 100%;
         padding: 8px;
         margin-bottom: 12px;
     }
-
     #FooterLinks {
         display: block;
         margin-bottom: 8px;
@@ -1154,7 +1160,8 @@ body {
 
 @media (max-width: 480px) {
     #MainBody {
-        max-width: 90%;
+        width: 100%;
+        max-width: 100%;
         padding: 6px;
         margin-top: 8px;
     }

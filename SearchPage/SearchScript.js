@@ -43,7 +43,6 @@
 
     function getGenerationFromCode(code) {
         if (!code) return 1;
-        // ✅ Simple: number of dot-separated blocks = generation
         return code.split('.').length;
     }
 
@@ -54,28 +53,12 @@
         return parts.slice(0, -1).join('.');
     }
 
-    /**
-     * ✅ CORRECT father-code derivation
-     * Rule:
-     *   1. Drop the last dot-segment.
-     *   2. In the new last segment, prefix "M" to its number.
-     *      - "K6"  -> "KM6"
-     *      - "1"   -> "M1"
-     *   3. Return null if there's only one segment (root has no father in DB).
-     *
-     * Examples:
-     *   K6.1.1.M5  ->  K6.1.M1
-     *   K6.1.M1    ->  K6.M1
-     *   K6.M1      ->  KM6
-     *   K6.1       ->  KM6
-     *   KM6        ->  null
-     */
     function getFatherCode(code) {
         if (!code) return null;
         const parts = code.split('.');
         if (parts.length <= 1) return null;
 
-        parts.pop();   // drop last segment
+        parts.pop();
 
         const lastIdx = parts.length - 1;
         const seg = parts[lastIdx];
@@ -95,7 +78,7 @@
         return members
             .filter(m => {
                 const code = m.PersonalCode || '';
-                if (code.endsWith('M')) return false;   // exclude spouses
+                if (code.endsWith('M')) return false;
                 const childParent = getParentCode(code);
                 if (!childParent) return false;
                 return getBaseCode(childParent) === parentBase;
@@ -378,6 +361,9 @@
 
         currentSelectedMember = selectedMember;
 
+        // Update dynamic panel headings with the selected person's name
+        updatePanelHeadings(selectedMember);
+
         const outputs = {
             code: document.getElementById('code-output'),
             name: document.getElementById('name-output'),
@@ -456,6 +442,33 @@
     }
 
     // ------------------------------------------------------------
+    // 6b. Update Panel Headings dynamically
+    // ------------------------------------------------------------
+    function updatePanelHeadings(member) {
+        const name = (member && member.FullName && String(member.FullName).trim() !== '')
+            ? member.FullName
+            : null;
+
+        const titleShort    = document.getElementById('title-short');
+        const titleDetail   = document.getElementById('title-detail');
+        const titleFamily   = document.getElementById('title-family');
+        const titleAncestor = document.getElementById('title-ancestor');
+
+        if (!name) {
+            if (titleShort)    titleShort.textContent    = 'संक्षिप्त विवरण';
+            if (titleDetail)   titleDetail.textContent   = 'विस्तृत विवरण';
+            if (titleFamily)   titleFamily.textContent   = 'पारिवारिक विवरण';
+            if (titleAncestor) titleAncestor.textContent = 'वंशावली (काँशीनाथबाट)';
+            return;
+        }
+
+        if (titleShort)    titleShort.textContent    = `${name}को संक्षिप्त विवरण`;
+        if (titleDetail)   titleDetail.textContent   = `${name}को विस्तृत विवरण`;
+        if (titleFamily)   titleFamily.textContent   = `${name}को पारिवारिक विवरण`;
+        if (titleAncestor) titleAncestor.textContent = `काँशीनाथ ओझाबाट ${name}सम्मको वंशावली`;
+    }
+
+    // ------------------------------------------------------------
     // 7. Populate Detail Panel
     // ------------------------------------------------------------
     function populateDetailPanel(m) {
@@ -466,7 +479,7 @@
         };
         setText('detail-name-hero', m.FullName);
         setText('detail-code', m.PersonalCode);
-        setText('detail-gender', getGenderLabel(m));
+        setText('detail-dob-hero-value', m.DOB);
         setText('detail-father', m.Father);
         setText('detail-mother', m.Mother);
         setText('detail-spouse', m.Spouse);
@@ -479,6 +492,7 @@
         setText('detail-email', m.Email);
         setText('detail-dob', m.DOB);
         setText('detail-dod', m.DOD_Age);
+        setText('detail-gender', getGenderLabel(m));
         setText('detail-education', m.Qualification);
         setText('detail-occupation', m.Profession);
         setText('detail-detailProfession', m.DetailProfession);
@@ -521,21 +535,59 @@
         const sons = getSonsOf(m);
         const daughters = getDaughtersOf(m);
 
-        const daughtersInLaw = sons.map(s => getSpouseOf(s)).filter(Boolean);
-        const sonsInLaw = daughters.map(d => getSpouseOf(d)).filter(Boolean);
+        // Build enriched lists — each child is paired with their spouse (if any)
+        const sonsWithSpouse = sons.map(s => ({
+            member: s,
+            spouse: getSpouseOf(s)     // बुहारी
+        }));
+        const daughtersWithSpouse = daughters.map(d => ({
+            member: d,
+            spouse: getSpouseOf(d)     // ज्वाइँ
+        }));
 
-        const grandsons = [];
-        const granddaughters = [];
+        // Grandchildren via sons (using their own children)
+        const grandsonsWithSpouse = [];
+        const granddaughtersWithSpouse = [];
         sons.forEach(s => {
-            getSonsOf(s).forEach(gs => grandsons.push(gs));
-            getDaughtersOf(s).forEach(gd => granddaughters.push(gd));
+            getSonsOf(s).forEach(gs => {
+                grandsonsWithSpouse.push({
+                    member: gs,
+                    spouse: getSpouseOf(gs)   // नाति बुहारी
+                });
+            });
+            getDaughtersOf(s).forEach(gd => {
+                granddaughtersWithSpouse.push({
+                    member: gd,
+                    spouse: getSpouseOf(gd)   // नातिनी ज्वाइँ
+                });
+            });
         });
 
-        const grandDaughtersInLaw = grandsons.map(gs => getSpouseOf(gs)).filter(Boolean);
-        const grandSonsInLaw = granddaughters.map(gd => getSpouseOf(gd)).filter(Boolean);
+        // Also include grandchildren via daughters (children of daughters
+        // belong to their father's lineage, so we only pull the daughter's
+        // own children if present in DB under the daughter's code — optional).
+        daughters.forEach(d => {
+            getSonsOf(d).forEach(gs => {
+                if (!grandsonsWithSpouse.some(x => x.member.PersonalCode === gs.PersonalCode)) {
+                    grandsonsWithSpouse.push({
+                        member: gs,
+                        spouse: getSpouseOf(gs)
+                    });
+                }
+            });
+            getDaughtersOf(d).forEach(gd => {
+                if (!granddaughtersWithSpouse.some(x => x.member.PersonalCode === gd.PersonalCode)) {
+                    granddaughtersWithSpouse.push({
+                        member: gd,
+                        spouse: getSpouseOf(gd)
+                    });
+                }
+            });
+        });
 
         let html = '';
 
+        // घरमुली
         html += `
             <div class="family-section family-hero">
                 <div class="family-section-title">
@@ -545,6 +597,7 @@
             </div>
         `;
 
+        // श्रीमान/श्रीमती
         if (spouse) {
             html += `
                 <div class="family-section">
@@ -556,111 +609,72 @@
             `;
         }
 
-        if (sons.length > 0) {
+        // छोराहरू (with बुहारी shown inside their card)
+        if (sonsWithSpouse.length > 0) {
             html += `
                 <div class="family-section">
                     <div class="family-section-title">
-                        <i class="fas fa-mars"></i> छोराहरू (${sons.length})
+                        <i class="fas fa-mars"></i> छोराहरू (${sonsWithSpouse.length})
                     </div>
                     <div class="family-cards-grid">
-                        ${sons.map(s => renderFamilyMemberCard(s, 'son')).join('')}
+                        ${sonsWithSpouse.map(x =>
+                            renderFamilyMemberCard(x.member, 'son', x.spouse, 'बुहारी')
+                        ).join('')}
                     </div>
                 </div>
             `;
         }
 
-        if (daughters.length > 0) {
+        // छोरीहरू (with ज्वाइँ shown inside their card)
+        if (daughtersWithSpouse.length > 0) {
             html += `
                 <div class="family-section">
                     <div class="family-section-title">
-                        <i class="fas fa-venus"></i> छोरीहरू (${daughters.length})
+                        <i class="fas fa-venus"></i> छोरीहरू (${daughtersWithSpouse.length})
                     </div>
                     <div class="family-cards-grid">
-                        ${daughters.map(d => renderFamilyMemberCard(d, 'daughter')).join('')}
+                        ${daughtersWithSpouse.map(x =>
+                            renderFamilyMemberCard(x.member, 'daughter', x.spouse, 'ज्वाइँ')
+                        ).join('')}
                     </div>
                 </div>
             `;
         }
 
-        if (daughtersInLaw.length > 0) {
+        // नातिहरू (with नाति बुहारी shown inside their card)
+        if (grandsonsWithSpouse.length > 0) {
             html += `
                 <div class="family-section">
                     <div class="family-section-title">
-                        <i class="fas fa-female"></i> बुहारीहरू (${daughtersInLaw.length})
+                        <i class="fas fa-child"></i> नातिहरू (${grandsonsWithSpouse.length})
                     </div>
                     <div class="family-cards-grid">
-                        ${daughtersInLaw.map(d => renderFamilyMemberCard(d, 'inlaw')).join('')}
+                        ${grandsonsWithSpouse.map(x =>
+                            renderFamilyMemberCard(x.member, 'grandson', x.spouse, 'नाति बुहारी')
+                        ).join('')}
                     </div>
                 </div>
             `;
         }
 
-        if (sonsInLaw.length > 0) {
+        // नातिनीहरू (with नातिनी ज्वाइँ shown inside their card)
+        if (granddaughtersWithSpouse.length > 0) {
             html += `
                 <div class="family-section">
                     <div class="family-section-title">
-                        <i class="fas fa-male"></i> ज्वाइँहरू (${sonsInLaw.length})
+                        <i class="fas fa-child"></i> नातिनीहरू (${granddaughtersWithSpouse.length})
                     </div>
                     <div class="family-cards-grid">
-                        ${sonsInLaw.map(s => renderFamilyMemberCard(s, 'inlaw')).join('')}
+                        ${granddaughtersWithSpouse.map(x =>
+                            renderFamilyMemberCard(x.member, 'granddaughter', x.spouse, 'नातिनी ज्वाइँ')
+                        ).join('')}
                     </div>
                 </div>
             `;
         }
 
-        if (grandsons.length > 0) {
-            html += `
-                <div class="family-section">
-                    <div class="family-section-title">
-                        <i class="fas fa-child"></i> नातिहरू (${grandsons.length})
-                    </div>
-                    <div class="family-cards-grid">
-                        ${grandsons.map(gs => renderFamilyMemberCard(gs, 'grandson')).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        if (granddaughters.length > 0) {
-            html += `
-                <div class="family-section">
-                    <div class="family-section-title">
-                        <i class="fas fa-child"></i> नातिनीहरू (${granddaughters.length})
-                    </div>
-                    <div class="family-cards-grid">
-                        ${granddaughters.map(gd => renderFamilyMemberCard(gd, 'granddaughter')).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        if (grandDaughtersInLaw.length > 0) {
-            html += `
-                <div class="family-section">
-                    <div class="family-section-title">
-                        <i class="fas fa-female"></i> नाति बुहारीहरू (${grandDaughtersInLaw.length})
-                    </div>
-                    <div class="family-cards-grid">
-                        ${grandDaughtersInLaw.map(d => renderFamilyMemberCard(d, 'inlaw')).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        if (grandSonsInLaw.length > 0) {
-            html += `
-                <div class="family-section">
-                    <div class="family-section-title">
-                        <i class="fas fa-male"></i> नातिनी ज्वाइँहरू (${grandSonsInLaw.length})
-                    </div>
-                    <div class="family-cards-grid">
-                        ${grandSonsInLaw.map(s => renderFamilyMemberCard(s, 'inlaw')).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        if (!spouse && sons.length === 0 && daughters.length === 0) {
+        // Empty state
+        if (!spouse && sonsWithSpouse.length === 0 && daughtersWithSpouse.length === 0) {
             html += `
                 <div class="family-empty">
                     <i class="fas fa-info-circle"></i>
@@ -672,35 +686,74 @@
         container.innerHTML = html;
     }
 
-    function renderFamilyMemberCard(m, role) {
+    /**
+     * Render a family member card.
+     * @param {Object} m         — the primary member
+     * @param {string} role      — card role class suffix (primary/son/daughter/...)
+     * @param {Object|null} sp   — spouse object (optional)
+     * @param {string} spLabel   — label to show next to spouse, e.g. "बुहारी"
+     */
+    function renderFamilyMemberCard(m, role, sp, spLabel) {
         if (!m) return '';
         const photo = (m.PhotoUrl && m.PhotoUrl.trim() !== '') ? m.PhotoUrl : '../no_pic.png';
         const dob = formatDob(m);
         const roleClass = 'family-card-' + role;
 
+        // Spouse block — only rendered when a spouse record exists
+        let spouseBlock = '';
+        if (sp && sp.FullName) {
+            const spPhoto = (sp.PhotoUrl && sp.PhotoUrl.trim() !== '') ? sp.PhotoUrl : '../no_pic.png';
+            const spDob = formatDob(sp);
+            spouseBlock = `
+                <div class="family-card-spouse-block">
+                    <div class="family-card-spouse-label">
+                        <i class="fas fa-heart"></i> ${escapeHtml(spLabel || 'जीवनसाथी')}
+                    </div>
+                    <div class="family-card-spouse-inner">
+                        <div class="family-card-spouse-photo">
+                            <img src="${escapeHtml(spPhoto)}"
+                                 alt="${escapeHtml(sp.FullName || '')}"
+                                 loading="lazy">
+                        </div>
+                        <div class="family-card-spouse-info">
+                            <div class="family-card-spouse-name">${escapeHtml(sp.FullName)}</div>
+                            <div class="family-card-spouse-code">
+                                <i class="fas fa-qrcode"></i> ${escapeHtml(sp.PersonalCode || '-')}
+                            </div>
+                            ${spDob && spDob !== '-'
+                                ? `<div class="family-card-spouse-dob"><i class="fas fa-calendar-alt"></i> ${escapeHtml(spDob)}</div>`
+                                : ''}
+                            ${sp.Mobile
+                                ? `<div class="family-card-spouse-mobile"><i class="fas fa-phone"></i> ${escapeHtml(sp.Mobile)}</div>`
+                                : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         return `
             <div class="family-card ${roleClass}">
-                <div class="family-card-photo">
-                    <img src="${escapeHtml(photo)}" alt="${escapeHtml(m.FullName || '')}" loading="lazy">
+                <div class="family-card-main">
+                    <div class="family-card-photo">
+                        <img src="${escapeHtml(photo)}" alt="${escapeHtml(m.FullName || '')}" loading="lazy">
+                    </div>
+                    <div class="family-card-info">
+                        <div class="family-card-name">${escapeHtml(m.FullName || '-')}</div>
+                        <div class="family-card-code"><i class="fas fa-qrcode"></i> ${escapeHtml(m.PersonalCode || '-')}</div>
+                        <div class="family-card-dob"><i class="fas fa-calendar-alt"></i> ${escapeHtml(dob)}</div>
+                        ${m.Address ? `<div class="family-card-address"><i class="fas fa-map-pin"></i> ${escapeHtml(m.Address)}</div>` : ''}
+                        ${m.Mobile ? `<div class="family-card-mobile"><i class="fas fa-phone"></i> ${escapeHtml(m.Mobile)}</div>` : ''}
+                    </div>
                 </div>
-                <div class="family-card-info">
-                    <div class="family-card-name">${escapeHtml(m.FullName || '-')}</div>
-                    <div class="family-card-code"><i class="fas fa-qrcode"></i> ${escapeHtml(m.PersonalCode || '-')}</div>
-                    <div class="family-card-dob"><i class="fas fa-calendar-alt"></i> ${escapeHtml(dob)}</div>
-                    ${m.Address ? `<div class="family-card-address"><i class="fas fa-map-pin"></i> ${escapeHtml(m.Address)}</div>` : ''}
-                    ${m.Mobile ? `<div class="family-card-mobile"><i class="fas fa-phone"></i> ${escapeHtml(m.Mobile)}</div>` : ''}
-                </div>
+                ${spouseBlock}
             </div>
         `;
     }
 
     // ============================================================
-    // 9. ANCESTOR BOX  —  FIXED father-walking
+    // 9. ANCESTOR BOX
     // ============================================================
-    /**
-     * Build ancestor chain: [काँशीनाथ, Gen1, Gen2, ..., selected]
-     * काँशीनाथ is always the first entry (he's the originator, not in DB necessarily).
-     */
     function getAncestorChain(m) {
         if (!m || !m.PersonalCode) return [];
 
@@ -719,7 +772,7 @@
 
             if (node) {
                 if (!chain.some(c => c.PersonalCode === node.PersonalCode)) {
-                    chain.unshift(node);   // prepend → root ends up at index 0
+                    chain.unshift(node);
                 }
             }
 
@@ -728,7 +781,6 @@
             code = fatherCode;
         }
 
-        // ✅ Always prepend काँशीनाथ ओझा (the originator)
         const KANSHINATH = {
             PersonalCode: '__KANSHINATH__',
             FullName: 'काँशीनाथ ओझा',
@@ -740,12 +792,11 @@
             __isOriginator: true
         };
 
-        // Only add him if he's not already the top entry
         if (chain.length === 0 || chain[0].PersonalCode !== '__KANSHINATH__') {
             chain.unshift(KANSHINATH);
         }
 
-        return chain;   // [काँशीनाथ, Gen1, ..., selected]
+        return chain;
     }
 
     function populateAncestorBox(m) {
@@ -753,7 +804,7 @@
         const container = document.getElementById('ancestorContent');
         if (!container) return;
 
-        const chain = getAncestorChain(m);   // [काँशीनाथ, Gen1, ..., selected]
+        const chain = getAncestorChain(m);
 
         if (chain.length === 0) {
             container.innerHTML = `
@@ -765,9 +816,7 @@
             return;
         }
 
-        // "Total पुस्ता" should not count काँशीनाथ himself as a numbered पुस्ता
-        // but the user sees him at the top. We'll show the count of named generations.
-        const generationCount = chain.length - 1;   // exclude काँशीनाथ
+        const generationCount = chain.length - 1;
 
         let html = `
             <div class="ancestor-summary">
@@ -786,12 +835,9 @@
             const isOriginator = ancestor.__isOriginator === true;
             const isSelected = !isOriginator && (ancestor.PersonalCode === m.PersonalCode);
 
-            // Generation number:
-            //  - काँशीनाथ → 0 (or show a special icon)
-            //  - others   → number of dot blocks
             let generation;
             if (isOriginator) {
-                generation = '★';               // star icon
+                generation = '★';
             } else {
                 generation = getGenerationFromCode(ancestor.PersonalCode);
             }
@@ -804,7 +850,6 @@
             if (isOriginator) nodeClasses += ' ancestor-originator';
             if (isSelected)   nodeClasses += ' ancestor-selected';
 
-            // ✅ Uniform label: "मूलपुरूष" for काँशीनाथ, "पुस्ता N" for everyone else
             let roleLabel;
             if (isOriginator) {
                 roleLabel = 'मूलपुरूष';

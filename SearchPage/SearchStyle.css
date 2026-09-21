@@ -4,11 +4,9 @@
     font-weight: normal;
     font-style: normal;
 }
-
 * {
     box-sizing: border-box;
 }
-
 body {
     width: 100%;
     height: auto;
@@ -20,7 +18,6 @@ body {
     padding: 0;
     background-color: #000000;
 }
-
 #MainBody {
     width: 80%;
     height: auto;
@@ -31,31 +28,24 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
 }
-
 #MainHead {
     font-size: 2.4rem;
     font-weight: bold;
     text-align: center;
     color: #cc0000;
 }
-
 #SubHead {
     font-size: 2rem;
     font-weight: bold;
     text-align: center;
     color: #00cc00;
 }
-
 #SubHead2 {
     font-size: 1.4rem;
     font-weight: bold;
     text-align: center;
     color: #0000cc;
 }
-
-/* ============================================================
-   DROPDOWNS
-   ============================================================ */
 #DropDownBox {
     width: 100%;
     display: flex;
@@ -68,7 +58,6 @@ body {
     background-color: #6666ff;
     padding: 10px;
 }
-
 .DropDownClass {
     width: 80%;
     height: auto;
@@ -81,7 +70,6 @@ body {
     padding: 10px 0;
     gap: 10px;
 }
-
 .DropDownClass select {
     width: 60%;
     font-size: 1.4rem;
@@ -89,22 +77,16 @@ body {
     padding: 10px;
     font-family: 'MySanskritFont';
 }
-
 .DropDownClass select option {
     font-size: 1.4rem;
     font-weight: bold;
     padding: 10px 0;
     font-family: 'MySanskritFont';
 }
-
 .DropDownClass select:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
-
-/* ============================================================
-   VIEW TOGGLE BUTTONS (Short / Detail)
-   ============================================================ */
 #ViewToggleBox {
     width: 100%;
     display: flex;
@@ -114,7 +96,6 @@ body {
     margin: 16px 0 8px;
     flex-wrap: wrap;
 }
-
 .view-toggle-btn {
     flex: 0 1 260px;
     padding: 12px 26px;
@@ -133,40 +114,31 @@ body {
     background: linear-gradient(180deg, #0a7d32, #0c9e40, #0a7d32);
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
-
 #btnDetailDescription {
     background: linear-gradient(180deg, #007, #009, #007);
 }
-
 .view-toggle-btn:hover {
     transform: translateY(-2px);
     color: #ff0;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
 }
-
 .view-toggle-btn.active {
     background: linear-gradient(180deg, #b8864b, #daa520, #b8864b);
     color: #fff;
     box-shadow: 0 0 0 3px rgba(255, 200, 0, 0.5);
 }
-
 .view-toggle-btn:disabled {
     opacity: 0.45;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
-
-/* ============================================================
-   SEARCH PANELS (hidden by default)
-   ============================================================ */
 .search-panel {
     display: none;
     width: 100%;
     margin-top: 12px;
     animation: searchPanelFadeIn 0.28s ease;
 }
-
 .search-panel.is-active {
     display: block;
 }
@@ -177,24 +149,99 @@ body {
 }
 
 /* ============================================================
-   MAIN DISPLAY BOX (Short view)
+   UNIFIED PANEL TITLE BAR — appears inside saved images
+   ============================================================ */
+.panel-title-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.45);
+    border-radius: 14px;
+    text-align: center;
+    line-height: 1.25;
+    font-family: 'MySanskritFont', Arial, sans-serif;
+    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.panel-title-bar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -60%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        transparent 100%
+    );
+    transform: skewX(-20deg);
+    pointer-events: none;
+}
+
+.panel-title-bar i {
+    font-size: 1.7rem;
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
+    flex-shrink: 0;
+}
+
+.panel-title-bar span {
+    word-break: break-word;
+}
+
+.panel-title-green {
+    background: linear-gradient(135deg, #064b2b 0%, #0a8a4c 50%, #064b2b 100%);
+    border: 3px solid #ffd966;
+}
+.panel-title-red {
+    background: linear-gradient(135deg, #8B0000 0%, #b8864b 50%, #8B0000 100%);
+    border: 3px solid #ffe27a;
+}
+.panel-title-orange {
+    background: linear-gradient(135deg, #7a3d00 0%, #d4a24b 50%, #7a3d00 100%);
+    border: 3px solid #ffe27a;
+}
+.panel-title-purple {
+    background: linear-gradient(135deg, #4a1a5e 0%, #7a2a9a 50%, #4a1a5e 100%);
+    border: 3px solid #e0b3ff;
+}
+
+/* ============================================================
+   DESCRIPTION BOX — photo on LEFT (top on mobile)
    ============================================================ */
 #DescriptionBoxWrapper {
     border: #000000 solid 2px;
     background-color: #66ff66;
     padding: 10px;
 }
-
 #DescriptionBox {
     width: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     min-height: 380px;
 }
+.panel-flex-row {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    min-height: 340px;
+}
+#DescriptionBox .panel-flex-row #MemberPhotoArea { width: 30%; }
+#DescriptionBox .panel-flex-row #DescriptionArea   { width: 70%; }
 
 #DescriptionArea {
-    width: 70%;
     height: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -203,7 +250,6 @@ body {
     font-weight: bold;
     padding: 10px;
 }
-
 #DescriptionArea > div {
     display: flex;
     flex-direction: row;
@@ -212,14 +258,11 @@ body {
     padding: 4px 0;
     border-bottom: 1px dotted #888;
 }
-
 #DescriptionArea > div span {
     font-weight: normal;
     color: #0000aa;
 }
-
 #MemberPhotoArea {
-    width: 30%;
     height: auto;
     display: flex;
     flex-direction: column;
@@ -229,7 +272,6 @@ body {
     padding: 10px;
     position: relative;
 }
-
 #MemberPhotoBox {
     display: flex;
     justify-content: center;
@@ -240,7 +282,6 @@ body {
     padding: 8px;
     width: 100%;
 }
-
 #MemberPhoto {
     width: 20vw;
     max-width: 280px;
@@ -251,10 +292,6 @@ body {
     border-radius: 4px;
     background: #f0ebe4;
 }
-
-/* ============================================================
-   SAVE BUTTONS
-   ============================================================ */
 .save-btn-icon {
     width: 40px;
     height: 40px;
@@ -270,21 +307,17 @@ body {
     transition: 0.3s;
     flex-shrink: 0;
 }
-
 .save-btn-icon:hover {
     background: linear-gradient(180deg, #550, #770, #550);
     color: #ff0;
     transform: scale(1.1);
 }
-
 .save-btn-icon:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
 }
-
 .save-btn-icon i { font-size: 1.2rem; }
-
 #ButtonArea {
     width: 100%;
     display: flex;
@@ -294,7 +327,7 @@ body {
 }
 
 /* ============================================================
-   DETAIL PANEL (inline, replaces modal)
+   DETAIL PANEL
    ============================================================ */
 #detailPanel {
     background: linear-gradient(160deg, #fdfbf7 0%, #f4ede2 100%);
@@ -303,7 +336,6 @@ body {
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
-
 .detail-panel-header {
     display: flex;
     justify-content: space-between;
@@ -311,7 +343,6 @@ body {
     background: linear-gradient(135deg, #8B0000 0%, #b8864b 100%);
     padding: 18px 26px;
 }
-
 .detail-panel-header h2 {
     color: #fff;
     font-size: 1.7rem;
@@ -323,23 +354,18 @@ body {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.35);
     letter-spacing: 0.4px;
 }
-
 .detail-panel-header h2 i {
     color: #ffd966;
 }
-
 #modalCaptureArea {
     background: #fff;
     padding: 26px 28px 30px;
 }
-
 #detailContent {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
-
-/* HERO SECTION */
 #detailHero {
     display: flex;
     align-items: center;
@@ -350,7 +376,6 @@ body {
     border: 2px solid #f0d9a8;
     box-shadow: 0 4px 14px rgba(184, 134, 75, 0.12);
 }
-
 #detailPhotoSection {
     flex: 0 0 160px;
     display: flex;
@@ -362,7 +387,6 @@ body {
     padding: 6px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
-
 #detail-photo {
     width: 100%;
     max-width: 148px;
@@ -372,7 +396,6 @@ body {
     border-radius: 8px;
     background: #f0ebe4;
 }
-
 #detailHeroText {
     flex: 1;
     display: flex;
@@ -380,7 +403,6 @@ body {
     gap: 10px;
     min-width: 0;
 }
-
 #detail-name-hero {
     font-size: 1.9rem;
     font-weight: 800;
@@ -389,9 +411,8 @@ body {
     letter-spacing: -0.3px;
     word-break: break-word;
 }
-
 #detail-code-hero,
-#detail-gender-hero {
+#detail-dob-hero {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -404,11 +425,9 @@ body {
     border: 1px solid #e0cfa8;
     align-self: flex-start;
 }
-
 #detail-code-hero i,
-#detail-gender-hero i { color: #b8864b; }
+#detail-dob-hero i { color: #b8864b; }
 
-/* SECTION BLOCKS */
 .detail-section {
     background: #fff;
     border: 1px solid #e8dfd4;
@@ -416,7 +435,6 @@ body {
     padding: 16px 20px 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
-
 .detail-section-title {
     font-size: 1.15rem;
     font-weight: 700;
@@ -428,18 +446,15 @@ body {
     align-items: center;
     gap: 10px;
 }
-
 .detail-section-title i {
     color: #b8864b;
     font-size: 1.1rem;
 }
-
 .detail-grid-single {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-
 .detail-row {
     display: flex;
     flex-direction: row;
@@ -450,30 +465,24 @@ body {
     align-items: flex-start;
     line-height: 1.5;
 }
-
 .detail-row:last-child { border-bottom: none; }
-
 .detail-row strong {
     min-width: 150px;
     color: #4a3728;
     font-weight: 700;
     flex-shrink: 0;
 }
-
 .detail-row span {
     color: #1a3a6a;
     word-break: break-word;
     flex: 1;
 }
-
 .detail-row.detail-multiline {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
 }
-
 .detail-row.detail-multiline strong { min-width: 0; }
-
 .detail-row.detail-multiline span {
     width: 100%;
     background: #faf6ef;
@@ -482,7 +491,6 @@ body {
     border: 1px solid #ede4d4;
     line-height: 1.65;
 }
-
 .detail-story-box {
     background: linear-gradient(135deg, #fefcf7 0%, #f9f3e8 100%);
     padding: 16px 18px;
@@ -501,7 +509,7 @@ body {
    FOOTER
    ============================================================ */
 #FooterBox {
-    width: 80vw;
+    width: 100%;
     background-color: #000000;
     color: #fff;
     padding: 2vh;
@@ -510,7 +518,6 @@ body {
     margin-bottom: 2vh;
     margin-top: 24px;
 }
-
 #FooterLinks {
     display: flex;
     flex-direction: row;
@@ -519,25 +526,21 @@ body {
     flex-wrap: wrap;
     gap: 8px;
 }
-
 #FooterLinks a {
     color: #00bb00;
     text-decoration: none;
     font-size: 1.2rem;
     font-weight: bold;
 }
-
 #FooterLinks a:hover {
     text-decoration: underline;
     color: #008800;
 }
-
 #FooterHeading {
     font-size: 1.5rem;
     font-weight: bold;
     color: #8888ff;
 }
-
 #FooterContacts {
     margin-top: 1vh;
     display: flex;
@@ -547,21 +550,18 @@ body {
     flex-wrap: wrap;
     gap: 10px;
 }
-
 #FooterContacts div {
     font-size: 1.2rem;
     font-weight: bold;
 }
-
 #FooterContacts a { color: #00bb00; text-decoration: none; }
 
 /* ============================================================
-   EXTRA VIEW-TOGGLE BUTTON VARIANTS
+   VIEW TOGGLE COLORS
    ============================================================ */
 .view-toggle-family {
     background: linear-gradient(180deg, #7a3d00, #a35a00, #7a3d00);
 }
-
 .view-toggle-ancestor {
     background: linear-gradient(180deg, #4a1a5e, #7a2a9a, #4a1a5e);
 }
@@ -576,7 +576,6 @@ body {
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
-
 .family-panel-header {
     display: flex;
     justify-content: space-between;
@@ -584,7 +583,6 @@ body {
     background: linear-gradient(135deg, #7a3d00 0%, #d4a24b 100%);
     padding: 18px 26px;
 }
-
 .family-panel-header h2 {
     color: #fff;
     font-size: 1.7rem;
@@ -596,23 +594,18 @@ body {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.35);
     letter-spacing: 0.4px;
 }
-
 .family-panel-header h2 i {
     color: #ffe27a;
 }
-
 #familyCaptureArea {
     background: #fff;
     padding: 24px 26px 28px;
 }
-
 #familyContent {
     display: flex;
     flex-direction: column;
     gap: 22px;
 }
-
-/* Section wrapper */
 .family-section {
     background: #fff;
     border: 1px solid #f0d9a8;
@@ -620,7 +613,6 @@ body {
     padding: 16px 18px 18px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-
 .family-section-title {
     font-size: 1.15rem;
     font-weight: 700;
@@ -632,25 +624,18 @@ body {
     align-items: center;
     gap: 10px;
 }
-
 .family-section-title i {
     color: #d4a24b;
 }
-
-/* Primary / spouse variant — hero style */
 .family-section.family-hero {
     background: linear-gradient(135deg, #fff8ec 0%, #fdf1dc 100%);
     border: 2px solid #f0d9a8;
 }
-
-/* Card grid */
 .family-cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 14px;
 }
-
-/* Individual family member card */
 .family-card {
     display: flex;
     gap: 14px;
@@ -662,30 +647,24 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     align-items: flex-start;
 }
-
 .family-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
-
-/* Role-based accent colors */
 .family-card-primary {
     border: 3px solid #b8864b;
     background: linear-gradient(135deg, #fff8ec 0%, #fdf1dc 100%);
     box-shadow: 0 6px 20px rgba(184, 134, 75, 0.2);
 }
-
 .family-card-spouse {
     border: 3px solid #d9534f;
     background: linear-gradient(135deg, #fff5f5 0%, #fde4e4 100%);
 }
-
 .family-card-son      { border-left: 4px solid #2c7fb8; }
 .family-card-daughter { border-left: 4px solid #c2468e; }
 .family-card-inlaw    { border-left: 4px solid #6a8b4e; }
 .family-card-grandson { border-left: 4px solid #2c7fb8; background: #f6fbff; }
 .family-card-granddaughter { border-left: 4px solid #c2468e; background: #fff8fc; }
-
 .family-card-photo {
     flex: 0 0 70px;
     width: 70px;
@@ -695,14 +674,12 @@ body {
     background: #f0ebe4;
     border: 2px solid #ddd6cb;
 }
-
 .family-card-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
-
 .family-card-info {
     flex: 1;
     min-width: 0;
@@ -710,7 +687,6 @@ body {
     flex-direction: column;
     gap: 4px;
 }
-
 .family-card-name {
     font-weight: 700;
     font-size: 1rem;
@@ -718,16 +694,15 @@ body {
     line-height: 1.3;
     word-break: break-word;
 }
-
 .family-card-primary .family-card-name {
     color: #8B0000;
     font-size: 1.15rem;
 }
-
 .family-card-code,
 .family-card-gender,
 .family-card-address,
-.family-card-mobile {
+.family-card-mobile,
+.family-card-dob {
     font-size: 0.82rem;
     color: #555;
     display: flex;
@@ -735,16 +710,15 @@ body {
     gap: 6px;
     word-break: break-word;
 }
-
 .family-card-code i,
 .family-card-gender i,
 .family-card-address i,
-.family-card-mobile i {
+.family-card-mobile i,
+.family-card-dob i {
     color: #b8864b;
     font-size: 0.78rem;
     flex-shrink: 0;
 }
-
 .family-empty {
     text-align: center;
     padding: 30px 20px;
@@ -754,7 +728,6 @@ body {
     border-radius: 12px;
     border: 1px dashed #e0cfa8;
 }
-
 .family-empty i {
     color: #b8864b;
     margin-right: 8px;
@@ -770,7 +743,6 @@ body {
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
-
 .ancestor-panel-header {
     display: flex;
     justify-content: space-between;
@@ -778,7 +750,6 @@ body {
     background: linear-gradient(135deg, #4a1a5e 0%, #7a2a9a 100%);
     padding: 18px 26px;
 }
-
 .ancestor-panel-header h2 {
     color: #fff;
     font-size: 1.7rem;
@@ -790,22 +761,18 @@ body {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.35);
     letter-spacing: 0.4px;
 }
-
 .ancestor-panel-header h2 i {
     color: #e0b3ff;
 }
-
 #ancestorCaptureArea {
     background: #fff;
     padding: 24px 26px 28px;
 }
-
 #ancestorContent {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-
 .ancestor-chain {
     display: flex;
     flex-direction: column;
@@ -814,21 +781,18 @@ body {
     width: 100%;
     max-width: 620px;
 }
-
 .ancestor-node {
     display: flex;
     align-items: center;
     gap: 14px;
     width: 100%;
 }
-
 .ancestor-step {
     flex: 0 0 44px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 .ancestor-step-badge {
     width: 40px;
     height: 40px;
@@ -843,7 +807,6 @@ body {
     box-shadow: 0 4px 12px rgba(122, 42, 154, 0.35);
     border: 3px solid #fff;
 }
-
 .ancestor-card {
     flex: 1;
     display: flex;
@@ -858,18 +821,15 @@ body {
     align-items: center;
     min-width: 0;
 }
-
 .ancestor-card:hover {
     transform: translateX(4px);
     box-shadow: 0 8px 20px rgba(122, 42, 154, 0.20);
 }
-
 .ancestor-selected .ancestor-card {
     border: 3px solid #7a2a9a;
     background: linear-gradient(135deg, #fdf6ff 0%, #f5e6fc 100%);
     box-shadow: 0 8px 24px rgba(122, 42, 154, 0.28);
 }
-
 .ancestor-card-photo {
     flex: 0 0 68px;
     width: 68px;
@@ -879,14 +839,12 @@ body {
     background: #f0ebe4;
     border: 2px solid #ddd6cb;
 }
-
 .ancestor-card-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
-
 .ancestor-card-info {
     flex: 1;
     min-width: 0;
@@ -894,7 +852,6 @@ body {
     flex-direction: column;
     gap: 4px;
 }
-
 .ancestor-card-name {
     font-weight: 700;
     font-size: 1.05rem;
@@ -902,11 +859,11 @@ body {
     line-height: 1.3;
     word-break: break-word;
 }
-
 .ancestor-card-code,
 .ancestor-card-gender,
 .ancestor-card-dob,
-.ancestor-card-address {
+.ancestor-card-address,
+.ancestor-card-mobile {
     font-size: 0.82rem;
     color: #555;
     display: flex;
@@ -914,16 +871,15 @@ body {
     gap: 6px;
     word-break: break-word;
 }
-
 .ancestor-card-code i,
 .ancestor-card-gender i,
 .ancestor-card-dob i,
-.ancestor-card-address i {
+.ancestor-card-address i,
+.ancestor-card-mobile i {
     color: #b866e0;
     font-size: 0.78rem;
     flex-shrink: 0;
 }
-
 .ancestor-card-badge {
     position: absolute;
     top: -10px;
@@ -937,45 +893,28 @@ body {
     letter-spacing: 0.5px;
     box-shadow: 0 3px 10px rgba(122, 42, 154, 0.4);
 }
-
-/* Connector between ancestor nodes */
 .ancestor-connector {
-    width: 44px;
-    align-self: flex-start;
-    margin-left: 0;
-    height: 28px;
-    position: relative;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    height: 42px;
+    width: 100%;
+    position: relative;
+    margin-left: 0;
 }
-
-.ancestor-connector span {
+.ancestor-connector-line {
     display: block;
     width: 3px;
-    height: 100%;
-    background: linear-gradient(to bottom, #7a2a9a, #b866e0);
+    flex: 1;
+    background: linear-gradient(to bottom, #b866e0, #7a2a9a);
     border-radius: 2px;
 }
-
-/* ✅ Replace old .family-card-gender with .family-card-dob */
-.family-card-dob {
-    font-size: 0.82rem;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    word-break: break-word;
+.ancestor-connector-arrow {
+    color: #7a2a9a;
+    font-size: 0.9rem;
+    margin-bottom: -4px;
 }
-
-.family-card-dob i {
-    color: #b8864b;
-    font-size: 0.78rem;
-    flex-shrink: 0;
-}
-
-/* ============================================================
-   ANCESTOR — Summary header
-   ============================================================ */
 .ancestor-summary {
     width: 100%;
     max-width: 640px;
@@ -991,7 +930,6 @@ body {
     flex-wrap: wrap;
     box-shadow: 0 3px 10px rgba(122, 42, 154, 0.08);
 }
-
 .ancestor-summary-line {
     display: flex;
     align-items: center;
@@ -1000,16 +938,13 @@ body {
     font-size: 1rem;
     font-weight: 600;
 }
-
 .ancestor-summary-line i {
     color: #7a2a9a;
     font-size: 1.2rem;
 }
-
 .ancestor-summary-line strong {
     color: #7a2a9a;
 }
-
 .ancestor-summary-count {
     font-size: 0.9rem;
     color: #6a2a8a;
@@ -1018,26 +953,10 @@ body {
     border-radius: 20px;
     border: 1px solid #e0b3ff;
 }
-
 .ancestor-summary-count strong {
     color: #7a2a9a;
     font-size: 1rem;
 }
-
-/* ============================================================
-   ANCESTOR — Node variations
-   ============================================================ */
-.ancestor-root .ancestor-card {
-    border: 3px solid #b8864b;
-    background: linear-gradient(135deg, #fff8ec 0%, #fdf1dc 100%);
-    box-shadow: 0 6px 20px rgba(184, 134, 75, 0.25);
-}
-
-.ancestor-root .ancestor-step-badge {
-    background: linear-gradient(135deg, #b8864b, #d4a24b);
-    box-shadow: 0 4px 12px rgba(184, 134, 75, 0.45);
-}
-
 .ancestor-card-role {
     position: absolute;
     top: -11px;
@@ -1053,201 +972,724 @@ body {
     text-transform: uppercase;
     box-shadow: 0 2px 6px rgba(122, 42, 154, 0.15);
 }
-
-.ancestor-root .ancestor-card-role {
-    border-color: #b8864b;
-    color: #7a3d00;
-    background: #fff8ec;
-}
-
 .ancestor-selected .ancestor-card-role {
     border-color: #7a2a9a;
     color: #fff;
     background: linear-gradient(135deg, #7a2a9a, #b866e0);
     box-shadow: 0 2px 8px rgba(122, 42, 154, 0.4);
 }
-
-/* ============================================================
-   ANCESTOR — Connector (arrow + line)
-   ============================================================ */
-.ancestor-connector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    height: 42px;
-    width: 100%;
-    position: relative;
-    margin-left: 0;
-}
-
-.ancestor-connector-line {
-    display: block;
-    width: 3px;
-    flex: 1;
-    background: linear-gradient(to bottom, #b866e0, #7a2a9a);
-    border-radius: 2px;
-}
-
-.ancestor-connector-arrow {
-    color: #7a2a9a;
-    font-size: 0.9rem;
-    margin-bottom: -4px;
-}
-
-/* ============================================================
-   ANCESTOR — Originator (काँशीनाथ ओझा)
-   ============================================================ */
 .ancestor-originator .ancestor-card {
     border: 3px solid #8B0000;
     background: linear-gradient(135deg, #fff5e6 0%, #ffe4b5 100%);
     box-shadow: 0 8px 22px rgba(139, 0, 0, 0.28);
 }
-
 .ancestor-originator .ancestor-step-badge.badge-originator {
     background: linear-gradient(135deg, #8B0000, #d4a24b);
     color: #ffe27a;
     font-size: 1.2rem;
     box-shadow: 0 4px 12px rgba(139, 0, 0, 0.45);
 }
-
 .ancestor-originator .ancestor-card-role {
     border-color: #8B0000;
     color: #fff;
     background: linear-gradient(135deg, #8B0000, #b8864b);
     box-shadow: 0 2px 8px rgba(139, 0, 0, 0.35);
 }
-
 .ancestor-originator .ancestor-card-name {
     color: #8B0000;
     font-size: 1.2rem;
     font-weight: 800;
 }
-
 .ancestor-originator .ancestor-card-code i,
 .ancestor-originator .ancestor-card-dob i,
 .ancestor-originator .ancestor-card-address i,
 .ancestor-originator .ancestor-card-mobile i {
     color: #b8864b;
 }
-
 /* ============================================================
-   Selected member — subtle highlight (no badge)
+   FAMILY CARD — SPOUSE SUB-BLOCK
+   Shows बुहारी / ज्वाइँ / नाति बुहारी / नातिनी ज्वाइँ etc.
    ============================================================ */
-.ancestor-selected .ancestor-card {
-    border: 3px solid #7a2a9a;
-    background: linear-gradient(135deg, #fdf6ff 0%, #f0e0fa 100%);
-    box-shadow: 0 6px 18px rgba(122, 42, 154, 0.25);
+
+/* Re-architect the family card to be vertical so main + spouse stack */
+.family-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Main row: photo + info (was the previous card layout) */
+.family-card-main {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+/* Spouse sub-block */
+.family-card-spouse-block {
+    margin-top: 6px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, #fffaf3 0%, #fdf1dc 100%);
+    border: 1px dashed #e0cfa8;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.family-card-spouse-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #8B0000;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.family-card-spouse-label i {
+    color: #d9534f;
+    font-size: 0.85rem;
+}
+
+.family-card-spouse-inner {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.family-card-spouse-photo {
+    flex: 0 0 54px;
+    width: 54px;
+    height: 70px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f0ebe4;
+    border: 2px solid #d9534f;
+}
+.family-card-spouse-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.family-card-spouse-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.family-card-spouse-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #8B0000;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.family-card-spouse-code,
+.family-card-spouse-dob,
+.family-card-spouse-mobile {
+    font-size: 0.75rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    word-break: break-word;
+}
+.family-card-spouse-code i,
+.family-card-spouse-dob i,
+.family-card-spouse-mobile i {
+    color: #d9534f;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+}
+
+/* Spouse block on primary card (घरमुली) — highlight differently */
+.family-card-primary .family-card-spouse-block {
+    background: linear-gradient(135deg, #fff5f5 0%, #fde4e4 100%);
+    border-color: #d9534f;
+}
+
+/* Spouse block on spouse card — slightly muted */
+.family-card-spouse .family-card-spouse-block {
+    background: linear-gradient(135deg, #fffaf3 0%, #fdf1dc 100%);
+    border-color: #e0cfa8;
 }
 
 /* ============================================================
-   ANCESTOR — Mobile refinements
+   RESPONSIVE — TABLET & MOBILE (≤ 768px)
    ============================================================ */
 @media (max-width: 768px) {
-    .ancestor-summary {
-        flex-direction: column;
-        text-align: center;
-        padding: 12px;
-    }
 
-    .ancestor-summary-line {
-        flex-direction: column;
+    /* ---------- General layout ---------- */
+    #MainBody {
+        width: 100%;
+        padding: 8px;
+    }
+    #MainHead { font-size: 1.6rem; }
+    #SubHead  { font-size: 1.3rem; }
+    #SubHead2 { font-size: 1rem; padding: 0 6px; }
+
+    /* ---------- Dropdowns ---------- */
+    #DropDownBox {
+        padding: 8px;
         gap: 6px;
-        text-align: center;
     }
-
-    .ancestor-connector {
-        height: 32px;
-    }
-
-    .ancestor-card-role {
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .ancestor-node {
+    .DropDownClass {
+        width: 100%;
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
+        gap: 4px;
+        font-size: 1rem;
+        padding: 6px 0;
+    }
+    .DropDownClass select {
+        width: 100%;
+        font-size: 1rem;
+        padding: 8px;
+    }
+
+    /* ---------- View toggle buttons ---------- */
+    #ViewToggleBox {
+        gap: 8px;
+        margin: 10px 0 6px;
+    }
+    .view-toggle-btn {
+        flex: 1 1 100%;
+        padding: 10px 14px;
+        font-size: 1rem;
+        border-radius: 18px;
+    }
+
+    /* ---------- Panel title bar ---------- */
+    .panel-title-bar {
+        font-size: 1.15rem;
+        padding: 12px 10px;
+        gap: 8px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        letter-spacing: 0.4px;
+    }
+    .panel-title-bar i { font-size: 1rem; }
+
+    /* ---------- Short description (photo first, then info) ---------- */
+    .panel-flex-row {
+        flex-direction: column;
+        min-height: 0;
         gap: 8px;
     }
-
-    .ancestor-step {
-        flex: 0 0 auto;
+    #DescriptionBox .panel-flex-row #MemberPhotoArea,
+    #DescriptionBox .panel-flex-row #DescriptionArea {
+        width: 100%;
     }
-}
-
-/* ============================================================
-   RESPONSIVE — Family & Ancestors
-   ============================================================ */
-@media (max-width: 768px) {
-    .family-cards-grid {
+    #DescriptionBoxWrapper { padding: 6px; }
+    #DescriptionBox { min-height: 0; }
+    #DescriptionArea {
         grid-template-columns: 1fr;
+        gap: 3px 10px;
+        font-size: 0.95rem;
+        padding: 6px;
     }
-    .family-card {
-        flex-direction: row;
+    #DescriptionArea > div {
+        padding: 3px 0;
+        font-size: 0.9rem;
+    }
+    #MemberPhotoArea { padding: 6px; gap: 6px; }
+    #MemberPhotoBox { padding: 6px; }
+    #MemberPhoto {
+        width: 55vw;
+        max-width: 220px;
+        min-width: 100px;
     }
 
-    .ancestor-chain {
-        max-width: 100%;
-    }
-    .ancestor-card {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    .ancestor-card-info {
-        align-items: center;
-    }
-    .ancestor-card-photo {
-        flex: 0 0 auto;
-    }
-    .ancestor-node {
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-    }
-    .ancestor-step {
-        flex: 0 0 auto;
-    }
-    .ancestor-connector {
-        margin-left: 0;
-        align-self: center;
-    }
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 768px) {
-    #MainBody { width: 95%; padding: 10px; }
-    #DescriptionBox { flex-direction: column; }
-    #DescriptionArea { width: 100%; grid-template-columns: 1fr; }
-    #MemberPhotoArea { width: 100%; }
-    #MemberPhoto { width: 60vw; }
-    .DropDownClass { width: 100%; flex-direction: column; }
-    .DropDownClass select { width: 100%; }
-
-    .view-toggle-btn { flex: 1 1 100%; }
-
-    #modalCaptureArea { padding: 18px 16px 22px; }
+    /* ---------- Detail panel ---------- */
+    #modalCaptureArea { padding: 12px 10px 14px; }
+    .detail-panel-header { padding: 10px 14px; }
+    .detail-panel-header h2 { font-size: 1.15rem; gap: 8px; }
 
     #detailHero {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 18px;
+        padding: 12px;
+        gap: 12px;
     }
-    #detailPhotoSection { flex: 0 0 auto; }
-    #detail-name-hero { font-size: 1.4rem; }
+    #detailPhotoSection { flex: 0 0 auto; padding: 4px; }
+    #detail-name-hero { font-size: 1.25rem; }
     #detail-code-hero,
-    #detail-gender-hero { align-self: center; }
-
+    #detail-dob-hero {
+        align-self: center;
+        font-size: 0.9rem;
+        padding: 5px 12px;
+        gap: 6px;
+    }
+    #detailContent { gap: 12px; }
+    .detail-section { padding: 10px 12px 12px; border-radius: 10px; }
+    .detail-section-title {
+        font-size: 1rem;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        gap: 8px;
+    }
+    .detail-grid-single { gap: 4px; }
     .detail-row {
         flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        padding: 6px 2px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    .detail-row strong { min-width: 0; font-size: 0.88rem; }
+    .detail-row span  { font-size: 0.9rem; }
+    .detail-row.detail-multiline span { padding: 8px 10px; }
+    .detail-story-box {
+        font-size: 0.9rem;
+        padding: 10px 12px;
+        line-height: 1.6;
+    }
+
+    /* ---------- Family panel header ---------- */
+    .family-panel-header { padding: 10px 14px; }
+    .family-panel-header h2 { font-size: 1.15rem; gap: 8px; }
+    #familyCaptureArea { padding: 12px 10px 14px; }
+    #familyContent { gap: 12px; }
+
+    /* ---------- Family sections ---------- */
+    .family-section {
+        padding: 10px 10px 12px;
+        border-radius: 10px;
+    }
+    .family-section-title {
+        font-size: 1rem;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        gap: 8px;
+    }
+
+    /* ---------- Family cards grid: single column, tighter ---------- */
+    .family-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    /* =========================================================
+       FAMILY CARD — mobile: photo on top, info below, spouse
+       stacked directly underneath the person
+       ========================================================= */
+    .family-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+        padding: 10px 8px;
+        border-radius: 10px;
+    }
+
+    /* Main member block: photo on top, info below */
+    .family-card-main {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 6px;
+        width: 100%;
+    }
+
+    /* Photo block – centered, not stretched */
+    .family-card-photo {
+        flex: 0 0 auto;
+        width: 84px;
+        height: 108px;
+        border-radius: 8px;
+    }
+
+    /* Info block – centered columns */
+    .family-card-info {
+        align-items: center;
+        text-align: center;
+        gap: 2px;
+        width: 100%;
+    }
+    .family-card-name {
+        font-size: 0.98rem;
+        text-align: center;
+    }
+    .family-card-primary .family-card-name {
+        font-size: 1.08rem;
+    }
+    .family-card-code,
+    .family-card-gender,
+    .family-card-address,
+    .family-card-mobile,
+    .family-card-dob {
+        justify-content: center;
+        text-align: center;
+        font-size: 0.78rem;
+        gap: 4px;
+    }
+
+    /* ---- Spouse sub-block: directly below the person ---- */
+    .family-card-spouse-block {
+        width: 100%;
+        margin-top: 4px;
+        padding: 8px;
+        border-radius: 8px;
+        gap: 6px;
+    }
+    .family-card-spouse-label {
+        justify-content: center;
+        font-size: 0.72rem;
+        gap: 4px;
+    }
+    .family-card-spouse-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 6px;
+    }
+    .family-card-spouse-photo {
+        flex: 0 0 auto;
+        width: 68px;
+        height: 88px;
+        border-radius: 6px;
+    }
+    .family-card-spouse-info {
+        align-items: center;
+        text-align: center;
+        gap: 2px;
+        width: 100%;
+    }
+    .family-card-spouse-name {
+        font-size: 0.9rem;
+        text-align: center;
+    }
+    .family-card-spouse-code,
+    .family-card-spouse-dob,
+    .family-card-spouse-mobile {
+        justify-content: center;
+        text-align: center;
+        font-size: 0.72rem;
+        gap: 4px;
+    }
+
+    /* ---------- Ancestor panel ---------- */
+    .ancestor-panel-header { padding: 10px 14px; }
+    .ancestor-panel-header h2 { font-size: 1.15rem; gap: 8px; }
+    #ancestorCaptureArea { padding: 12px 10px 14px; }
+
+    .ancestor-summary {
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 14px;
+        gap: 6px;
+    }
+    .ancestor-summary-line {
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    .ancestor-summary-line i { font-size: 1rem; }
+    .ancestor-summary-count {
+        font-size: 0.82rem;
+        padding: 3px 10px;
+    }
+
+    .ancestor-chain { max-width: 100%; }
+
+    .ancestor-node {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+    .ancestor-step { flex: 0 0 auto; }
+    .ancestor-step-badge {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+        border-width: 2px;
+    }
+
+    .ancestor-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 12px 10px;
+        gap: 8px;
+        border-radius: 12px;
+    }
+    .ancestor-card-info {
+        align-items: center;
+        text-align: center;
+        gap: 2px;
+    }
+    .ancestor-card-photo {
+        flex: 0 0 auto;
+        width: 72px;
+        height: 94px;
+        border-radius: 6px;
+    }
+    .ancestor-card-name {
+        font-size: 1rem;
+        text-align: center;
+    }
+    .ancestor-originator .ancestor-card-name {
+        font-size: 1.08rem;
+    }
+    .ancestor-card-code,
+    .ancestor-card-gender,
+    .ancestor-card-dob,
+    .ancestor-card-address,
+    .ancestor-card-mobile {
+        justify-content: center;
+        text-align: center;
+        font-size: 0.78rem;
+        gap: 4px;
+    }
+    .ancestor-card-role {
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.68rem;
+        padding: 2px 10px;
+    }
+
+    .ancestor-connector {
+        height: 26px;
+        margin-left: 0;
+        align-self: center;
+    }
+
+    /* ---------- Save button floats near photo (short view) ---------- */
+    .save-btn-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    .save-btn-icon i { font-size: 1rem; }
+
+    /* ---------- Footer ---------- */
+    #FooterBox {
+        padding: 10px 8px;
+        margin-top: 14px;
+    }
+    #FooterLinks { gap: 4px; }
+    #FooterLinks a { font-size: 1rem; }
+    #FooterHeading { font-size: 1.05rem; }
+    #FooterContacts { gap: 4px; margin-top: 6px; }
+    #FooterContacts div { font-size: 0.95rem; }
+}
+
+/* ============================================================
+   RESPONSIVE — SMALL PHONES (≤ 480px)
+   Tighter still, smaller photos, denser text
+   ============================================================ */
+@media (max-width: 480px) {
+
+    #MainBody { padding: 6px; }
+    #MainHead { font-size: 1.3rem; }
+    #SubHead  { font-size: 1.05rem; }
+    #SubHead2 { font-size: 0.9rem; }
+
+    #DropDownBox { padding: 6px; }
+    .DropDownClass { font-size: 0.9rem; padding: 4px 0; }
+    .DropDownClass select { font-size: 0.9rem; padding: 6px; }
+
+    .view-toggle-btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        border-radius: 16px;
+    }
+
+    .panel-title-bar {
+        font-size: 1rem;
+        padding: 10px 8px;
+        gap: 6px;
+        margin-bottom: 8px;
+        letter-spacing: 0.3px;
+    }
+    .panel-title-bar i { font-size: 0.9rem; }
+
+    /* ---------- Short description ---------- */
+    #DescriptionArea {
+        font-size: 0.85rem;
+        padding: 4px;
+        gap: 2px 6px;
+    }
+    #DescriptionArea > div {
+        font-size: 0.82rem;
+        padding: 2px 0;
         gap: 3px;
     }
-    .detail-row strong { min-width: 0; }
+    #MemberPhotoArea { padding: 4px; gap: 4px; }
+    #MemberPhotoBox { padding: 4px; }
+    #MemberPhoto {
+        width: 60vw;
+        max-width: 180px;
+        min-width: 90px;
+    }
 
-    .detail-panel-header { padding: 14px 18px; }
-    .detail-panel-header h2 { font-size: 1.3rem; }
+    /* ---------- Detail panel ---------- */
+    #modalCaptureArea { padding: 8px 6px 10px; }
+    .detail-panel-header { padding: 8px 10px; }
+    .detail-panel-header h2 { font-size: 1rem; gap: 6px; }
+    .detail-panel-header h2 i { font-size: 0.95rem; }
+
+    #detailHero { padding: 10px; gap: 8px; border-radius: 10px; }
+    #detailPhotoSection { padding: 3px; border-width: 2px; }
+    #detail-photo { max-width: 110px; }
+    #detail-name-hero { font-size: 1.1rem; }
+    #detail-code-hero,
+    #detail-dob-hero {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        gap: 4px;
+    }
+    #detailContent { gap: 10px; }
+    .detail-section { padding: 8px 8px 10px; border-radius: 8px; }
+    .detail-section-title {
+        font-size: 0.92rem;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        gap: 6px;
+    }
+    .detail-section-title i { font-size: 0.9rem; }
+    .detail-row {
+        padding: 4px 2px;
+        font-size: 0.82rem;
+    }
+    .detail-row strong { font-size: 0.8rem; }
+    .detail-row span   { font-size: 0.82rem; }
+    .detail-row.detail-multiline span { padding: 6px 8px; }
+    .detail-story-box {
+        font-size: 0.82rem;
+        padding: 8px 10px;
+        line-height: 1.55;
+    }
+
+    /* ---------- Family panel ---------- */
+    .family-panel-header { padding: 8px 10px; }
+    .family-panel-header h2 { font-size: 1rem; gap: 6px; }
+    #familyCaptureArea { padding: 8px 6px 10px; }
+    #familyContent { gap: 8px; }
+
+    .family-section {
+        padding: 8px 6px 10px;
+        border-radius: 8px;
+    }
+    .family-section-title {
+        font-size: 0.92rem;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        gap: 6px;
+    }
+
+    .family-cards-grid { gap: 8px; }
+
+    /* ---------- Family card (small phones) ---------- */
+    .family-card {
+        padding: 8px 6px;
+        gap: 6px;
+        border-radius: 8px;
+    }
+    .family-card-main { gap: 4px; }
+
+    .family-card-photo {
+        width: 72px;
+        height: 92px;
+    }
+    .family-card-name { font-size: 0.9rem; }
+    .family-card-primary .family-card-name { font-size: 1rem; }
+    .family-card-code,
+    .family-card-gender,
+    .family-card-address,
+    .family-card-mobile,
+    .family-card-dob {
+        font-size: 0.72rem;
+        gap: 3px;
+    }
+
+    /* Spouse sub-block — even tighter */
+    .family-card-spouse-block {
+        padding: 6px;
+        margin-top: 2px;
+        gap: 4px;
+        border-radius: 6px;
+    }
+    .family-card-spouse-label {
+        font-size: 0.68rem;
+        gap: 3px;
+    }
+    .family-card-spouse-inner {
+        gap: 4px;
+    }
+    .family-card-spouse-photo {
+        width: 58px;
+        height: 76px;
+    }
+    .family-card-spouse-name { font-size: 0.84rem; }
+    .family-card-spouse-code,
+    .family-card-spouse-dob,
+    .family-card-spouse-mobile {
+        font-size: 0.68rem;
+        gap: 3px;
+    }
+
+    /* ---------- Ancestor panel ---------- */
+    .ancestor-panel-header { padding: 8px 10px; }
+    .ancestor-panel-header h2 { font-size: 1rem; gap: 6px; }
+    #ancestorCaptureArea { padding: 8px 6px 10px; }
+
+    .ancestor-summary { padding: 8px; gap: 4px; margin-bottom: 10px; }
+    .ancestor-summary-line { font-size: 0.82rem; gap: 3px; }
+    .ancestor-summary-count { font-size: 0.75rem; padding: 2px 8px; }
+
+    .ancestor-step-badge {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+    }
+    .ancestor-card {
+        padding: 10px 8px;
+        gap: 6px;
+        border-radius: 10px;
+    }
+    .ancestor-card-photo {
+        width: 64px;
+        height: 84px;
+    }
+    .ancestor-card-name { font-size: 0.92rem; }
+    .ancestor-originator .ancestor-card-name { font-size: 1rem; }
+    .ancestor-card-code,
+    .ancestor-card-gender,
+    .ancestor-card-dob,
+    .ancestor-card-address,
+    .ancestor-card-mobile {
+        font-size: 0.72rem;
+        gap: 3px;
+    }
+    .ancestor-card-role {
+        font-size: 0.62rem;
+        padding: 2px 8px;
+    }
+    .ancestor-connector { height: 20px; }
+
+    /* ---------- Save button ---------- */
+    .save-btn-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    .save-btn-icon i { font-size: 0.9rem; }
+
+    /* ---------- Footer ---------- */
+    #FooterBox { padding: 8px 6px; margin-top: 10px; }
+    #FooterLinks a { font-size: 0.9rem; }
+    #FooterHeading { font-size: 0.95rem; }
+    #FooterContacts div { font-size: 0.85rem; }
 }
