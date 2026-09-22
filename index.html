@@ -87,6 +87,16 @@
     <script src="SupabaseConfig.js"></script>
     <script src="DocumentReader.js"></script>
     <script src="HomeScript.js"></script>
-    <script src="service-worker.js"></script>
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker
+                    .register('/OjhaBandhuBansawali/service-worker.js')
+                    .then((reg) => console.log('✅ SW registered, scope:', reg.scope))
+                    .catch((err) => console.warn('SW registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>
