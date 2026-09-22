@@ -133,6 +133,25 @@
     function getMemberByCode(code, members) {
         return members.find(m => m.PersonalCode === code);
     }
+
+    /**
+     * Read a photo URL from any object using any known field name.
+     * This makes the code resilient to variations between
+     * MemberDataTable and MemberSuggestionTable schemas.
+     */
+    function getPhotoUrlFrom(obj) {
+        if (!obj) return '';
+        return (
+            obj.PhotoUrl ||
+            obj.MemberPhotoUrl ||
+            obj.PhotoURL ||
+            obj.photo_url ||
+            obj.ImageUrl ||
+            obj.image_url ||
+            ''
+        );
+    }
+
     function escapeHtml(str) {
         if (str === null || str === undefined) return '';
         return String(str)
@@ -201,9 +220,6 @@
     // ------------------------------------------------------------
     // 5. Reusable combobox engine
     // ------------------------------------------------------------
-    /**
-     * Build the HTML for one combobox result row.
-     */
     function buildResultRowHtml(member, hasSuggestion) {
         let emoji = '';
         if (member.PersonalCode && member.PersonalCode.startsWith('KM')) emoji = '♂️';
@@ -219,9 +235,6 @@
         `;
     }
 
-    /**
-     * Filter members by query. Match against code or name.
-     */
     function filterMembers(query, filterFn) {
         const q = (query || '').trim().toLowerCase();
         let list = allMembers.filter(m => m.PersonalCode && m.PersonalCode.trim() !== '');
@@ -236,9 +249,6 @@
         return list.sort((a, b) => a.PersonalCode.localeCompare(b.PersonalCode));
     }
 
-    /**
-     * Generic combobox renderer.
-     */
     function renderComboboxResults(opts) {
         const {
             input, resultsEl, query, results, highlightedIndex,
@@ -246,7 +256,6 @@
         } = opts;
 
         if (!query || query.trim() === '') {
-            // Show empty input → show nothing
             resultsEl.hidden = true;
             resultsEl.innerHTML = '';
             return;
@@ -265,7 +274,6 @@
             return `<div class="${cls}" data-index="${i}" role="option">${buildResultRowHtml(m, hasSuggestion)}</div>`;
         }).join('');
 
-        // Wire click
         resultsEl.querySelectorAll('.combobox-item').forEach(el => {
             el.addEventListener('mousedown', (e) => {
                 e.preventDefault();
@@ -275,7 +283,6 @@
             });
         });
 
-        // Ensure highlighted row is scrolled into view
         if (highlightedIndex >= 0) {
             const el = resultsEl.querySelector('.combobox-item.is-highlighted');
             if (el) {
@@ -317,18 +324,17 @@
     }
 
     function pickFiller(member) {
-        // Fill the input with ONLY the code
         fillerCodeInput.value = member.PersonalCode || '';
         closeCombobox(fillerCodeResults);
         fillerHighlightedIndex = -1;
 
-        // Show the member name box
         fillerMemberData = member;
         fillerNameBox.style.display = 'flex';
         fillerNameDisplay.textContent = member.FullName || 'नाम उपलब्ध छैन';
         fillerNameDisplay.style.color = '#0a6b3e';
-        if (member.PhotoUrl) {
-            fillerPhoto.src = member.PhotoUrl;
+        const photoUrl = getPhotoUrlFrom(member);
+        if (photoUrl) {
+            fillerPhoto.src = photoUrl;
             fillerPhoto.style.display = 'block';
         } else {
             fillerPhoto.style.display = 'none';
@@ -337,7 +343,6 @@
         btnConfirmFiller.disabled = false;
         isMemberRegisteredBox.style.display = 'none';
 
-        // Blur the input so the results don't reopen on focus
         fillerCodeInput.blur();
     }
 
@@ -348,10 +353,8 @@
         isMemberRegisteredBox.style.display = 'none';
     }
 
-    // Stage 1 events
     if (fillerCodeInput) {
         fillerCodeInput.addEventListener('focus', () => {
-            // Only open the list if the user has already typed something
             if (fillerCodeInput.value.trim() !== '') refreshFillerResults();
         });
         fillerCodeInput.addEventListener('input', () => {
@@ -381,12 +384,10 @@
             }
         });
         fillerCodeInput.addEventListener('blur', () => {
-            // Small delay to allow click
             setTimeout(() => closeCombobox(fillerCodeResults), 150);
         });
     }
 
-    // Click outside closes
     document.addEventListener('click', (e) => {
         if (fillerCombobox && !fillerCombobox.contains(e.target)) {
             closeCombobox(fillerCodeResults);
@@ -396,7 +397,6 @@
         }
     });
 
-    // Generation change clears previous selection
     fillerGenerationSelect.addEventListener('change', () => {
         fillerCodeInput.value = '';
         clearFillerSelection();
@@ -422,12 +422,10 @@
     }
 
     function pickMember(member) {
-        // Fill the input with ONLY the code
         memberCodeSearch.value = member.PersonalCode || '';
         closeCombobox(memberCodeResults);
         memberHighlightedIndex = -1;
 
-        // Trigger the existing selection handler
         handleMemberCodeSelection(member.PersonalCode);
         memberCodeSearch.blur();
     }
@@ -437,7 +435,6 @@
             if (memberCodeSearch.value.trim() !== '') refreshMemberResults();
         });
         memberCodeSearch.addEventListener('input', () => {
-            // If the user changes the code, reset any previous selection
             if (selectedMemberCode && memberCodeSearch.value.trim() !== selectedMemberCode) {
                 selectedMemberCode = '';
             }
@@ -867,7 +864,13 @@
         $('detailProfession').value  = suggestion.MemberDetailProfession || '';
         $('lifeStory').value         = suggestion.MemberLifeStory || '';
         $('dodAge').value            = suggestion.MemberDOD || '';
-        const photoUrl = suggestion.MemberPhotoUrl || suggestion.PhotoUrl || '';
+
+        // Photo: prefer the suggestion's own, fall back to the member's.
+        let photoUrl = getPhotoUrlFrom(suggestion);
+        if (!photoUrl) {
+            const member = getMemberByCode(suggestion.MemberCode, allMembers);
+            if (member) photoUrl = getPhotoUrlFrom(member);
+        }
         photoUrlInput.value = photoUrl;
         if (photoUrl) {
             photoPreview.src = photoUrl;
@@ -908,7 +911,8 @@
             $('detailProfession').value = member.DetailProfession || '';
             $('lifeStory').value        = member.LifeStory || '';
             $('dodAge').value           = member.DOD_Age || '';
-            const photoUrl = member.PhotoUrl || '';
+
+            const photoUrl = getPhotoUrlFrom(member);
             photoUrlInput.value = photoUrl;
             if (photoUrl) {
                 photoPreview.src = photoUrl;
@@ -929,12 +933,17 @@
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> सुझाव पठाउनुहोस्';
         setProgressStep(3);
     }
+    /**
+     * Reset the *suggestion edit state* only. Does NOT touch
+     * isMemberRegisteredSelect — that dropdown's value is
+     * controlled exclusively by resetForm (via its opts flag)
+     * and by explicit callers.
+     */
     function resetEditMode() {
         isEditMode = false;
         editingSuggestionId = null;
         selectedMemberCode = '';
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> सुझाव पठाउनुहोस्';
-        if (isMemberRegisteredSelect) isMemberRegisteredSelect.selectedIndex = 0;
         memberPersonalCodeBox.style.display = 'none';
         if (memberCodeSearch) memberCodeSearch.value = '';
         closeCombobox(memberCodeResults);
@@ -945,6 +954,11 @@
     // ------------------------------------------------------------
     function toggleVisibility() {
         const value = isRegisteredSelect.value;
+
+        // Wipe any lingering form data. isMemberRegisteredSelect
+        // is reset here because the top-level path just changed.
+        resetForm(true, { preserveMemberRegSelect: false });
+
         if (value === 'yes') {
             fillerIdentificationBox.style.display = 'flex';
             suggestMemberContainer.style.display = 'none';
@@ -1182,7 +1196,19 @@
     // ------------------------------------------------------------
     // 16. Reset
     // ------------------------------------------------------------
-    function resetForm(skipConfirm) {
+    /**
+     * Reset the form.
+     * @param {boolean} skipConfirm — if true, don't ask the user to confirm.
+     * @param {Object}  [opts]      — options
+     * @param {boolean} [opts.preserveMemberRegSelect=false]
+     *        When true, do NOT reset the isMemberRegisteredSelect dropdown.
+     *        Used when the caller is the isMemberRegisteredSelect handler
+     *        itself, so the user's just-made choice is preserved.
+     */
+    function resetForm(skipConfirm, opts) {
+        opts = opts || {};
+        const preserveMemberReg = opts.preserveMemberRegSelect === true;
+
         if (!skipConfirm) {
             const ok = window.confirm('तपाईंले भरेको सबै विवरण मेटिनेछ। निश्चित हुनुहुन्छ?');
             if (!ok) return;
@@ -1191,9 +1217,11 @@
         textInputs.forEach(input => { input.value = ''; });
         const selects = form.querySelectorAll('select');
         selects.forEach(select => {
-            if (select.id !== 'isRegisteredSelect' && select.id !== 'isMemberRegisteredSelect') {
-                select.selectedIndex = 0;
-            }
+            // Always preserve the top-level registration choice.
+            if (select.id === 'isRegisteredSelect') return;
+            // Preserve the sub-question if the caller asked us to.
+            if (select.id === 'isMemberRegisteredSelect' && preserveMemberReg) return;
+            select.selectedIndex = 0;
         });
         photoFileNameDisp.textContent = 'कुनै फोटो छानिएको छैन';
         photoPreview.style.display = 'none';
@@ -1206,7 +1234,6 @@
         document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
         if (consentCheck) consentCheck.checked = false;
         updateSubmitButtonVisibility();
-        if (isMemberRegisteredSelect) isMemberRegisteredSelect.selectedIndex = 0;
         memberPersonalCodeBox.style.display = 'none';
         if (memberCodeSearch) memberCodeSearch.value = '';
         closeCombobox(memberCodeResults);
@@ -1254,15 +1281,23 @@
 
     isMemberRegisteredSelect.addEventListener('change', function() {
         const value = this.value;
+
+        // Wipe any previous form data, but PRESERVE the user's just-made
+        // choice on this same dropdown so they can see their selection.
+        resetForm(true, { preserveMemberRegSelect: true });
+
         if (value === 'yes') {
             memberPersonalCodeBox.style.display = 'flex';
             suggestMemberContainer.style.display = 'flex';
+            suggestHeadingText.textContent = 'आफन्तको विवरण भर्नुहोस्';
+            setProgressStep(3);
             memberCodeSearch.focus();
         } else if (value === 'no') {
             memberPersonalCodeBox.style.display = 'none';
             if (memberCodeSearch) memberCodeSearch.value = '';
             closeCombobox(memberCodeResults);
             suggestMemberContainer.style.display = 'flex';
+            suggestHeadingText.textContent = 'आफन्तको विवरण भर्नुहोस्';
             resetEditMode();
             setProgressStep(3);
         } else {
