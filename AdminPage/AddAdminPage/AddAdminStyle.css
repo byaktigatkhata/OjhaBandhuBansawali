@@ -745,102 +745,518 @@ body {
     font-size: 1rem;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .navbar {
-        padding: 0.8rem 1rem;
+/* ============================================================
+   RESPONSIVE — TABLET (≤ 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+    #MainBody {
+        width: 95%;
     }
-    
-    .nav-brand span {
-        font-size: 1rem;
+    #NavigationBar {
+        padding: 0.85rem 1.25rem;
     }
-    
-    .container {
-        padding: 1rem;
+    #LogoBox img {
+        width: 52px;
+        height: 52px;
     }
-    
-    .page-header h1 {
-        font-size: 1.5rem;
+    #LogoBox span {
+        font-size: 26px;
     }
-    
-    .subtitle {
-        margin-left: 0;
+    #btnBackToDashboard,
+    #btnLogout {
+        font-size: 17px;
+        padding: 8px 14px;
+        border-radius: 16px;
     }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    #addAdminForm,
-    .modal-body {
+
+    #FormContainer {
+        width: 95%;
         padding: 1.5rem;
     }
-    
-    .card-header {
-        padding: 1rem 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
+    #FormHeader h2 { font-size: 26px; }
+    #FormHeader i  { font-size: 26px; }
+
+    .FormGroups label { font-size: 18px; }
+    .FormGroups input,
+    .FormGroups select { font-size: 18px; }
+
+    /* Two-column form rows stay side-by-side but tighten gap */
+    .form-row {
+        gap: 1rem;
+        margin-bottom: 1.2rem;
     }
-    
-    .list-controls {
-        width: 100%;
-        flex-direction: column;
-    }
-    
-    .search-box {
-        width: 100%;
-    }
-    
-    .search-box input {
-        width: 100%;
-    }
-    
-    .table-wrapper {
-        padding: 0 1rem 1rem 1rem;
-    }
-    
-    #adminTable {
-        font-size: 0.8rem;
-    }
-    
+
+    /* Table */
     #adminTable th,
     #adminTable td {
-        padding: 8px 10px;
+        padding: 10px 12px;
     }
-    
+    .table-wrapper {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+    }
     .pagination-container {
-        flex-direction: column;
-        align-items: center;
+        padding: 1rem 1.5rem;
     }
-    
-    .action-buttons {
-        flex-direction: column;
+    .card-header {
+        padding: 1.25rem 1.5rem;
     }
-    
+
+    /* Modal */
     .modal-content {
-        margin: 10% auto;
-        width: 98%;
+        max-width: 92%;
+        margin: 6% auto;
     }
 }
 
-@media (max-width: 480px) {
-    .nav-actions {
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+    /* ---------- Main layout: full width, top aligned ---------- */
+    #MainBody {
+        width: 100%;
+        min-height: 100vh;
+        justify-content: flex-start;
+        align-items: stretch;
+    }
+
+    /* ---------- Navigation bar: two rows, full-width buttons ---------- */
+    #NavigationBar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.75rem 0.9rem;
+        gap: 10px;
+        position: static;
+    }
+    #LogoBox {
+        justify-content: center;
+    }
+    #LogoBox img {
+        width: 46px;
+        height: 46px;
+    }
+    #LogoBox span {
+        font-size: 20px;
+    }
+    #NavButtonBox {
+        flex-direction: column;
+        gap: 8px;
+    }
+    #btnBackToDashboard,
+    #btnLogout {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        font-size: 15px;
+        padding: 9px 12px;
+        border-radius: 12px;
+    }
+
+    /* ---------- Form container ---------- */
+    #FormContainer {
+        width: 100%;
+        padding: 1rem;
+    }
+    #FormHeader {
+        flex-direction: column;
+        align-items: flex-start;
         gap: 6px;
     }
-    
-    .btn-back span,
-    .btn-logout span {
-        display: none;
+    #FormHeader h2 {
+        font-size: 20px;
     }
-    
+    #FormHeader i {
+        font-size: 22px;
+    }
+    #currentUserRole {
+        font-size: 14px;
+    }
+    .subtitle {
+        font-size: 0.9rem;
+        margin-left: 0;
+    }
+
+    /* ---------- Form fields ---------- */
+    .FormGroups {
+        padding: 10px;
+        gap: 8px;
+        margin: 10px 0;
+        box-shadow: 2px 2px 6px #555;
+    }
+    .FormGroups label {
+        font-size: 16px;
+        padding: 6px 0;
+    }
+    .FormGroups input,
+    .FormGroups select {
+        font-size: 16px;
+        padding: 8px 10px;
+    }
+
+    /* Collapse two-column rows to a single column */
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    #addAdminForm {
+        padding: 1.25rem;
+    }
+    .form-group label {
+        font-size: 0.95rem;
+    }
+    .form-group input,
+    .form-group select {
+        font-size: 1rem;
+        padding: 10px 12px;
+    }
+
+    /* ---------- Action buttons ---------- */
+    #ButtonBox {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 0;
+    }
+    #btnAddAdmin,
+    #btnReset {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        font-size: 16px;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
     .form-actions {
         flex-direction: column;
     }
-    
-    .btn-primary,
-    .btn-secondary {
+    .form-actions .btn-primary,
+    .form-actions .btn-secondary {
         width: 100%;
         justify-content: center;
+    }
+
+    /* ---------- List controls ---------- */
+    .list-controls {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .search-box {
+        width: 100%;
+    }
+    .search-box input {
+        width: 100%;
+        font-size: 1rem;
+    }
+    .btn-refresh {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* ---------- Card header ---------- */
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 1rem 1.1rem;
+    }
+    .card-header h2 {
+        font-size: 1.05rem;
+    }
+
+    /* ---------- Table: scrollable with sensible column widths ---------- */
+    .table-wrapper {
+        padding: 0 1rem 1.25rem 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    #adminTable {
+        width: 100%;
+        min-width: 700px;              /* forces horizontal scroll on narrow screens */
+        font-size: 0.85rem;
+    }
+    #adminTable th,
+    #adminTable td {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+    #adminTable th {
+        white-space: nowrap;
+    }
+    #adminTable td {
+        white-space: normal;
+    }
+
+    /* Per-column minimum widths.
+       Adjust the nth-child numbers to match your actual <th> order.
+       Typical order: #, Name, Email, Role, Status, Actions. */
+    #adminTable th:nth-child(1),
+    #adminTable td:nth-child(1) { min-width: 48px; }
+
+    #adminTable th:nth-child(2),
+    #adminTable td:nth-child(2) {
+        min-width: 180px;
+        max-width: 260px;
+    }
+
+    #adminTable th:nth-child(3),
+    #adminTable td:nth-child(3) {
+        min-width: 200px;
+        max-width: 320px;
+        word-break: break-word;
+    }
+
+    #adminTable th:nth-child(4),
+    #adminTable td:nth-child(4) { min-width: 110px; }
+
+    #adminTable th:nth-child(5),
+    #adminTable td:nth-child(5) { min-width: 110px; }
+
+    #adminTable th:nth-child(6),
+    #adminTable td:nth-child(6) { min-width: 200px; }
+
+    /* Badges */
+    .status-badge,
+    .role-badge {
+        font-size: 0.72rem;
+        padding: 3px 10px;
+        white-space: nowrap;
+    }
+
+    /* Row action buttons */
+    .action-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .btn-edit,
+    .btn-delete,
+    .btn-toggle {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+        flex-shrink: 0;
+    }
+
+    /* ---------- Pagination ---------- */
+    .pagination-container {
+        flex-direction: column;
+        gap: 10px;
+        padding: 1rem 1.1rem;
+    }
+    .pagination-info {
+        font-size: 0.85rem;
+        text-align: center;
+    }
+    .pagination-controls {
+        width: 100%;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-page {
+        flex: 1 1 auto;
+        justify-content: center;
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+
+    /* ---------- Modal ---------- */
+    .modal-content {
+        width: calc(100% - 20px);
+        max-width: 100%;
+        margin: 15% auto;
+        border-radius: 12px;
+    }
+    .modal-header {
+        padding: 1rem 1.1rem;
+    }
+    .modal-header h3 {
+        font-size: 1.05rem;
+    }
+    .modal-body {
+        padding: 1.25rem;
+    }
+    #editAdminForm .form-group {
+        margin-bottom: 1rem;
+    }
+
+    /* ---------- Loading ---------- */
+    .loading-spinner p {
+        font-size: 0.95rem;
+    }
+
+    /* ---------- Footer ---------- */
+    #FooterBox {
+        padding: 16px 14px;
+    }
+    #FooterPublicLinks,
+    #FooterPrivateLinks {
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 0;
+        margin-bottom: 8px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 1rem;
+    }
+    #copyright, #copyright a {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — SMALL PHONES (≤ 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+    /* ---------- Navigation ---------- */
+    #NavigationBar {
+        padding: 0.6rem 0.7rem;
+    }
+    #LogoBox img {
+        width: 38px;
+        height: 38px;
+    }
+    #LogoBox span {
+        font-size: 17px;
+    }
+    #btnBackToDashboard,
+    #btnLogout {
+        font-size: 14px;
+        padding: 8px 10px;
+        border-radius: 10px;
+    }
+
+    /* ---------- Form ---------- */
+    #FormContainer {
+        padding: 0.75rem;
+    }
+    #FormHeader h2 {
+        font-size: 17px;
+    }
+    #FormHeader i {
+        font-size: 18px;
+    }
+    .subtitle {
+        font-size: 0.82rem;
+    }
+    .FormGroups {
+        padding: 8px;
+        gap: 6px;
+        margin: 8px 0;
+    }
+    .FormGroups label {
+        font-size: 15px;
+        padding: 4px 0;
+    }
+    .FormGroups input,
+    .FormGroups select {
+        font-size: 15px;
+        padding: 7px 9px;
+    }
+    #addAdminForm {
+        padding: 1rem;
+    }
+    .form-group label {
+        font-size: 0.9rem;
+    }
+    .form-group input,
+    .form-group select {
+        font-size: 0.95rem;
+        padding: 9px 10px;
+    }
+    #btnAddAdmin,
+    #btnReset {
+        font-size: 15px;
+        padding: 9px 12px;
+        border-radius: 12px;
+    }
+
+    /* ---------- Card header ---------- */
+    .card-header {
+        padding: 0.85rem 0.9rem;
+    }
+    .card-header h2 {
+        font-size: 0.98rem;
+    }
+    .role-indicator {
+        font-size: 0.72rem;
+        padding: 3px 10px;
+    }
+
+    /* ---------- Table ---------- */
+    .table-wrapper {
+        padding: 0 0.75rem 1rem 0.75rem;
+    }
+    #adminTable {
+        min-width: 620px;
+        font-size: 0.8rem;
+    }
+    #adminTable th,
+    #adminTable td {
+        padding: 7px 8px;
+        font-size: 0.8rem;
+    }
+    #adminTable th:nth-child(2),
+    #adminTable td:nth-child(2) { min-width: 150px; max-width: 220px; }
+    #adminTable th:nth-child(3),
+    #adminTable td:nth-child(3) { min-width: 170px; max-width: 260px; }
+    #adminTable th:nth-child(6),
+    #adminTable td:nth-child(6) { min-width: 180px; }
+
+    .status-badge,
+    .role-badge {
+        font-size: 0.68rem;
+        padding: 2px 8px;
+    }
+    .btn-edit,
+    .btn-delete,
+    .btn-toggle {
+        font-size: 0.72rem;
+        padding: 5px 9px;
+    }
+
+    /* ---------- Pagination ---------- */
+    .pagination-container {
+        padding: 0.85rem 0.9rem;
+    }
+    .pagination-info {
+        font-size: 0.78rem;
+    }
+    .btn-page {
+        font-size: 0.78rem;
+        padding: 7px 10px;
+    }
+
+    /* ---------- Modal ---------- */
+    .modal-content {
+        margin: 12% auto;
+        border-radius: 10px;
+    }
+    .modal-header {
+        padding: 0.85rem 0.9rem;
+    }
+    .modal-header h3 {
+        font-size: 1rem;
+    }
+    .modal-close {
+        font-size: 1.3rem;
+    }
+    .modal-body {
+        padding: 1rem;
+    }
+
+    /* ---------- Footer ---------- */
+    #FooterBox {
+        padding: 14px 12px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 0.95rem;
+    }
+    #copyright, #copyright a {
+        font-size: 0.78rem;
     }
 }

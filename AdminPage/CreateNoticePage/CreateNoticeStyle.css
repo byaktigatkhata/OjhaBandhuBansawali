@@ -592,97 +592,486 @@ body {
 }
 
 /* ============================================================
-   Responsive
+   RESPONSIVE — TABLET (≤ 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+    #NavigationBar {
+        padding: 0.85rem 1.25rem;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    #NavigationHead {
+        font-size: 22px;
+    }
+    #NavigationHead i {
+        font-size: 20px;
+    }
+    #btnBackToDashboard,
+    #btnLogout {
+        font-size: 16px;
+        padding: 8px 14px;
+        border-radius: 16px;
+    }
+
+    #FormTitleBox,
+    #FormContentBox,
+    #FormMediaTypeBox,
+    #mediaSection,
+    #editModeIndicator,
+    .form-actions,
+    .card {
+        width: 95%;
+    }
+
+    #FormTitleBox,
+    #FormContentBox,
+    #FormMediaTypeBox {
+        font-size: 18px;
+        padding: 10px 14px;
+    }
+    #FormTitleBox input,
+    #FormContentBox textarea,
+    #FormMediaTypeBox select {
+        font-size: 18px;
+        padding: 10px;
+    }
+
+    #mediaSection {
+        padding: 16px;
+    }
+    .upload-area i { font-size: 34px; }
+    .upload-area p { font-size: 16px; }
+
+    .card-header h2 { font-size: 20px; }
+    #noticesTable { font-size: 15px; }
+    #noticesTable th { padding: 10px 8px; font-size: 15px; }
+    #noticesTable td { padding: 8px; }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 768px)
    ============================================================ */
 @media (max-width: 768px) {
-    .navbar {
-        padding: 0.8rem 1rem;
+    /* ---------- Navigation bar ---------- */
+    #NavigationBar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.75rem 0.9rem;
+        gap: 10px;
+        position: static;
+    }
+    #NavigationHead {
+        justify-content: center;
+        font-size: 18px;
+        gap: 8px;
+    }
+    #NavigationHead i { font-size: 16px; }
+    #NavigationAction {
+        flex-direction: column;
+        gap: 8px;
+    }
+    #btnBackToDashboard,
+    #btnLogout {
+        width: 100%;
+        justify-content: center;
+        font-size: 15px;
+        padding: 9px 12px;
+        border-radius: 12px;
     }
 
-    .nav-brand span {
-        font-size: 1rem;
+    /* ---------- Form container ----------
+       Add inner horizontal padding so the inputs don't touch the edges.
+    ------------------------------------- */
+    #FormBox {
+        border-width: 1px;
+        padding: 0 4px;
     }
-
-    .container {
-        padding: 1rem;
-    }
-
-    .page-header h1 {
-        font-size: 1.5rem;
-    }
-
-    .subtitle {
+    #FormTitleBox,
+    #FormContentBox,
+    #FormMediaTypeBox,
+    #mediaSection,
+    #editModeIndicator,
+    .form-actions,
+    .card {
+        width: 100%;
+        max-width: 100%;
         margin-left: 0;
+        margin-right: 0;
+        border-radius: 10px;
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+    }
+    #FormTitleBox,
+    #FormContentBox,
+    #FormMediaTypeBox {
+        font-size: 16px;
+        padding: 8px 10px;         /* slightly less inner padding */
+        margin: 8px 0;
+    }
+    #FormTitleBox label,
+    #FormContentBox label,
+    #FormMediaTypeBox label {
+        padding: 6px 0;
+        font-size: 15px;
+    }
+    /* Inputs: keep box-sizing but reserve breathing room and
+       cap them so they don't stretch edge-to-edge. */
+    #FormTitleBox input,
+    #FormContentBox textarea,
+    #FormMediaTypeBox select {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 16px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        margin: 0 auto;
+    }
+    /* Textarea shouldn't grow too tall on mobile */
+    #FormContentBox textarea {
+        min-height: 110px;
     }
 
-    #createNoticeForm {
-        padding: 1.5rem;
-    }
-
+    /* ---------- Form actions ---------- */
     .form-actions {
         flex-direction: column;
+        gap: 10px;
+        margin: 14px 0;
     }
-
     .btn-publish,
     .btn-draft,
     .btn-secondary {
         width: 100%;
         justify-content: center;
+        font-size: 15px;
+        padding: 10px 14px;
+        border-radius: 12px;
     }
 
+    /* ---------- Media section ---------- */
+    #mediaSection {
+        padding: 12px;
+    }
+    .upload-area {
+        padding: 22px 14px;
+    }
+    .upload-area i { font-size: 30px; }
+    .upload-area p { font-size: 15px; }
+    .upload-hint { font-size: 12.5px; }
+
+    .input-group {
+        padding: 8px 10px;
+        gap: 8px;
+        border-radius: 6px;
+    }
+    .input-group i { font-size: 18px; }
+    .media-input { font-size: 15px; }
+
+    #imagePreview,
+    #youtubePreview,
+    #facebookPreview,
+    #pdfPreview {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px;
+    }
+    #imagePreviewImg {
+        max-width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+        align-self: center;
+    }
+    #imagePreview button,
+    #pdfPreview button,
+    #youtubePreview button,
+    #facebookPreview button {
+        margin-left: 0;
+        align-self: flex-end;
+    }
+    .file-name,
+    #imageFileName,
+    #pdfFileName { font-size: 13px; word-break: break-word; }
+
+    /* ---------- Cards ---------- */
+    .card-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 14px;
+    }
+    .card-header h2 {
+        font-size: 17px;
+        gap: 6px;
+    }
+    .btn-refresh {
+        font-size: 12.5px;
+        padding: 6px 12px;
+    }
+
+    /* ---------- Table ----------
+       Give columns sensible minimum widths so no column collapses.
+       The wrapper scrolls horizontally when needed.
+    ------------------------------------- */
     .table-wrapper {
-        padding: 0 1rem 1rem 1rem;
+        padding: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
-
     #noticesTable {
-        font-size: 0.8rem;
+        width: 100%;
+        min-width: 720px;              /* force horizontal scroll on narrow screens */
+        font-size: 13.5px;
+        table-layout: auto;
     }
-
     #noticesTable th,
     #noticesTable td {
         padding: 8px 10px;
+        font-size: 13.5px;
+        white-space: nowrap;           /* keep headers on one line */
+        vertical-align: middle;
+    }
+    #noticesTable td {
+        white-space: normal;           /* allow cell content to wrap */
     }
 
+    /* Column-specific minimum widths (assuming typical column order:
+       #, Title, Media Type, Status, Date, Actions).
+       Adjust nth-child selectors to match your actual column order. */
+    #noticesTable th:nth-child(1),
+    #noticesTable td:nth-child(1) { min-width: 48px; }
+
+    #noticesTable th:nth-child(2),
+    #noticesTable td:nth-child(2) {
+        min-width: 220px;
+        max-width: 340px;
+        white-space: normal;
+    }
+
+    #noticesTable th:nth-child(3),
+    #noticesTable td:nth-child(3) { min-width: 110px; }
+
+    #noticesTable th:nth-child(4),
+    #noticesTable td:nth-child(4) { min-width: 110px; }
+
+    #noticesTable th:nth-child(5),
+    #noticesTable td:nth-child(5) { min-width: 130px; }
+
+    #noticesTable th:nth-child(6),
+    #noticesTable td:nth-child(6) { min-width: 90px; }
+
+    .status-badge,
+    .media-badge {
+        font-size: 11px;
+        padding: 3px 9px;
+        gap: 4px;
+        white-space: nowrap;
+    }
+
+    /* ---------- Row action buttons ---------- */
+    .action-buttons {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 6px;
+    }
+    .btn-edit,
+    .btn-delete {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+
+    /* ---------- Pagination ---------- */
     .pagination-container {
         flex-direction: column;
-        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
     }
-
-    .card-header {
-        padding: 1rem 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
+    .pagination-info {
+        font-size: 13.5px;
+        text-align: center;
     }
-
-    .media-section {
-        padding: 1rem;
-    }
-
-    .upload-area {
-        padding: 1.5rem;
-    }
-
-    .input-group {
-        flex-wrap: wrap;
-        padding: 8px 12px;
-    }
-
-    .media-input {
+    .pagination-controls {
         width: 100%;
+        justify-content: center;
+    }
+    .btn-page {
+        flex: 1 1 auto;
+        font-size: 13px;
+        padding: 7px 12px;
+        border-radius: 8px;
+        text-align: center;
+        justify-content: center;
     }
 
-    #imagePreviewImg {
-        max-width: 100%;
+    /* ---------- Edit mode indicator ---------- */
+    #editModeIndicator {
+        font-size: 14px;
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    /* ---------- Loading ---------- */
+    .loading-spinner p { font-size: 0.95rem; }
+
+    /* ---------- Footer ---------- */
+    #FooterBox {
+        padding: 16px 14px;
+    }
+    #FooterPublicLinks,
+    #FooterPrivateLinks {
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 0;
+        margin-bottom: 8px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 1rem;
+    }
+    #copyright, #copyright a {
+        font-size: 0.85rem;
+        line-height: 1.5;
     }
 }
 
+/* ============================================================
+   RESPONSIVE — SMALL PHONES (≤ 480px)
+   ============================================================ */
 @media (max-width: 480px) {
-    .nav-actions {
-        gap: 6px;
+    #NavigationBar {
+        padding: 0.6rem 0.7rem;
+    }
+    #NavigationHead {
+        font-size: 16px;
+    }
+    #NavigationHead i { font-size: 14px; }
+    #btnBackToDashboard,
+    #btnLogout {
+        font-size: 14px;
+        padding: 8px 10px;
+        border-radius: 10px;
     }
 
-    .btn-back span,
-    .btn-logout span {
-        display: none;
+    /* ---------- Form ---------- */
+    #FormBox { padding: 0 3px; }
+    #FormTitleBox,
+    #FormContentBox,
+    #FormMediaTypeBox {
+        font-size: 15px;
+        padding: 6px 8px;
     }
+    #FormTitleBox label,
+    #FormContentBox label,
+    #FormMediaTypeBox label {
+        font-size: 14px;
+    }
+    #FormTitleBox input,
+    #FormContentBox textarea,
+    #FormMediaTypeBox select {
+        font-size: 15px;
+        padding: 7px 9px;
+        border-radius: 6px;
+    }
+    #FormContentBox textarea {
+        min-height: 100px;
+    }
+
+    /* ---------- Media section ---------- */
+    #mediaSection {
+        padding: 10px;
+        border-radius: 8px;
+    }
+    .upload-area {
+        padding: 18px 12px;
+        border-radius: 8px;
+    }
+    .upload-area i { font-size: 26px; margin-bottom: 6px; }
+    .upload-area p { font-size: 14px; margin-bottom: 4px; }
+    .upload-hint { font-size: 12px; }
+
+    .input-group { padding: 7px 9px; }
+    .input-group i { font-size: 16px; }
+    .media-input { font-size: 14px; padding: 4px; }
+
+    #imagePreviewImg { max-height: 160px; }
+
+    /* ---------- Cards ---------- */
+    .card-header { padding: 10px 12px; }
+    .card-header h2 { font-size: 15px; }
+    .btn-refresh { font-size: 12px; padding: 5px 10px; border-radius: 14px; }
+
+    /* ---------- Table ----------
+       Keep a minimum total width so every column stays usable.
+       Users swipe horizontally inside the wrapper. */
+    .table-wrapper {
+        padding: 6px;
+    }
+    #noticesTable {
+        min-width: 620px;
+        font-size: 12.5px;
+    }
+    #noticesTable th,
+    #noticesTable td {
+        padding: 6px 8px;
+        font-size: 12.5px;
+    }
+
+    /* Column minimums — scaled down but still readable */
+    #noticesTable th:nth-child(1),
+    #noticesTable td:nth-child(1) { min-width: 40px; }
+
+    #noticesTable th:nth-child(2),
+    #noticesTable td:nth-child(2) {
+        min-width: 180px;
+        max-width: 260px;
+    }
+
+    #noticesTable th:nth-child(3),
+    #noticesTable td:nth-child(3) { min-width: 90px; }
+
+    #noticesTable th:nth-child(4),
+    #noticesTable td:nth-child(4) { min-width: 90px; }
+
+    #noticesTable th:nth-child(5),
+    #noticesTable td:nth-child(5) { min-width: 110px; }
+
+    #noticesTable th:nth-child(6),
+    #noticesTable td:nth-child(6) { min-width: 80px; }
+
+    .status-badge,
+    .media-badge {
+        font-size: 10px;
+        padding: 2px 8px;
+        gap: 3px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+        border-radius: 5px;
+    }
+
+    /* ---------- Pagination ---------- */
+    .pagination-container { padding: 10px 12px; }
+    .pagination-info { font-size: 12.5px; }
+    .pagination-controls { gap: 6px; }
+    .btn-page {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    /* ---------- Edit mode indicator ---------- */
+    #editModeIndicator {
+        font-size: 13px;
+        padding: 8px 10px;
+        border-radius: 6px;
+    }
+
+    /* ---------- Footer ---------- */
+    #FooterBox { padding: 14px 12px; }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a { font-size: 0.95rem; }
+    #copyright, #copyright a { font-size: 0.78rem; }
 }

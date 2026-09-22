@@ -330,53 +330,242 @@ body {
     text-decoration:underline;
 }
 
-/* Responsive */
-@media (max-width: 520px) {
+/* ============================================================
+   RESPONSIVE — TABLET (≤ 600px)
+   ============================================================ */
+@media (max-width: 600px) {
     #loginPage {
-        padding: 20px 12px;
+        padding: 20px 14px;
+    }
+    #loginContainer {
+        max-width: 100%;
+        border-radius: 16px;
+    }
+    #loginHeader {
+        padding: 26px 22px 20px;
+    }
+    #loginLogo {
+        width: 62px;
+        height: 62px;
+        font-size: 1.7rem;
+        margin-bottom: 12px;
+    }
+    #loginHeader h1 {
+        font-size: 1.4rem;
+    }
+    #loginHeader h2 {
+        font-size: 1.1rem;
+    }
+    #loginHeader p {
+        font-size: 0.88rem;
+    }
+    #loginForm {
+        padding: 24px 22px;
+    }
+    .formGroup {
+        margin-bottom: 16px;
+    }
+    .inputWrapper input {
+        height: 46px;
+        font-size: 0.98rem;
+        padding: 0 42px 0 42px;
+    }
+    #togglePasswordBtn {
+        width: 34px;
+        height: 34px;
+    }
+    #loginBtn {
+        height: 48px;
+        font-size: 1rem;
     }
 
+    /* Footer */
+    #FooterPublicLinks,
+    #FooterPrivateLinks {
+        gap: 14px;
+        padding: 8px 0;
+        margin-bottom: 8px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 15px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+    #loginPage {
+        padding: 14px 10px;
+        align-items: flex-start;      /* keep card near top on short screens */
+        padding-top: 22px;
+    }
     #loginContainer {
         border-radius: 14px;
     }
 
+    /* ---------- Header ---------- */
     #loginHeader {
-        padding: 27px 20px 21px;
+        padding: 22px 18px 18px;
     }
-
-    #loginHeader h1 {
-        font-size: 1.4rem;
-    }
-
-    #loginHeader h2 {
-        font-size: 1.15rem;
-    }
-
-    #loginForm {
-        padding: 25px 20px;
-    }
-
-    #loginFooter {
-        padding: 0 20px 22px;
-    }
-
     #loginLogo {
-        width: 64px;
-        height: 64px;
-        font-size: 1.75rem;
+        width: 56px;
+        height: 56px;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        border-width: 1.5px;
+    }
+    #loginHeader h1 {
+        font-size: 1.2rem;
+        line-height: 1.35;
+    }
+    #loginHeader h2 {
+        font-size: 1rem;
+        margin-top: 5px;
+    }
+    #loginHeader p {
+        font-size: 0.82rem;
+        margin-top: 6px;
+    }
+
+    /* ---------- Form ---------- */
+    #loginForm {
+        padding: 20px 18px 22px;
+    }
+    .formGroup {
+        margin-bottom: 14px;
+    }
+    .formGroup label {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+    .inputWrapper input {
+        height: 44px;
+        font-size: 0.95rem;
+        padding: 0 40px 0 40px;
+        border-radius: 9px;
+    }
+    .inputIcon {
+        left: 13px;
+        font-size: 0.9rem;
+    }
+    #togglePasswordBtn {
+        width: 32px;
+        height: 32px;
+        right: 6px;
+        font-size: 0.95rem;
+    }
+    .fieldError {
+        font-size: 0.78rem;
+    }
+
+    /* ---------- Options row ---------- */
+    #loginOptions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin: 6px 0 16px;
+    }
+    #rememberMeLabel {
+        font-size: 0.88rem;
+    }
+    #rememberMe {
+        width: 15px;
+        height: 15px;
+    }
+    #forgotPasswordBtn {
+        font-size: 0.88rem;
+        align-self: flex-end;         /* push "forgot" to the right of its row */
+        padding: 4px 0;
+    }
+
+    /* ---------- Login button ---------- */
+    #loginBtn {
+        height: 46px;
+        font-size: 0.98rem;
+        border-radius: 9px;
+    }
+
+    /* ---------- Message ---------- */
+    #loginMessage {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+        margin-top: 14px;
+    }
+
+    /* ---------- Footer ---------- */
+    #FooterBox {
+        padding: 10px 10px;
+    }
+    #FooterPublicLinks,
+    #FooterPrivateLinks {
+        flex-direction: column;
+        gap: 8px;
+        padding: 6px 0;
+        margin-bottom: 6px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 14px;
+    }
+    #copyright, #copyright a {
+        font-size: 11px;
+        line-height: 1.5;
     }
 }
 
+/* ============================================================
+   RESPONSIVE — VERY SMALL PHONES (≤ 360px)
+   ============================================================ */
 @media (max-width: 360px) {
+    #loginPage {
+        padding: 10px 8px;
+        padding-top: 16px;
+    }
+    #loginHeader {
+        padding: 18px 14px 14px;
+    }
+    #loginLogo {
+        width: 48px;
+        height: 48px;
+        font-size: 1.3rem;
+    }
     #loginHeader h1 {
-        font-size: 1.25rem;
+        font-size: 1.05rem;
     }
-
+    #loginHeader h2 {
+        font-size: 0.92rem;
+    }
     #loginHeader p {
-        font-size: 0.84rem;
+        font-size: 0.78rem;
     }
-
     #loginForm {
-        padding: 22px 16px;
+        padding: 16px 14px 18px;
+    }
+    .inputWrapper input {
+        height: 42px;
+        font-size: 0.92rem;
+        padding: 0 38px 0 38px;
+    }
+    .inputIcon {
+        left: 12px;
+        font-size: 0.85rem;
+    }
+    #togglePasswordBtn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+    #loginBtn {
+        height: 44px;
+        font-size: 0.94rem;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 13px;
+    }
+    #copyright, #copyright a {
+        font-size: 10.5px;
     }
 }

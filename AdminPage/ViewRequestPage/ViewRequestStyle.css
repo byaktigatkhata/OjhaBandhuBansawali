@@ -462,25 +462,393 @@ body {
     color: #f0f;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    #MainBody { padding: 1rem; }
-    #MainHeading { font-size: 2rem; }
-    #FilterBox { flex-direction: column; align-items: stretch; }
-    .filter-group { flex-direction: column; align-items: stretch; }
-    #btnRefresh { margin-left: 0; }
-    #TableContainer { min-height: 300px; max-height: 400px; }
-    #SuggestionTable { font-size: 0.85rem; }
-    #SuggestionTable th, #SuggestionTable td { padding: 6px 8px; }
-    .action-buttons { flex-direction: column; }
-    .btn-view, .btn-delete { width: 100%; margin: 2px 0; }
+/* ============================================================
+   RESPONSIVE — TABLET (≤ 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+    body {
+        padding: 1.5rem 0.75rem;
+    }
+    #MainBody {
+        padding: 1.5rem 1.25rem;
+    }
+    #MainHeading {
+        font-size: 2.2rem;
+        gap: 8px;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+    }
+    #FilterBox {
+        gap: 12px;
+        padding: 12px 14px;
+    }
+    .filter-group {
+        font-size: 1.05rem;
+        gap: 8px;
+    }
+    .filter-group select,
+    .filter-group input {
+        padding: 7px 12px;
+        font-size: 1.05rem;
+    }
+    #btnRefresh {
+        font-size: 1.05rem;
+        padding: 8px 16px;
+    }
+    #SuggestionTable {
+        font-size: 1rem;
+    }
+    #SuggestionTable th,
+    #SuggestionTable td {
+        padding: 10px 12px;
+    }
+    #PaginationBox {
+        gap: 14px;
+    }
+    #PaginationBox button {
+        font-size: 1.05rem;
+        padding: 8px 16px;
+    }
+    #pageInfo {
+        font-size: 1.05rem;
+    }
+    .modal-content {
+        padding: 24px;
+        margin: 20px auto;
+    }
+    .modal-header h2 {
+        font-size: 1.6rem;
+    }
 }
 
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem 0.5rem;
+    }
+    #MainBody {
+        padding: 1.1rem 0.9rem;
+        border-radius: 10px;
+    }
+
+    /* ---------- Heading ---------- */
+    #MainHeading {
+        font-size: 1.6rem;
+        gap: 6px;
+        margin-bottom: 1rem;
+        padding-bottom: 0.6rem;
+        border-bottom-width: 2px;
+    }
+    #MainHeading i {
+        font-size: 1.35rem;
+    }
+
+    /* ---------- Filter box — stack everything ---------- */
+    #FilterBox {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 12px;
+        border-radius: 10px;
+    }
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        font-size: 1rem;
+    }
+    .filter-group label {
+        font-size: 0.95rem;
+    }
+    .filter-group select,
+    .filter-group input {
+        width: 100%;
+        font-size: 1rem;
+        padding: 8px 10px;
+        border-radius: 8px;
+    }
+    #btnRefresh {
+        margin-left: 0;
+        width: 100%;
+        font-size: 1rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+
+    /* ---------- Table ---------- */
+    #TableContainer {
+        min-height: 300px;
+        max-height: 60vh;
+        border-radius: 10px;
+    }
+    #SuggestionTable {
+        font-size: 0.92rem;
+    }
+    #SuggestionTable th {
+        padding: 8px 10px;
+        font-size: 0.88rem;
+    }
+    #SuggestionTable td {
+        padding: 8px 10px;
+    }
+    .status-badge {
+        font-size: 0.78rem;
+        padding: 3px 10px;
+    }
+    .btn-view,
+    .btn-delete {
+        font-size: 0.82rem;
+        padding: 5px 10px;
+    }
+    .action-buttons {
+        gap: 4px;
+    }
+
+    /* ---------- Pagination ---------- */
+    #PaginationBox {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 0;
+    }
+    #PaginationBox button {
+        width: 100%;
+        font-size: 1rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+    #pageInfo {
+        font-size: 0.95rem;
+        text-align: center;
+        order: -1;
+    }
+
+    /* ---------- Edit Modal ---------- */
+    .modal-content {
+        margin: 10px auto;
+        padding: 16px 14px;
+        border-radius: 14px;
+        width: calc(100% - 12px);
+        max-width: 100%;
+    }
+    .modal-header {
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+    }
+    .modal-header h2 {
+        font-size: 1.25rem;
+    }
+    .close {
+        font-size: 26px;
+    }
+    .close:hover {
+        font-size: 28px;
+    }
+    .modal .form-grid {
+        gap: 10px;
+        max-height: 65vh;
+        padding-right: 6px;
+    }
+    .modal .form-group {
+        padding: 8px 10px;
+        gap: 4px;
+        border-radius: 10px;
+    }
+    .modal .form-group label {
+        font-size: 0.98rem;
+        gap: 6px;
+    }
+    .modal .form-group label i {
+        width: 16px;
+        font-size: 0.95rem;
+    }
+    .modal .form-group input,
+    .modal .form-group textarea,
+    .modal .form-group select {
+        font-size: 1rem;
+        padding: 7px 10px;
+        border-radius: 8px;
+    }
+    .modal .form-group textarea {
+        min-height: 45px;
+    }
+    .modal .btn-group {
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 14px;
+        margin-top: 14px;
+    }
+    .modal .btn-group button {
+        width: 100%;
+        font-size: 1rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+    .modal .photo-upload-area {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .modal .photo-select-btn {
+        width: 100%;
+        text-align: center;
+        font-size: 0.95rem;
+        padding: 8px 12px;
+        border-radius: 12px;
+    }
+    .modal .photo-file-name {
+        font-size: 0.85rem;
+        text-align: center;
+        padding: 6px 10px;
+    }
+    .modal .photo-preview {
+        width: 64px;
+        margin: 0 auto;
+    }
+
+    /* ---------- Footer ---------- */
+    #FooterBox {
+        padding: 16px 14px;
+    }
+    #FooterPublicLinks,
+    #FooterPrivateLinks {
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 0;
+        margin-bottom: 8px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 1rem;
+    }
+    #copyright, #copyright a {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — SMALL PHONES (≤ 480px)
+   ============================================================ */
 @media (max-width: 480px) {
-    #MainHeading { font-size: 1.5rem; }
-    #TableContainer { min-height: 250px; max-height: 350px; }
-    #SuggestionTable { font-size: 0.75rem; }
-    #SuggestionTable th, #SuggestionTable td { padding: 4px 6px; }
-    .filter-group { font-size: 1rem; }
-    .filter-group select, .filter-group input { font-size: 1rem; padding: 6px 10px; }
+    body {
+        padding: 0.75rem 0.4rem;
+    }
+    #MainBody {
+        padding: 0.9rem 0.75rem;
+        border-radius: 10px;
+    }
+
+    /* ---------- Heading ---------- */
+    #MainHeading {
+        font-size: 1.25rem;
+        gap: 5px;
+        margin-bottom: 0.75rem;
+    }
+    #MainHeading i {
+        font-size: 1.1rem;
+    }
+
+    /* ---------- Filter box ---------- */
+    #FilterBox {
+        padding: 10px;
+        gap: 8px;
+        border-radius: 10px;
+    }
+    .filter-group label {
+        font-size: 0.9rem;
+    }
+    .filter-group select,
+    .filter-group input {
+        font-size: 0.95rem;
+        padding: 7px 9px;
+    }
+    #btnRefresh {
+        font-size: 0.95rem;
+        padding: 9px 12px;
+        border-radius: 12px;
+    }
+
+    /* ---------- Table ---------- */
+    #TableContainer {
+        min-height: 260px;
+        max-height: 65vh;
+    }
+    #SuggestionTable {
+        font-size: 0.85rem;
+    }
+    #SuggestionTable th {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+    #SuggestionTable td {
+        padding: 6px 8px;
+    }
+    .status-badge {
+        font-size: 0.72rem;
+        padding: 2px 8px;
+    }
+    .btn-view,
+    .btn-delete {
+        font-size: 0.78rem;
+        padding: 4px 8px;
+    }
+
+    /* ---------- Pagination ---------- */
+    #PaginationBox button {
+        font-size: 0.95rem;
+        padding: 9px 12px;
+        border-radius: 12px;
+    }
+    #pageInfo {
+        font-size: 0.88rem;
+    }
+
+    /* ---------- Edit modal ---------- */
+    .modal-content {
+        padding: 14px 10px;
+        border-radius: 12px;
+    }
+    .modal-header h2 {
+        font-size: 1.1rem;
+    }
+    .close {
+        font-size: 22px;
+    }
+    .close:hover {
+        font-size: 24px;
+    }
+    .modal .form-group {
+        padding: 7px 9px;
+    }
+    .modal .form-group label {
+        font-size: 0.9rem;
+    }
+    .modal .form-group input,
+    .modal .form-group textarea,
+    .modal .form-group select {
+        font-size: 0.95rem;
+        padding: 6px 9px;
+    }
+    .modal .btn-group button {
+        font-size: 0.95rem;
+        padding: 9px 12px;
+        border-radius: 12px;
+    }
+    .modal .photo-preview {
+        width: 56px;
+    }
+
+    /* ---------- Footer ---------- */
+    #FooterBox {
+        padding: 14px 12px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 0.95rem;
+    }
+    #copyright, #copyright a {
+        font-size: 0.78rem;
+    }
 }
