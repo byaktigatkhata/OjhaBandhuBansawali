@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>अफलाइन — ओझा बन्धु वंशावली</title>
+    <link rel="icon" type="image/x-icon" href="ojhag.png">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #333, #555);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .card {
+            max-width: 460px;
+            background: #fee;
+            color: #333;
+            padding: 40px 30px;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+        .card img {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 3px solid #0a6b3e;
+            background: #fff;
+        }
+        .card h1 {
+            font-size: 1.5rem;
+            color: #0a6b3e;
+            margin-bottom: 12px;
+        }
+        .card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        .card button {
+            margin-top: 18px;
+            padding: 12px 26px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #0a7d32, #0c9e40, #0a7d32);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .card button:hover {
+            background: linear-gradient(180deg, #086627, #0a7d32, #086627);
+            color: #ff0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="ojhag.png" alt="ओझा बन्धु वंशावली">
+        <h1>इन्टरनेट जडान छैन</h1>
+        <p>
+            तपाईं यतिबेला अफलाइन हुनुहुन्छ। कृपया इन्टरनेट जडान जाँच गरेर
+            पुनः प्रयास गर्नुहोस्।
+        </p>
+        <p>
+            पहिले खोलिएका केही पृष्ठहरू भने अफलाइनमा पनि उपलब्ध हुन सक्छन्।
+        </p>
+        <button onclick="location.reload()">
+            पुनः प्रयास गर्नुहोस्
+        </button>
+    </div>
+</body>
+</html>

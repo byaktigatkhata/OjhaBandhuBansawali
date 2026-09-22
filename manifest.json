@@ -1,0 +1,66 @@
+{
+  "name": "ओझा बन्धु वंशावली",
+  "short_name": "ओझा वंशावली",
+  "description": "ओझा बन्धुहरूको वंशावली संकलन गर्ने, सम्बन्धित विवरण हेर्ने तथा सम्बन्धहरू प्रष्ट पार्ने।",
+  "start_url": "/OjhaBandhuBansawali/",
+  "scope": "/OjhaBandhuBansawali/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0a6b3e",
+  "background_color": "#fee",
+  "lang": "ne",
+  "dir": "ltr",
+  "categories": ["genealogy", "education", "reference"],
+  "icons": [
+    {
+      "src": "/OjhaBandhuBansawali/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/OjhaBandhuBansawali/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/OjhaBandhuBansawali/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/OjhaBandhuBansawali/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "खोज्नुहोस्",
+      "short_name": "खोज",
+      "description": "वंशावलीमा सदस्य खोज्नुहोस्",
+      "url": "/OjhaBandhuBansawali/SearchPage/SearchIndex.html",
+      "icons": [
+        {
+          "src": "/OjhaBandhuBansawali/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "सुझाव पठाउनुहोस्",
+      "short_name": "सुझाव",
+      "description": "नयाँ विवरण सुझाव पठाउनुहोस्",
+      "url": "/OjhaBandhuBansawali/RequestPage/RequestIndex.html",
+      "icons": [
+        {
+          "src": "/OjhaBandhuBansawali/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
