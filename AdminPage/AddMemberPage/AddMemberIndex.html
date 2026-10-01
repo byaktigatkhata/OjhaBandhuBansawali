@@ -12,7 +12,10 @@
 <div class="container" id="app">
     <h1><i class="fas fa-user-plus"></i>परिवारका सदस्यहरू थप्नुहोस्</h1>
 
-    <div class="full-width form-group">
+    <!-- ============================================================
+         STICKY TOP BAR — always visible when generations exist
+         ============================================================ -->
+    <div class="sticky-top-bar" id="stickyTopBar">
         <div class="dropdown-row" id="genDropdownsContainer">
             <!-- populated by JS -->
         </div>
@@ -26,11 +29,14 @@
             <button type="button" id="editMemberBtn" class="action-btn action-btn-blue">
                 <i class="fas fa-edit"></i> छानिएको सदस्य एडिट गर्नुहोस्
             </button>
+            <button type="button" id="addGenerationBtn" class="action-btn action-btn-cyan">
+                <i class="fas fa-plus-circle"></i> पुस्ता थप्नुहोस्
+            </button>
         </div>
     </div>
 
     <!-- ============================================================
-         PANEL 1: Add Member Form (hidden by default)
+         PANEL 1: Add Member Form
          ============================================================ -->
     <form id="addMemberForm" class="inline-panel" enctype="multipart/form-data">
         <div class="panel-header">
@@ -165,7 +171,7 @@
     </form>
 
     <!-- ============================================================
-         PANEL 2: Add Spouse (was a modal, now inline)
+         PANEL 2: Add Spouse
          ============================================================ -->
     <div id="spouseModal" class="inline-panel">
         <div class="panel-header">
@@ -238,7 +244,7 @@
     </div>
 
     <!-- ============================================================
-         PANEL 3: Edit Member (was a modal, now inline)
+         PANEL 3: Edit Member
          ============================================================ -->
     <div id="editModal" class="inline-panel">
         <div class="panel-header">

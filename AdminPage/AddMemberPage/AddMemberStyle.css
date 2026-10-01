@@ -16,6 +16,29 @@ body {
     display: flex;
     justify-content: center;
 }
+
+/* ============================================================
+   TOP BAR — dropdowns + action buttons (NOT sticky anymore)
+   Scrolls with the page so it doesn't cover form fields
+   ============================================================ */
+.sticky-top-bar {
+    /* No position: sticky — flows normally with the page */
+    background: #bbb;
+    padding: 12px 0 10px;
+    margin: 0 0 1rem 0;
+    border-bottom: 2px solid #b8864b;
+}
+
+/* Make sure the dropdown-row inside doesn't double-pad */
+.sticky-top-bar .dropdown-row {
+    margin-bottom: 8px;
+}
+
+/* Hide the top bar only if it has no generations */
+.sticky-top-bar.is-empty {
+    display: none;
+}
+
 .container {
     max-width: 1100px;
     width: 100%;
@@ -210,6 +233,16 @@ h1 i {
     transform: scale(1.02);
 }
 
+/* Cyan button for "Add Generation" */
+.action-btn-cyan {
+    background: linear-gradient(180deg, #077, #099, #077);
+}
+.action-btn-cyan:hover {
+    background: linear-gradient(180deg, #055, #077, #055);
+    color: #ff0;
+    transform: scale(1.02);
+}
+
 .action-btn.active {
     background: linear-gradient(180deg, #b8864b, #daa520, #b8864b);
     color: #fff;
@@ -378,7 +411,7 @@ h1 i {
 }
 
 /* ============================================================
-   ✅ FORCE 3:4 RATIO FOR ALL PHOTO PREVIEWS
+   FORCE 3:4 RATIO FOR ALL PHOTO PREVIEWS
    ============================================================ */
 #photoPreview {
     width: 120px !important;
@@ -699,7 +732,7 @@ h1 i {
 }
 
 /* ============================================================
-   PHOTO CROPPER MODAL (unchanged — still a floating modal)
+   PHOTO CROPPER MODAL
    ============================================================ */
 .cropper-modal {
     position: fixed;
@@ -866,16 +899,269 @@ h1 i {
     gap: 15px;
 }
 
-/* Ensure each form-group spans full width in single-column mode */
 #spouseModal .form-grid .form-group,
 #editModal .form-grid .form-group {
     width: 100%;
 }
 
-/* Keep full-width utility working inside these panels */
 #spouseModal .form-grid .full-width,
 #editModal .form-grid .full-width {
     grid-column: auto;
+}
+
+/* ============================================================
+   ✅ ADDED: ORANGE BUTTON — "पुर्खा थप्नुहोस्" (Add Ancestor)
+   ============================================================ */
+.action-btn-orange {
+    background: linear-gradient(180deg, #a50, #c70, #a50);
+}
+.action-btn-orange:hover {
+    background: linear-gradient(180deg, #830, #a50, #830);
+    color: #ff0;
+    transform: scale(1.02);
+}
+.action-btn-orange:disabled {
+    background: linear-gradient(180deg, #666, #888, #666);
+    color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+/* ============================================================
+   ✅ ADDED: DANGER BUTTON — "मूल व्यक्ति हटाउनुहोस्" (Remove Root)
+   ============================================================ */
+.action-btn-danger {
+    background: linear-gradient(180deg, #700, #900, #700);
+}
+.action-btn-danger:hover {
+    background: linear-gradient(180deg, #500, #700, #500);
+    color: #ff0;
+    transform: scale(1.02);
+}
+.action-btn-danger:disabled {
+    background: linear-gradient(180deg, #666, #888, #666);
+    color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+/* ============================================================
+   ✅ ADDED: Confirm/Cancel buttons inside dynamic panels
+   ============================================================ */
+#confirmAncestorBtn,
+#cancelAncestorBtn,
+#confirmRemoveRootBtn,
+#cancelRemoveRootBtn {
+    width: 45%;
+    padding: 12px 20px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+#confirmAncestorBtn {
+    background: linear-gradient(180deg, #070, #090, #070);
+}
+#confirmAncestorBtn:hover {
+    background: linear-gradient(180deg, #050, #070, #050);
+    color: #ff0;
+}
+
+#cancelAncestorBtn,
+#cancelRemoveRootBtn {
+    background: linear-gradient(180deg, #700, #900, #700);
+}
+#cancelAncestorBtn:hover,
+#cancelRemoveRootBtn:hover {
+    background: linear-gradient(180deg, #500, #700, #500);
+    color: #ff0;
+}
+
+#confirmRemoveRootBtn {
+    background: linear-gradient(180deg, #700, #900, #700);
+}
+#confirmRemoveRootBtn:hover {
+    background: linear-gradient(180deg, #500, #700, #500);
+    color: #ff0;
+}
+
+#confirmAncestorBtn:disabled,
+#cancelAncestorBtn:disabled,
+#confirmRemoveRootBtn:disabled,
+#cancelRemoveRootBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    color: #ccc;
+}
+
+/* ============================================================
+   ✅ ADDED: Preview box inside ancestor and remove-root panels
+   ============================================================ */
+#ancestorPreview,
+#removeRootPreview {
+    font-family: 'Courier New', monospace;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    background: #f0ebe4;
+    padding: 14px 16px;
+    border-radius: 12px;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 2px solid #b8864b;
+    color: #1e2a3a;
+    white-space: normal;
+    word-break: break-word;
+}
+
+#ancestorPreview strong,
+#removeRootPreview strong {
+    color: #0000aa;
+}
+
+#ancestorPreview hr,
+#removeRootPreview hr {
+    border: none;
+    border-top: 1px solid #b8864b;
+    margin: 8px 0;
+}
+
+/* ============================================================
+   ✅ ADDED: Info box inside ancestor and remove-root panels
+   ============================================================ */
+#ancestorInfoBox,
+#removeRootPanel .info-box {
+    background: #e8f0fe;
+    border-left: 4px solid #b8864b;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-top: 4px;
+    font-size: 1.05rem;
+    color: #1e2a3a;
+    line-height: 1.7;
+}
+
+#ancestorInfoBox strong,
+#removeRootPanel .info-box strong {
+    color: #0000aa;
+}
+
+/* ============================================================
+   ✅ ADDED: Panel-specific titles
+   ============================================================ */
+#ancestorPanel .panel-header h2,
+#removeRootPanel .panel-header h2 {
+    color: #0000aa;
+}
+
+#ancestorPanel .panel-header h2 i {
+    color: #c70;
+    text-shadow: 2px 2px 3px #000;
+}
+
+#removeRootPanel .panel-header h2 i {
+    color: #a00;
+    text-shadow: 2px 2px 3px #000;
+}
+
+/* ============================================================
+   ✅ ADDED: Warning text colors used inside previews
+   ============================================================ */
+.ancestor-warning,
+.remove-root-warning {
+    color: #b02b2b;
+    font-weight: bold;
+}
+
+.ancestor-hint,
+.remove-root-hint {
+    color: #856404;
+}
+
+.ancestor-success,
+.remove-root-success {
+    color: #1f7b4d;
+}
+
+/* ============================================================
+   ✅ ADDED: Remove-root panel — code-flow visualization
+   ============================================================ */
+#removeRootPanel #removeRootCurrentRoot,
+#ancestorPanel #ancestorCurrentRoot,
+#ancestorPanel #ancestorMemberCount,
+#removeRootPanel #removeRootMemberCount {
+    color: #1e2a3a;
+    font-weight: 700;
+}
+
+/* ============================================================
+   ✅ ADDED: Responsive tweaks for dynamic panels
+   ============================================================ */
+@media (max-width: 900px) {
+    #confirmAncestorBtn,
+    #cancelAncestorBtn,
+    #confirmRemoveRootBtn,
+    #cancelRemoveRootBtn {
+        font-size: 1.15rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+    #ancestorPreview,
+    #removeRootPreview {
+        font-size: 0.95rem;
+        padding: 10px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    #confirmAncestorBtn,
+    #cancelAncestorBtn,
+    #confirmRemoveRootBtn,
+    #cancelRemoveRootBtn {
+        width: 100%;
+        font-size: 1.05rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+    #ancestorPreview,
+    #removeRootPreview {
+        font-size: 0.9rem;
+        max-height: 200px;
+        padding: 10px;
+    }
+    #ancestorInfoBox,
+    #removeRootPanel .info-box {
+        font-size: 0.95rem;
+        padding: 10px 12px;
+    }
+    #ancestorPanel .panel-header h2,
+    #removeRootPanel .panel-header h2 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #confirmAncestorBtn,
+    #cancelAncestorBtn,
+    #confirmRemoveRootBtn,
+    #cancelRemoveRootBtn {
+        font-size: 1rem;
+        padding: 9px 12px;
+        border-radius: 12px;
+    }
+    #ancestorPreview,
+    #removeRootPreview {
+        font-size: 0.85rem;
+        padding: 8px 10px;
+        max-height: 180px;
+    }
 }
 
 /* ============================================================
@@ -931,7 +1217,6 @@ h1 i {
         border-radius: 10px;
     }
 
-    /* ---- Headings ---- */
     h1 {
         font-size: 1.6rem;
         gap: 6px;
@@ -942,7 +1227,6 @@ h1 i {
         font-size: 1.3rem;
     }
 
-    /* ---- Form layout ---- */
     .form-grid,
     .inline-panel .form-grid {
         grid-template-columns: 1fr;
@@ -976,7 +1260,6 @@ h1 i {
         font-size: 0.75rem;
     }
 
-    /* ---- Dropdown row ---- */
     .dropdown-row {
         padding: 12px 12px;
         gap: 10px;
@@ -996,7 +1279,6 @@ h1 i {
         border-radius: 10px;
     }
 
-    /* ---- Action buttons (top) ---- */
     #ActionButtonBox {
         flex-direction: column;
         gap: 10px;
@@ -1010,7 +1292,6 @@ h1 i {
         border-radius: 14px;
     }
 
-    /* ---- Inline panels ---- */
     .inline-panel {
         padding: 14px 14px;
         margin-top: 14px;
@@ -1033,7 +1314,6 @@ h1 i {
         font-size: 1rem;
     }
 
-    /* ---- Code display ---- */
     #CodeDisplayContainer {
         flex-wrap: wrap;
         gap: 10px;
@@ -1055,7 +1335,6 @@ h1 i {
         padding: 6px 12px;
     }
 
-    /* ---- Photo upload area ---- */
     .photo-upload-area {
         flex-direction: column;
         align-items: stretch;
@@ -1076,7 +1355,6 @@ h1 i {
         min-width: 0;
     }
 
-    /* ---- Preview sizes: shrink and center ---- */
     #photoPreview,
     #editPhotoPreview {
         width: 96px !important;
@@ -1100,7 +1378,6 @@ h1 i {
         margin: 0 auto;
     }
 
-    /* ---- Bottom action buttons ---- */
     #ButtonBox {
         flex-direction: column;
         gap: 10px;
@@ -1129,7 +1406,6 @@ h1 i {
         border-radius: 14px;
     }
 
-    /* ---- Spouse / edit panel bits ---- */
     #spouseCodeDisplay {
         font-size: 1.4rem;
         padding: 6px 12px;
@@ -1155,7 +1431,6 @@ h1 i {
         width: 100%;
     }
 
-    /* ---- Sons / daughters tags ---- */
     .tag {
         font-size: 0.8rem;
         padding: 3px 10px;
@@ -1181,7 +1456,6 @@ h1 i {
         border-radius: 14px;
     }
 
-    /* ---- Info box + upload status ---- */
     .info-box {
         font-size: 0.85rem;
         padding: 8px 12px;
@@ -1195,7 +1469,6 @@ h1 i {
         padding: 2px 10px;
     }
 
-    /* ---- Footer ---- */
     #FooterBox {
         padding: 16px 14px;
         margin-top: 16px;
@@ -1216,7 +1489,6 @@ h1 i {
         line-height: 1.5;
     }
 
-    /* ---- Cropper modal ---- */
     .cropper-dialog {
         max-width: 100%;
         border-radius: 12px;
@@ -1251,7 +1523,6 @@ h1 i {
         font-size: 0.95rem;
     }
 
-    /* ---- Spouse / edit modal inner grid ---- */
     #spouseModal .form-grid,
     #editModal .form-grid {
         gap: 12px;
@@ -1270,7 +1541,6 @@ h1 i {
         border-radius: 10px;
     }
 
-    /* ---- Headings ---- */
     h1 {
         font-size: 1.25rem;
         gap: 5px;
@@ -1280,7 +1550,6 @@ h1 i {
         font-size: 1.05rem;
     }
 
-    /* ---- Form ---- */
     .form-group {
         padding: 6px;
         gap: 6px;
@@ -1304,7 +1573,6 @@ h1 i {
         min-height: 50px;
     }
 
-    /* ---- Dropdown row ---- */
     .dropdown-row {
         padding: 10px;
         border-radius: 12px;
@@ -1317,7 +1585,6 @@ h1 i {
         padding: 7px;
     }
 
-    /* ---- Buttons ---- */
     .action-btn {
         font-size: 1rem;
         padding: 9px 10px;
@@ -1336,7 +1603,6 @@ h1 i {
         border-radius: 12px;
     }
 
-    /* ---- Panels ---- */
     .inline-panel {
         padding: 12px 12px;
         border-radius: 10px;
@@ -1350,7 +1616,6 @@ h1 i {
         font-size: 0.9rem;
     }
 
-    /* ---- Code display ---- */
     #CodeDisplayContainer {
         padding: 6px 10px;
         gap: 8px;
@@ -1369,7 +1634,6 @@ h1 i {
         padding: 5px 10px;
     }
 
-    /* ---- Photo previews ---- */
     #photoPreview,
     #editPhotoPreview,
     .photo-preview {
@@ -1396,13 +1660,11 @@ h1 i {
         padding: 6px 10px;
     }
 
-    /* ---- Tags ---- */
     .tag {
         font-size: 0.75rem;
         padding: 3px 8px;
     }
 
-    /* ---- Footer ---- */
     #FooterBox {
         padding: 14px 12px;
         border-radius: 10px;
@@ -1415,7 +1677,6 @@ h1 i {
         font-size: 0.78rem;
     }
 
-    /* ---- Cropper ---- */
     .cropper-stage {
         min-height: 220px;
     }
