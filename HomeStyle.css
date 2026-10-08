@@ -17,11 +17,13 @@ body {
     min-height: 90vh;
     width: 100%;
     overflow-x: hidden;
-    box-sizing: border-box;    
+    box-sizing: border-box;
 }
+
 *, *::before, *::after {
     box-sizing: border-box;
 }
+
 #MainBody {
     max-width: 90%;
     background-color: #fee;
@@ -218,7 +220,6 @@ body {
 #FooterContacts div {
     font-size: 1.2rem;
     font-weight: bold;
-    text-decoration: italic;
 }
 
 #FooterContacts a {
@@ -323,7 +324,6 @@ body {
 
 /* ============================================================
    TEXT + IMAGE THUMBNAIL — SHOW FULL IMAGE (NO CROP)
-   Uses class .is-text-image added by JS for guaranteed targeting.
    ============================================================ */
 .notice-card.is-text-image .notice-thumbnail {
     height: 220px;
@@ -344,23 +344,6 @@ body {
 
 .notice-card.is-text-image:hover .notice-thumbnail img {
     transform: scale(1.02);
-}
-
-/* Text+Image badge */
-.notice-thumbnail .text-image-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(6, 75, 43, 0.9);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    z-index: 2;
 }
 
 /* ============================================================
@@ -413,20 +396,40 @@ body {
     background: rgba(255, 0, 0, 1);
 }
 
-/* PDF Badge */
-.notice-thumbnail .pdf-badge {
+/* ============================================================
+   FACEBOOK THUMBNAIL — Live iframe preview with click overlay
+   ============================================================ */
+.notice-card.is-facebook .notice-thumbnail {
+    height: 240px;
+    background: #ffffff;
+    padding: 0;
+}
+
+.facebook-thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #fff;
+}
+
+.facebook-thumbnail-wrapper iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.facebook-thumbnail-wrapper .facebook-click-overlay {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: #dc3545;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    cursor: pointer;
+    background: transparent;
 }
 
 /* Notice Body */
@@ -472,17 +475,6 @@ body {
     display: flex;
     align-items: center;
     gap: 5px;
-}
-
-.notice-body .notice-meta .media-type {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    background: #e7f3ff;
-    color: #4a9eff;
 }
 
 /* ============================================================
@@ -713,32 +705,132 @@ body {
     word-wrap: break-word;
 }
 
-.popup-media .text-content::-webkit-scrollbar { width: 8px; }
-.popup-media .text-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-.popup-media .text-content::-webkit-scrollbar-thumb { background: #c1c7cd; border-radius: 4px; }
-.popup-media .text-content::-webkit-scrollbar-thumb:hover { background: #a8afb7; }
+/* ============================================================
+   FACEBOOK POPUP — Live post with scrollable container
+   ============================================================ */
+.popup-content.is-facebook-popup {
+    width: auto;
+    min-width: 320px;
+    max-width: 720px;
+    max-height: 92vh;
+    background: #ffffff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+}
 
-.popup-media .fb-embed-wrapper {
-    width: 100%;
-    min-height: 600px;
-    max-height: 85vh;
-    overflow-y: auto;
+/* Header bar inside Facebook popup */
+.fb-popup-header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: #1877f2;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.fb-popup-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fb-popup-header-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.fb-popup-header-link:hover {
+    background: rgba(255, 255, 255, 0.32);
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.fb-popup-header-link i {
+    font-size: 0.8rem;
+}
+
+/* The scrollable box: horizontal + vertical scroll both enabled */
+.popup-content.is-facebook-popup .popup-media {
+    min-height: 0;
+    max-height: none;
     background: #f0f2f5;
-    padding: 20px;
+    display: block;
+    overflow: visible;
+    padding: 0;
+    flex: 1 1 auto;
 }
 
-.popup-media .fb-embed-wrapper iframe {
+.fb-scroll-box {
     width: 100%;
-    max-width: 550px;
-    min-height: 500px;
-    border: none;
-    background: white;
-    border-radius: 8px;
+    height: 100%;
+    max-height: 78vh;
+    background: #f0f2f5;
+    overflow: auto;                 /* both x and y */
+    -webkit-overflow-scrolling: touch;
+    padding: 16px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    box-sizing: border-box;
 }
 
+.fb-scroll-box iframe {
+    flex: 0 0 auto;
+    /* Facebook's post plugin needs at least 500px width.
+       Keep the iframe at its native size and let the container scroll. */
+    width: 500px;
+    min-width: 500px;
+    height: 700px;
+    border: none;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    display: block;
+}
+
+/* Video variant: wider, shorter */
+.fb-scroll-box iframe[src*="video.php"] {
+    width: 560px;
+    min-width: 560px;
+    height: 400px;
+}
+
+/* Optional scrollbar styling for the Facebook box */
+.fb-scroll-box::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+.fb-scroll-box::-webkit-scrollbar-track {
+    background: #e4e6eb;
+    border-radius: 5px;
+}
+.fb-scroll-box::-webkit-scrollbar-thumb {
+    background: #bcc0c4;
+    border-radius: 5px;
+}
+.fb-scroll-box::-webkit-scrollbar-thumb:hover {
+    background: #90949c;
+}
+
+/* ============================================================
+   PDF / PICTURE VIEWER / OFFICE MODAL
+   ============================================================ */
 #pdfModal,
 #pictureViewer,
 #officeModal {
@@ -1030,10 +1122,10 @@ body {
 .text-image-clearfix { clear: both; }
 
 /* ============================================================
-   RESPONSIVE — TEXT-ONLY & TEXT_IMAGE POPUPS
+   RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
-        #MainBody {
+    #MainBody {
         max-width: 100%;
         width: 100%;
         padding: 8px;
@@ -1048,38 +1140,28 @@ body {
         gap: 10px;
         margin-bottom: 12px;
     }
-
-    .MainHead {
-        font-size: 32px;
-        }
-
+    .MainHead { font-size: 32px; }
     #MainHeadBox img {
         width: 80px;
         height: auto;
         margin-right: 0px;
     }
-
     #MainDescription {
         font-size: 16px;
         padding: 0 10px;
         margin-bottom: 20px;
     }
-
     .content {
         padding: 10px;
         font-size: 16px;
         text-indent: 10px;
-    }   
-
-    #buttonBox {
-        margin-top: 30px;
     }
-
+    #buttonBox { margin-top: 30px; }
     #buttonBox button {
         width: 48%;
         font-size: 18px;
         padding: 10px 12px;
-  }
+    }
     #FooterBox {
         width: 100%;
         max-width: 100%;
@@ -1090,7 +1172,6 @@ body {
         display: block;
         margin-bottom: 8px;
     }
-
     #FooterLinks a {
         color: #00bb00;
         padding: 10px 30px;
@@ -1098,11 +1179,7 @@ body {
         font-size: 20px;
         font-weight: bold;
     }
-
-    #FooterHeading {
-        font-size: 24px;        
-    }
-
+    #FooterHeading { font-size: 24px; }
     #FooterContacts {
         margin-top: 20px;
         display: block;
@@ -1113,21 +1190,16 @@ body {
         color: #00bb00;
         text-decoration: none;
     }
-
     #noticeSection {
         margin: 10px;
         padding: 10px;
     }
-
     #noticeSection h2 {
         font-size: 28px;
         margin-bottom: 12px;
-        padding-bottom: 10px;        
+        padding-bottom: 10px;
     }
-
-    #noticeSection h2 i {
-         color: #ffc107; 
-    }
+    #noticeSection h2 i { color: #ffc107; }
     #noticeGrid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1135,27 +1207,32 @@ body {
         padding: 10px;
         min-height: 150px;
     }
-    .notice-thumbnail {
+    .notice-thumbnail { height: 150px; }
+    .notice-card.is-text-image .notice-thumbnail { height: 160px; }
+    .notice-card.is-facebook .notice-thumbnail { height: 200px; }
+    .notice-thumbnail .no-image { font-size: 24px; }
+    .notice-thumbnail .no-image span { font-size: 18px; }
+    .notice-popup { padding: 10px; }
+    .popup-content { max-width: 600px; }
+
+    /* Facebook popup — tablet */
+    .popup-content.is-facebook-popup {
+        min-width: 0;
         width: 100%;
-        height: 150px;
+        max-width: 100%;
     }
-    .notice-card.is-text-image .notice-thumbnail {
-        height: 160px;
+    .fb-popup-header {
+        padding: 10px 14px;
+        font-size: 0.9rem;
     }
-    .notice-thumbnail .no-image {
-        font-size: 24px;        
+    .fb-popup-header-link {
+        padding: 5px 10px;
+        font-size: 0.78rem;
     }
-
-    .notice-thumbnail .no-image span {
-        font-size: 18px;        
+    .fb-scroll-box {
+        max-height: 72vh;
+        padding: 12px;
     }
-    .notice-popup {
-        padding: 10px;
-    }
-
-    .popup-content {
-        max-width: 600px;        
-    }    
 }
 
 @media (max-width: 480px) {
@@ -1174,9 +1251,7 @@ body {
         gap: 8px;
         margin-bottom: 10px;
     }
-    .MainHead {
-        font-size: 24px;
-    }
+    .MainHead { font-size: 24px; }
     #MainHeadBox img {
         width: 60px;
         height: auto;
@@ -1191,41 +1266,33 @@ body {
         padding: 8px;
         font-size: 14px;
         text-indent: 8px;
-    }   
-
+    }
     #buttonBox {
         margin-top: 20px;
         flex-direction: column;
     }
-
     #buttonBox button {
         width: 90%;
         font-size: 18px;
         padding: 10px 12px;
         margin: 10px 0;
-  }
+    }
     #FooterBox {
         width: 100%;
         padding: 6px;
         margin-bottom: 10px;
     }
-
     #FooterLinks {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-bottom: 8px;
     }
-
     #FooterLinks a {
         padding: 10px;
         font-size: 20px;
     }
-
-    #FooterHeading {
-        font-size: 24px;        
-    }
-
+    #FooterHeading { font-size: 24px; }
     #FooterContacts {
         margin: 20px 0;
         display: flex;
@@ -1238,16 +1305,14 @@ body {
         text-decoration: none;
         padding: 20px 0;
     }
-
     #noticeSection {
         margin: 10px;
         padding: 10px;
     }
-
     #noticeSection h2 {
         font-size: 20px;
         margin-bottom: 10px;
-        padding-bottom: 8px;        
+        padding-bottom: 8px;
     }
     #noticeGrid {
         display: flex;
@@ -1257,28 +1322,31 @@ body {
         padding: 10px;
         min-height: 150px;
     }
-    .notice-card {
-    width: 90%;
-    }
-    .notice-thumbnail {
-        width: 100%;
-        height: 100px;
-    }
-    .notice-card.is-text-image .notice-thumbnail {
-        height: 100px;
-    }
-    .notice-thumbnail .no-image {
-        font-size: 18px;        
-    }
+    .notice-card { width: 90%; }
+    .notice-thumbnail { height: 100px; }
+    .notice-card.is-text-image .notice-thumbnail { height: 100px; }
+    .notice-card.is-facebook .notice-thumbnail { height: 180px; }
+    .notice-thumbnail .no-image { font-size: 18px; }
+    .notice-thumbnail .no-image span { font-size: 18px; }
+    .notice-popup { padding: 8px; }
+    .popup-content { max-width: 400px; }
 
-    .notice-thumbnail .no-image span {
-        font-size: 18px;        
+    /* Facebook popup — phone */
+    .fb-popup-header {
+        padding: 9px 12px;
+        font-size: 0.82rem;
+        flex-wrap: wrap;
+        gap: 6px;
     }
-    .notice-popup {
+    .fb-popup-header-title {
+        font-size: 0.82rem;
+    }
+    .fb-popup-header-link {
+        padding: 4px 9px;
+        font-size: 0.72rem;
+    }
+    .fb-scroll-box {
+        max-height: 68vh;
         padding: 8px;
-    }
-
-    .popup-content {
-        max-width: 400px;        
     }
 }

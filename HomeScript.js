@@ -34,28 +34,7 @@
     const pageInfo = document.getElementById('pageInfo');
 
     // ------------------------------------------------------------
-    // 4. Media type maps
-    // ------------------------------------------------------------
-    const MEDIA_ICONS = {
-        'image': 'fa-image',
-        'text_image': 'fa-image',
-        'youtube': 'fa-youtube',
-        'facebook': 'fa-facebook',
-        'pdf': 'fa-file-pdf',
-        'none': 'fa-file-alt'
-    };
-
-    const MEDIA_LABELS = {
-        'image': 'Image',
-        'text_image': 'Image + Text',
-        'youtube': 'YouTube',
-        'facebook': 'Facebook',
-        'pdf': 'PDF',
-        'none': 'Text'
-    };
-
-    // ------------------------------------------------------------
-    // 5. Initialize
+    // 4. Initialize
     // ------------------------------------------------------------
     document.addEventListener('DOMContentLoaded', init);
 
@@ -63,11 +42,16 @@
         console.log('🚀 Initializing Home page...');
         await loadNotices();
         setupEventListeners();
+
+        if (window.FB) {
+            window.FB.XFBML.parse();
+        }
+
         console.log('✅ Home page ready');
     }
 
     // ------------------------------------------------------------
-    // 6. Load Notices from Supabase
+    // 5. Load Notices from Supabase
     // ------------------------------------------------------------
     async function loadNotices() {
         try {
@@ -102,14 +86,14 @@
     }
 
     // ------------------------------------------------------------
-    // 7. Get Total Pages
+    // 6. Get Total Pages
     // ------------------------------------------------------------
     function getTotalPages() {
         return Math.ceil(allNotices.length / NOTICES_PER_PAGE);
     }
 
     // ------------------------------------------------------------
-    // 8. Render Notices for Current Page
+    // 7. Render Notices for Current Page
     // ------------------------------------------------------------
     function renderNotices() {
         if (allNotices.length === 0) {
@@ -137,7 +121,7 @@
     }
 
     // ------------------------------------------------------------
-    // 9. Create Notice Card
+    // 8. Create Notice Card
     // ------------------------------------------------------------
     function createNoticeCard(notice) {
         const card = document.createElement('div');
@@ -146,16 +130,10 @@
         card.dataset.media = notice.media_type || 'none';
 
         const mediaType = notice.media_type || 'none';
-        const mediaIcon = MEDIA_ICONS[mediaType] || 'fa-file-alt';
-        const mediaLabel = MEDIA_LABELS[mediaType] || mediaType;
 
-        // Add classes for reliable CSS targeting
-        if (mediaType === 'text_image') {
-            card.classList.add('is-text-image');
-        }
-        if (mediaType === 'image') {
-            card.classList.add('is-image');
-        }
+        if (mediaType === 'text_image') card.classList.add('is-text-image');
+        if (mediaType === 'image') card.classList.add('is-image');
+        if (mediaType === 'facebook') card.classList.add('is-facebook');
 
         let thumbnailHtml = '';
 
@@ -179,27 +157,14 @@
                  (notice.thumbnail_url || notice.media_url)) {
 
             let imgSrc;
-
             if (mediaType === 'text_image') {
-                // For text+image: use the ORIGINAL media_url (not the
-                // pre-cropped thumbnail_url), then strip Supabase transform
-                // params so the full portrait image is served.
                 imgSrc = notice.media_url || notice.thumbnail_url;
                 imgSrc = stripSupabaseTransform(imgSrc);
             } else {
-                // For plain image: keep using thumbnail_url (smaller, faster)
                 imgSrc = notice.thumbnail_url || notice.media_url;
             }
 
             thumbnailHtml = `<img src="${imgSrc}" alt="${escapeHtml(notice.title)}" loading="lazy">`;
-
-            if (mediaType === 'text_image') {
-                thumbnailHtml += `
-                    <div class="text-image-badge">
-                        <i class="fas fa-align-left"></i> Text
-                    </div>
-                `;
-            }
         }
         // ---- YOUTUBE ----
         else if (mediaType === 'youtube') {
@@ -218,17 +183,24 @@
             thumbnailHtml = `
                 <div class="no-image" style="background: #f8f9fa;">
                     <i class="fas fa-file-pdf" style="color: #dc3545; font-size: 4rem;"></i>
-                    <span style="font-size: 0.9rem; color: #6c757d;">PDF Document</span>
                 </div>
-                <div class="pdf-badge"><i class="fas fa-file-pdf"></i> PDF</div>
             `;
         }
         // ---- FACEBOOK ----
-        else if (mediaType === 'facebook') {
+        else if (mediaType === 'facebook' && notice.media_url) {
+            const fbUrl = notice.media_url;
             thumbnailHtml = `
-                <div class="no-image" style="background: #1877f2;">
-                    <i class="fab fa-facebook" style="color: white; font-size: 4rem;"></i>
-                    <span style="color: white; font-size: 0.9rem;">Facebook Post</span>
+                <div class="facebook-thumbnail-wrapper">
+                    <iframe
+                        src="https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(fbUrl)}&width=500&show_text=true&height=400"
+                        style="border:none;overflow:hidden;width:100%;height:100%;"
+                        scrolling="no"
+                        frameborder="0"
+                        allowfullscreen="true"
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                        loading="lazy">
+                    </iframe>
+                    <div class="facebook-click-overlay"></div>
                 </div>
             `;
         }
@@ -237,7 +209,6 @@
             thumbnailHtml = `
                 <div class="no-image">
                     <i class="fas fa-file-alt"></i>
-                    <span>Text Only</span>
                 </div>
             `;
         }
@@ -259,10 +230,6 @@
                         <i class="far fa-calendar-alt"></i>
                         ${formatDate(notice.created_at)}
                     </span>
-                    <span class="media-type">
-                        <i class="fas ${mediaIcon}"></i>
-                        ${mediaLabel}
-                    </span>
                 </div>
             </div>
         `;
@@ -273,19 +240,15 @@
     }
 
     // ------------------------------------------------------------
-    // 10. Strip Supabase transform params (for full-image display)
+    // 9. Strip Supabase transform params
     // ------------------------------------------------------------
     function stripSupabaseTransform(url) {
         if (!url) return url;
-
-        // Only process Supabase storage URLs
         if (!url.includes('/storage/v1/')) return url;
 
         try {
             const u = new URL(url);
 
-            // Convert render/image → object/public so the ORIGINAL
-            // (uncropped) image is served by Supabase.
             if (u.pathname.includes('/storage/v1/render/image/')) {
                 u.pathname = u.pathname.replace(
                     '/storage/v1/render/image/',
@@ -293,19 +256,17 @@
                 );
             }
 
-            // Strip transform query params (case-insensitive by URL API)
             const paramsToRemove = ['width', 'height', 'resize', 'quality', 'format'];
             paramsToRemove.forEach(p => u.searchParams.delete(p));
 
             return u.toString();
         } catch (e) {
-            // Fallback: nuke the query string
             return url.split('?')[0];
         }
     }
 
     // ------------------------------------------------------------
-    // 11. Render Pagination Controls
+    // 10. Render Pagination Controls
     // ------------------------------------------------------------
     function renderPagination() {
         const totalPages = getTotalPages();
@@ -349,7 +310,7 @@
     }
 
     // ------------------------------------------------------------
-    // 12. Build Smart Page List (with ellipsis)
+    // 11. Build Smart Page List
     // ------------------------------------------------------------
     function buildPageList(current, total) {
         const pages = [1];
@@ -366,7 +327,7 @@
     }
 
     // ------------------------------------------------------------
-    // 13. Navigate to a Page
+    // 12. Navigate to a Page
     // ------------------------------------------------------------
     function goToPage(page) {
         const totalPages = getTotalPages();
@@ -383,7 +344,7 @@
     }
 
     // ------------------------------------------------------------
-    // 14. Extract YouTube ID
+    // 13. Extract YouTube ID
     // ------------------------------------------------------------
     function extractYoutubeId(url) {
         if (!url) return null;
@@ -399,7 +360,7 @@
     }
 
     // ------------------------------------------------------------
-    // 15. Format Date
+    // 14. Format Date
     // ------------------------------------------------------------
     function formatDate(dateString) {
         if (!dateString) return '-';
@@ -412,7 +373,7 @@
     }
 
     // ------------------------------------------------------------
-    // 16. HTML Escape Helper
+    // 15. HTML Escape Helper
     // ------------------------------------------------------------
     function escapeHtml(str) {
         if (!str) return '';
@@ -425,7 +386,7 @@
     }
 
     // ------------------------------------------------------------
-    // 17. Open Media Directly
+    // 16. Open Media Directly
     // ------------------------------------------------------------
     function openMediaDirectly(notice) {
         console.log('📖 Opening notice:', notice.id, '| type:', notice.media_type);
@@ -457,7 +418,7 @@
     }
 
     // ------------------------------------------------------------
-    // 18. TEXT ONLY POPUP
+    // 17. TEXT ONLY POPUP
     // ------------------------------------------------------------
     function openTextOnlyPopup(notice) {
         const existing = document.getElementById('noticePopup');
@@ -485,7 +446,7 @@
     }
 
     // ------------------------------------------------------------
-    // 19. IMAGE + TEXT POPUP
+    // 18. IMAGE + TEXT POPUP
     // ------------------------------------------------------------
     function openImageWithTextPopup(notice) {
         const existing = document.getElementById('noticePopup');
@@ -519,19 +480,30 @@
     }
 
     // ------------------------------------------------------------
-    // 20. YOUTUBE / FACEBOOK POPUP
+    // 19. YOUTUBE / FACEBOOK POPUP
     // ------------------------------------------------------------
     function openEmbeddedPopup(notice) {
         console.log('📖 Opening embedded popup for:', notice.media_type);
 
         const mediaType = notice.media_type || 'none';
+        const isFacebook = (mediaType === 'facebook');
 
         let popupHTML = `
             <div id="noticePopup" class="notice-popup" style="display: flex;">
-                <div class="popup-content">
+                <div class="popup-content ${isFacebook ? 'is-facebook-popup' : ''}">
                     <button class="popup-close" id="closePopupBtn">
                         <i class="fas fa-times"></i>
                     </button>
+                    ${isFacebook ? `
+                        <div class="fb-popup-header">
+                            <span class="fb-popup-header-title">
+                                <i class="fab fa-facebook-f"></i> Facebook Post
+                            </span>
+                            <a href="${notice.media_url}" target="_blank" rel="noopener noreferrer" class="fb-popup-header-link">
+                                Open on Facebook <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    ` : ''}
                     <div class="popup-media" id="popupMedia">
         `;
 
@@ -552,28 +524,32 @@
             const fbUrl = notice.media_url;
             const isVideo = fbUrl.includes('/videos/') || fbUrl.includes('/video/');
 
+            // Scrollable container so the post is never clipped, even if
+            // Facebook renders wider/taller than the popup viewport.
             if (isVideo) {
                 popupHTML += `
-                    <div style="width:100%;min-height:70vh;max-height:85vh;overflow-y:auto;display:flex;align-items:center;justify-content:center;background:#1a1a2e;padding:20px;">
-                        <div style="width:100%;max-width:800px;min-height:500px;">
-                            <iframe src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(fbUrl)}&show_text=false&width=800"
-                                    style="width:100%;min-height:500px;border:none;overflow:hidden;background:transparent;"
-                                    scrolling="no" frameborder="0" allowfullscreen="true"
-                                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                            </iframe>
-                        </div>
+                    <div class="fb-scroll-box">
+                        <iframe
+                            src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(fbUrl)}&show_text=true&width=560&height=400"
+                            style="border:none;overflow:hidden;"
+                            scrolling="no"
+                            frameborder="0"
+                            allowfullscreen="true"
+                            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                        </iframe>
                     </div>
                 `;
             } else {
                 popupHTML += `
-                    <div style="width:100%;min-height:70vh;max-height:85vh;overflow-y:auto;display:flex;align-items:center;justify-content:center;background:#f0f2f5;padding:20px;">
-                        <div style="width:100%;max-width:550px;min-height:500px;overflow-y:auto;">
-                            <iframe src="https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(fbUrl)}&width=500&show_text=true&height=600"
-                                    style="width:100%;min-height:600px;border:none;overflow:hidden;background:white;border-radius:8px;"
-                                    scrolling="no" frameborder="0" allowfullscreen="true"
-                                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                            </iframe>
-                        </div>
+                    <div class="fb-scroll-box">
+                        <iframe
+                            src="https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(fbUrl)}&width=500&show_text=true&height=700"
+                            style="border:none;overflow:hidden;"
+                            scrolling="no"
+                            frameborder="0"
+                            allowfullscreen="true"
+                            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                        </iframe>
                     </div>
                 `;
             }
@@ -598,7 +574,7 @@
     }
 
     // ------------------------------------------------------------
-    // 21. Wire Up Popup Close
+    // 20. Wire Up Popup Close
     // ------------------------------------------------------------
     function wireUpPopupClose() {
         const closeBtn = document.getElementById('closePopupBtn');
@@ -617,7 +593,7 @@
     }
 
     // ------------------------------------------------------------
-    // 22. Close Popup
+    // 21. Close Popup
     // ------------------------------------------------------------
     function closePopupFunc() {
         if (window._currentYoutubeIframe) {
@@ -640,14 +616,14 @@
     }
 
     // ------------------------------------------------------------
-    // 23. Handle Popup Keydown (Escape key)
+    // 22. Handle Popup Keydown (Escape key)
     // ------------------------------------------------------------
     function handlePopupKeydown(e) {
         if (e.key === 'Escape') closePopupFunc();
     }
 
     // ------------------------------------------------------------
-    // 24. Setup Event Listeners
+    // 23. Setup Event Listeners
     // ------------------------------------------------------------
     function setupEventListeners() {
         prevPageBtn.addEventListener('click', () => {

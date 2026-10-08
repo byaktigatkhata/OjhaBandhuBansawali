@@ -119,6 +119,20 @@ async function checkAuthentication() {
         currentAdmin = admin;
         displayAdminInformation(admin);
 
+        // ✅ Persist to sessionStorage so other admin pages can read it
+        try {
+            sessionStorage.setItem('ojhaAdminInfo', JSON.stringify({
+                user_id: admin.user_id,
+                name: admin.admin_name,
+                email: admin.admin_email,
+                role: admin.admin_role,
+                isActive: admin.is_active,
+                isPermanent: admin.isPermanent === true
+            }));
+        } catch (e) {
+            console.warn('Could not save admin info to sessionStorage:', e);
+        }
+
     } catch (error) {
         console.error('Dashboard authentication error:', error);
         redirectToLogin();
@@ -129,27 +143,46 @@ async function checkAuthentication() {
 // 7. Get Admin Information
 // ============================================================
 async function getAdminInformation(authUser, email) {
-    // Check if permanent admin (bypasses database)
-    if (email === DEFAULT_ADMIN_EMAIL) {
+    // Normalize email once (defensive against whitespace / case)
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+
+    // ---------------------------------------------------------
+    // 7a. Permanent admin bypass — ALWAYS checked first
+    // ---------------------------------------------------------
+    if (normalizedEmail === DEFAULT_ADMIN_EMAIL) {
+        console.log('🛡️ Permanent admin detected:', normalizedEmail);
         return {
             user_id: authUser.id,
             admin_name: 'Permanent Admin',
-            admin_email: email,
+            admin_email: normalizedEmail,
             admin_role: 'AdminManager',
             is_active: 'true',
             isPermanent: true
         };
     }
 
-    // Check in admins table (lowercase)
-    const { data, error } = await supabaseDB
-        .from('admins')
-        .select('user_id, admin_name, admin_email, admin_role, is_active')
-        .eq('user_id', authUser.id)
-        .maybeSingle();
+    // ---------------------------------------------------------
+    // 7b. Fallback: look up user in `admins` table
+    // ---------------------------------------------------------
+    let data = null;
+    let error = null;
+
+    try {
+        const res = await supabaseDB
+            .from('admins')
+            .select('user_id, admin_name, admin_email, admin_role, is_active')
+            .eq('user_id', authUser.id)
+            .maybeSingle();
+        data = res.data;
+        error = res.error;
+    } catch (e) {
+        console.warn('⚠️ Admin lookup threw:', e.message);
+        return null;
+    }
 
     if (error) {
-        console.error('Admin lookup error:', error);
+        // Don't spam the user with a Supabase error if the row simply isn't there
+        console.warn('⚠️ Admin lookup error:', error.message);
         return null;
     }
 
@@ -158,7 +191,7 @@ async function getAdminInformation(authUser, email) {
         return null;
     }
 
-    // Check if admin is active
+    // Check if admin is active (note: stored as string in DB)
     if (data.is_active !== 'true') {
         showMessage('तपाईंको Admin account अहिले inactive छ।', 'error');
         return null;

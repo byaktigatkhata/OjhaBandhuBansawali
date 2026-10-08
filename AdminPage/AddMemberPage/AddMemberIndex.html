@@ -64,7 +64,7 @@
             <select id="gender">
                 <option value="M">पुरूष</option>
                 <option value="F">महिला</option>
-                <option value="O">अन्य</option>
+                <option value="N">अन्य</option>
             </select>
         </div>
 
@@ -171,8 +171,8 @@
     </form>
 
     <!-- ============================================================
-         PANEL 2: Add Spouse
-         ============================================================ -->
+        PANEL 2: Add Spouse
+        ============================================================ -->
     <div id="spouseModal" class="inline-panel">
         <div class="panel-header">
             <h2><i class="fas fa-ring"></i> <span id="spouseModalTitle">श्रीमान/श्रीमती थप्नुहोस्</span></h2>
@@ -201,7 +201,7 @@
                     <select id="spouseGender">
                         <option value="M">पुरूष</option>
                         <option value="F">महिला</option>
-                        <option value="O">अन्य</option>
+                        <option value="N">अन्य</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -223,6 +223,34 @@
                 <div class="form-group">
                     <label><i class="fas fa-briefcase"></i> ब्यवशाय</label>
                     <input type="text" id="spouseProfession" placeholder="जस्तोः खेती, ब्यापार ..." />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-male"></i> बाबुको नामः</label>
+                    <input type="text" id="spouseFather" placeholder="बाबुको पुरा नाम" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-female"></i> आमाको नामः</label>
+                    <input type="text" id="spouseMother" placeholder="आमाको पुरा नाम" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-sort-numeric-up"></i> स्थानः</label>
+                    <input type="text" id="spousePosition" placeholder="जेठो छोरो, साइँली बुहारी इत्यादि" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति / उमेर</label>
+                    <input type="text" id="spouseDodAge" placeholder="मृत्यु भैसकेको भए मिति, जीवित भए उमेर" />
+                </div>
+                <div class="form-group full-width">
+                    <label><i class="fas fa-home"></i> विस्तृत ठेगानाः</label>
+                    <textarea id="spouseDetailAddress" rows="2" placeholder="बसाइँ सराइ लगायत ठेगानाको इतिहास ..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label><i class="fas fa-tools"></i> विस्तृत व्यवसायः</label>
+                    <textarea id="spouseDetailProfession" rows="2" placeholder="व्यवसाय सम्बन्धि सम्पूर्ण जानकारी ..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label><i class="fas fa-book-open"></i> जीवन कथाः</label>
+                    <textarea id="spouseLifeStory" rows="2" placeholder="संक्षिप्त जीवन कथा ..."></textarea>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-image"></i> फोटो छान्नुहोस्ः</label>
@@ -268,7 +296,7 @@
                     <select id="editGender">
                         <option value="M">पुरूष</option>
                         <option value="F">महिला</option>
-                        <option value="O">अन्य</option>
+                        <option value="N">अन्य</option>
                     </select>
                 </div>
                 <div class="form-group">

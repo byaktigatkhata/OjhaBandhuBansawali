@@ -1115,6 +1115,203 @@ body {
     background: linear-gradient(135deg, #fffaf3 0%, #fdf1dc 100%);
     border-color: #e0cfa8;
 }
+/* ============================================================
+   SEARCH MODE BUTTONS
+   ============================================================ */
+#SearchModeBox {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 14px 0 4px;
+}
+
+.search-mode-btn {
+    flex: 0 1 240px;
+    padding: 12px 22px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 22px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.22s ease;
+    font-family: inherit;
+    background: linear-gradient(180deg, #6a4a00, #8c6300, #6a4a00);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+.search-mode-btn:hover {
+    transform: translateY(-2px);
+    color: #ff0;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+}
+.search-mode-btn.active {
+    background: linear-gradient(180deg, #0a7d32, #0c9e40, #0a7d32);
+    box-shadow: 0 0 0 3px rgba(10, 125, 50, 0.45);
+}
+
+/* ============================================================
+   SEARCH MODE BOXES
+   ============================================================ */
+.search-mode-box {
+    display: none;
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px 16px;
+    background: #e8f4e8;
+    border: 2px solid #0a7d32;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+.search-mode-box.is-active { display: block; }
+
+.mode-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0a5c2a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px dashed #0a7d32;
+}
+
+.mode-hint {
+    margin-top: 8px;
+    font-size: 0.92rem;
+    color: #2c4a2c;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.mode-hint i { color: #0a7d32; }
+
+/* Combobox wrapper used by Name + Code modes */
+.combobox-wrapper {
+    position: relative;
+    width: 100%;
+}
+.combobox-wrapper input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    border: 2px solid #0a7d32;
+    border-radius: 10px;
+    background: #fff;
+    outline: none;
+    font-family: inherit;
+}
+.combobox-wrapper input:focus {
+    border-color: #0c9e40;
+    box-shadow: 0 0 0 3px rgba(10, 125, 50, 0.2);
+}
+.combobox-results {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 40;
+    max-height: 320px;
+    overflow-y: auto;
+    background: #fff;
+    border: 2px solid #0a7d32;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    padding: 4px 0;
+}
+.combobox-results[hidden] { display: none; }
+
+.combobox-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+    line-height: 1.35;
+    transition: background 0.12s ease;
+}
+.combobox-item:last-child { border-bottom: none; }
+.combobox-item:hover,
+.combobox-item.is-highlighted { background: #e0f5e0; }
+.combobox-item .ci-emoji { flex-shrink: 0; }
+.combobox-item .ci-code {
+    font-weight: 800;
+    color: #0a5c2a;
+    flex-shrink: 0;
+}
+.combobox-item .ci-name {
+    color: #1f2933;
+    word-break: break-word;
+}
+.combobox-empty {
+    padding: 14px;
+    color: #6a6a6a;
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* The ancestor dropdowns keep their original styling, but adapt
+   to the new mode box */
+#ModeAncestorBox #DropDownBox {
+    width: 100%;
+    border-radius: 10px;
+    padding: 10px;
+}
+/* Allow the combobox results dropdown to overflow the mode box cleanly */
+.search-mode-box {
+    overflow: visible;
+    position: relative;
+}
+.combobox-wrapper {
+    position: relative;
+    z-index: 5;
+}
+.combobox-results {
+    z-index: 60;
+}
+
+/* ============================================================
+   RESPONSIVE — mobile tweaks for the new elements
+   ============================================================ */
+@media (max-width: 768px) {
+    #SearchModeBox { gap: 8px; margin: 10px 0 4px; }
+    .search-mode-btn {
+        flex: 1 1 100%;
+        padding: 10px 14px;
+        font-size: 1rem;
+        border-radius: 16px;
+    }
+    .search-mode-box {
+        padding: 10px 12px;
+        border-radius: 10px;
+    }
+    .mode-title { font-size: 1.05rem; gap: 8px; margin-bottom: 8px; }
+    .mode-hint { font-size: 0.82rem; }
+    .combobox-wrapper input {
+        padding: 10px 12px;
+        font-size: 1rem;
+        border-radius: 8px;
+    }
+    .combobox-item { font-size: 0.95rem; padding: 8px 10px; gap: 8px; }
+}
+
+@media (max-width: 480px) {
+    .search-mode-btn { font-size: 0.92rem; padding: 9px 12px; }
+    .mode-title { font-size: 0.98rem; }
+    .mode-hint { font-size: 0.78rem; }
+    .combobox-wrapper input { font-size: 0.95rem; padding: 9px 10px; }
+    .combobox-item { font-size: 0.88rem; padding: 7px 8px; }
+}
 
 /* ============================================================
    RESPONSIVE — TABLET & MOBILE (≤ 768px)
@@ -1372,7 +1569,9 @@ body {
         gap: 4px;
     }
 
-    /* ---------- Ancestor panel ---------- */
+    /* =========================================================
+       ANCESTOR PANEL — mobile
+       ========================================================= */
     .ancestor-panel-header { padding: 10px 14px; }
     .ancestor-panel-header h2 { font-size: 1.15rem; gap: 8px; }
     #ancestorCaptureArea { padding: 12px 10px 14px; }
@@ -1383,6 +1582,7 @@ body {
         padding: 10px;
         margin-bottom: 14px;
         gap: 6px;
+        max-width: 100%;
     }
     .ancestor-summary-line {
         flex-direction: column;
@@ -1396,14 +1596,25 @@ body {
         padding: 3px 10px;
     }
 
-    .ancestor-chain { max-width: 100%; }
+    /* Chain: full width, no max-width clamp */
+    .ancestor-chain {
+        max-width: 100%;
+        width: 100%;
+        align-items: stretch;
+    }
 
+    /* Each node becomes a vertical stack (badge on top, card below)
+       and stretches to the full width of the chain */
     .ancestor-node {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
         gap: 6px;
+        width: 100%;
     }
-    .ancestor-step { flex: 0 0 auto; }
+    .ancestor-step {
+        flex: 0 0 auto;
+        align-self: center;
+    }
     .ancestor-step-badge {
         width: 34px;
         height: 34px;
@@ -1411,18 +1622,25 @@ body {
         border-width: 2px;
     }
 
+    /* ✅ Force the card to fill the full node width so every
+       ancestor card is the same width regardless of content */
     .ancestor-card {
+        flex: 0 0 auto;
+        width: 100%;
+        min-width: 0;
         flex-direction: column;
         align-items: center;
         text-align: center;
         padding: 12px 10px;
         gap: 8px;
         border-radius: 12px;
+        box-sizing: border-box;
     }
     .ancestor-card-info {
         align-items: center;
         text-align: center;
         gap: 2px;
+        width: 100%;
     }
     .ancestor-card-photo {
         flex: 0 0 auto;
@@ -1433,6 +1651,7 @@ body {
     .ancestor-card-name {
         font-size: 1rem;
         text-align: center;
+        word-break: break-word;
     }
     .ancestor-originator .ancestor-card-name {
         font-size: 1.08rem;
@@ -1446,18 +1665,21 @@ body {
         text-align: center;
         font-size: 0.78rem;
         gap: 4px;
+        word-break: break-word;
     }
     .ancestor-card-role {
         left: 50%;
         transform: translateX(-50%);
         font-size: 0.68rem;
         padding: 2px 10px;
+        white-space: nowrap;
     }
 
     .ancestor-connector {
         height: 26px;
         margin-left: 0;
         align-self: center;
+        width: 100%;
     }
 
     /* ---------- Save button floats near photo (short view) ---------- */
@@ -1635,24 +1857,36 @@ body {
         gap: 3px;
     }
 
-    /* ---------- Ancestor panel ---------- */
+    /* =========================================================
+       ANCESTOR PANEL — small phones
+       ========================================================= */
     .ancestor-panel-header { padding: 8px 10px; }
     .ancestor-panel-header h2 { font-size: 1rem; gap: 6px; }
     #ancestorCaptureArea { padding: 8px 6px 10px; }
 
-    .ancestor-summary { padding: 8px; gap: 4px; margin-bottom: 10px; }
+    .ancestor-summary { padding: 8px; gap: 4px; margin-bottom: 10px; max-width: 100%; }
     .ancestor-summary-line { font-size: 0.82rem; gap: 3px; }
     .ancestor-summary-count { font-size: 0.75rem; padding: 2px 8px; }
 
+    .ancestor-chain { max-width: 100%; width: 100%; }
+
+    .ancestor-node {
+        width: 100%;
+        align-items: stretch;
+        gap: 4px;
+    }
     .ancestor-step-badge {
         width: 30px;
         height: 30px;
         font-size: 0.85rem;
     }
     .ancestor-card {
+        width: 100%;
+        min-width: 0;
         padding: 10px 8px;
         gap: 6px;
         border-radius: 10px;
+        box-sizing: border-box;
     }
     .ancestor-card-photo {
         width: 64px;
@@ -1672,7 +1906,7 @@ body {
         font-size: 0.62rem;
         padding: 2px 8px;
     }
-    .ancestor-connector { height: 20px; }
+    .ancestor-connector { height: 20px; width: 100%; }
 
     /* ---------- Save button ---------- */
     .save-btn-icon {

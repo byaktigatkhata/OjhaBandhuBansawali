@@ -9,31 +9,84 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@indic-transliteration/sanscript@1.2.8/dist/sanscript.min.js"></script>
     <script src="../SupabaseConfig.js"></script>
     <script src="SearchScript.js"></script>
 </head>
 <body>
     <div id="MainBody">
         <div id="MainHead">ओझा बन्धु वंशावली</div>
-        <div id="SubHead">(काँशीनाथ ओझाका सन्तानहरू)</div>
+        <!-- SubHead is filled dynamically with the actual root's name -->
+        <div id="SubHead">(...)</div>
         <div id="SubHead2">आफुभन्दा पहिलेका प्रत्येक पुस्ताका पुर्खाहरू रोज्नुहोस्</div>
 
-        <div id="DropDownBox">
-            <div class="DropDownClass">पहिलो पुस्ताः <select id="gen-1"><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">दोस्रो पुस्ताः <select id="gen-2" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">तेस्रो पुस्ताः <select id="gen-3" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">चौथो पुस्ताः <select id="gen-4" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">पाचौं पुस्ताः <select id="gen-5" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">छैटौं पुस्ताः <select id="gen-6" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">सातौं पुस्ताः <select id="gen-7" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">आठौं पुस्ताः <select id="gen-8" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">नवौं पुस्ताः <select id="gen-9" disabled><option value="">छान्नुहोस्</option></select></div>
-            <div class="DropDownClass">दशौं पुस्ताः <select id="gen-10" disabled><option value="">छान्नुहोस्</option></select></div>
+        <!-- ============================================================
+             SEARCH MODE BUTTONS
+             ============================================================ -->
+        <div id="SearchModeBox">
+            <button type="button" id="btnModeName" class="search-mode-btn">
+                <i class="fas fa-user"></i> नामले खोज्नुहोस्
+            </button>
+            <button type="button" id="btnModeCode" class="search-mode-btn">
+                <i class="fas fa-qrcode"></i> कोडले खोज्नुहोस्
+            </button>
+            <button type="button" id="btnModeAncestor" class="search-mode-btn">
+                <i class="fas fa-sitemap"></i> पुर्खाबाट खोज्नुहोस्
+            </button>
         </div>
 
         <!-- ============================================================
-            VIEW TOGGLE BUTTONS
-            ============================================================ -->
+             SEARCH MODE 1: NAME
+             ============================================================ -->
+        <div id="ModeNameBox" class="search-mode-box">
+            <div class="mode-title">
+                <i class="fas fa-user"></i> नामले खोज्नुहोस् (नेपाली वा अंग्रेजी)
+            </div>
+            <div class="combobox-wrapper">
+                <input type="text" id="NameSearchInput"
+                       placeholder="नाम टाइप गर्नुहोस् — नेपाली (जस्तै राम) वा अंग्रेजी (जस्तै ram)..."
+                       autocomplete="off" />
+                <div class="combobox-results" id="NameSearchResults" hidden></div>
+            </div>
+            <div class="mode-hint">
+                <i class="fas fa-info-circle"></i>
+                नेपाली वा अंग्रेजी दुबै भाषामा खोज्न सक्नुहुन्छ। उदाहरण: "राम" वा "ram" दुबैले रामलाई खोज्छ।
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SEARCH MODE 2: CODE
+             ============================================================ -->
+        <div id="ModeCodeBox" class="search-mode-box">
+            <div class="mode-title">
+                <i class="fas fa-qrcode"></i> कोडले खोज्नुहोस्
+            </div>
+            <div class="combobox-wrapper">
+                <input type="text" id="CodeSearchInput"
+                       placeholder="व्यक्तिगत कोड टाइप गर्नुहोस् (जस्तै B.M3 वा B.3.M1)..."
+                       autocomplete="off" />
+                <div class="combobox-results" id="CodeSearchResults" hidden></div>
+            </div>
+            <div class="mode-hint">
+                <i class="fas fa-info-circle"></i>
+                ठ्याक्कै वा आंशिक कोड टाइप गर्न सक्नुहुन्छ। जस्तै "B.M" ले B.M बाट सुरु हुने सबै देखाउँछ।
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SEARCH MODE 3: ANCESTOR
+             ============================================================ -->
+        <div id="ModeAncestorBox" class="search-mode-box">
+            <div class="mode-title">
+                <i class="fas fa-sitemap"></i> पुर्खाबाट खोज्नुहोस्
+            </div>
+            <!-- Dropdowns are built dynamically by SearchScript.js -->
+            <div id="DropDownBox"></div>
+        </div>
+
+        <!-- ============================================================
+             VIEW TOGGLE BUTTONS (common to all modes)
+             ============================================================ -->
         <div id="ViewToggleBox">
             <button type="button" id="btnShortDescription" class="view-toggle-btn">
                 <i class="fas fa-list"></i> संक्षिप्त विवरण
@@ -107,8 +160,6 @@
                 </div>
 
                 <div id="detailContent">
-
-                    <!-- HERO SECTION -->
                     <div id="detailHero">
                         <div id="detailPhotoSection">
                             <img id="detail-photo" src="../no_pic.png" alt="Member Photo">
@@ -120,7 +171,6 @@
                         </div>
                     </div>
 
-                    <!-- FAMILY -->
                     <div class="detail-section">
                         <div class="detail-section-title">
                             <i class="fas fa-users"></i> पारिवारिक जानकारी
@@ -135,7 +185,6 @@
                         </div>
                     </div>
 
-                    <!-- CONTACT -->
                     <div class="detail-section">
                         <div class="detail-section-title">
                             <i class="fas fa-address-book"></i> सम्पर्क तथा ठेगाना
@@ -148,7 +197,6 @@
                         </div>
                     </div>
 
-                    <!-- PERSONAL -->
                     <div class="detail-section">
                         <div class="detail-section-title">
                             <i class="fas fa-id-card"></i> व्यक्तिगत विवरण
@@ -161,7 +209,6 @@
                         </div>
                     </div>
 
-                    <!-- PROFESSION -->
                     <div class="detail-section">
                         <div class="detail-section-title">
                             <i class="fas fa-briefcase"></i> पेशा तथा व्यवसाय
@@ -175,14 +222,12 @@
                         </div>
                     </div>
 
-                    <!-- LIFE STORY -->
                     <div class="detail-section">
                         <div class="detail-section-title">
                             <i class="fas fa-book-open"></i> जीवन कथा
                         </div>
                         <div id="detail-lifeStory" class="detail-story-box">-</div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -203,9 +248,7 @@
                     <i class="fas fa-users"></i>
                     <span id="title-family">पारिवारिक विवरण</span>
                 </div>
-                <div id="familyContent">
-                    <!-- Populated by JavaScript -->
-                </div>
+                <div id="familyContent"></div>
             </div>
         </div>
 
@@ -214,7 +257,7 @@
              ============================================================ -->
         <div id="AnsestorsBox" class="search-panel">
             <div class="ancestor-panel-header">
-                <h2><i class="fas fa-sitemap"></i> वंशावली (काँशीनाथबाट)</h2>
+                <h2><i class="fas fa-sitemap"></i> वंशावली</h2>
                 <button type="button" id="btnSaveAncestorImage" class="save-btn-icon" title="तस्वीर सुरक्षित गर्नुहोस्">
                     <i class="fas fa-save"></i>
                 </button>
@@ -223,11 +266,9 @@
             <div id="ancestorCaptureArea" class="capture-area">
                 <div class="panel-title-bar panel-title-purple">
                     <i class="fas fa-sitemap"></i>
-                    <span id="title-ancestor">वंशावली (काँशीनाथबाट)</span>
+                    <span id="title-ancestor">वंशावली</span>
                 </div>
-                <div id="ancestorContent">
-                    <!-- Populated by JavaScript -->
-                </div>
+                <div id="ancestorContent"></div>
             </div>
         </div>
 

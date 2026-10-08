@@ -11,42 +11,37 @@
 <body>
     <div id="MainBody">
         <h1 id="MainHeading"><i class="fas fa-list"></i> सुझावहरूको सूची</h1>
-        
+
         <!-- Filters -->
         <div id="FilterBox">
             <div class="filter-group">
-                <label for="filterStatus">स्थिति:</label>
-                <select id="filterStatus">
+                <label for="filterType"><i class="fas fa-filter"></i> प्रकार:</label>
+                <select id="filterType">
                     <option value="all">सबै</option>
-                    <option value="pending">पेन्डिङ</option>
-                    <option value="approved">स्वीकृत</option>
-                    <option value="rejected">अस्वीकृत</option>
+                    <option value="edit">सम्पादनका लागि अनुरोध</option>
+                    <option value="add">थप्नका लागि अनुरोध</option>
+                    <option value="edited">सम्पादित भइसकेका</option>
+                    <option value="added">थपिएका</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label for="filterSearch">खोजी:</label>
+                <label for="filterSearch"><i class="fas fa-search"></i> खोजी:</label>
                 <input type="text" id="filterSearch" placeholder="नाम वा कोडले खोज्नुहोस्..." />
             </div>
-            <button id="btnRefresh"><i class="fas fa-sync-alt"></i> रिफ्रेस</button>
+            <button id="btnRefresh" title="तालिका रिफ्रेस गर्नुहोस्">
+                <i class="fas fa-sync-alt"></i> रिफ्रेस
+            </button>
         </div>
 
         <!-- Table Container with scroll -->
         <div id="TableContainer">
             <table id="SuggestionTable">
-                <thead>
-                    <tr>
-                        <th>क्र.सं.</th>
-                        <th>सुझावकर्ता</th>
-                        <th>सुझावकर्ता कोड</th>
-                        <th>सदस्यको नाम</th>
-                        <th>स्थिति</th>
-                        <th>मिति</th>
-                        <th>कार्य</th>
-                    </tr>
+                <thead id="SuggestionTableHead">
+                    <!-- populated dynamically by JS based on filter -->
                 </thead>
                 <tbody id="SuggestionTableBody">
                     <tr>
-                        <td colspan="7" style="text-align:center; padding: 40px;">
+                        <td colspan="12" style="text-align:center; padding: 40px;">
                             <i class="fas fa-spinner fa-spin"></i> लोड हुँदै...
                         </td>
                     </tr>
@@ -56,17 +51,20 @@
 
         <!-- Pagination -->
         <div id="PaginationBox">
-            <button id="btnPrevPage" disabled><i class="fas fa-chevron-left"></i> अघिल्लो</button>
+            <button id="btnPrevPage" disabled title="अघिल्लो पृष्ठ"><i class="fas fa-chevron-left"></i> अघिल्लो</button>
             <span id="pageInfo">पृष्ठ १ / १</span>
-            <button id="btnNextPage" disabled>पछिल्लो <i class="fas fa-chevron-right"></i></button>
+            <button id="btnNextPage" disabled title="पछिल्लो पृष्ठ">पछिल्लो <i class="fas fa-chevron-right"></i></button>
         </div>
-    
-    <!-- EDIT MODAL: Edit Suggestion Data -->
+    </div>
+
+    <!-- ============================================================
+         EDIT MODAL: Edit Suggestion Data
+         ============================================================ -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fas fa-edit"></i> सुझाव एडिट गर्नुहोस्</h2>
-                <span class="close" id="closeEditModal">&times;</span>
+                <span class="close" id="closeEditModal" title="बन्द गर्नुहोस्">&times;</span>
             </div>
             <form id="editSuggestionForm">
                 <div class="form-grid">
@@ -83,7 +81,7 @@
                         <select id="editGender">
                             <option value="M">पुरूष</option>
                             <option value="F">महिला</option>
-                            <option value="O">अन्य</option>
+                            <option value="N">अन्य</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -154,7 +152,7 @@
                         <label><i class="fas fa-image"></i> फोटो</label>
                         <div class="photo-upload-area">
                             <input type="file" id="editPhotoFile" accept="image/*" style="display:none;" />
-                            <button type="button" id="editPhotoBtn" class="photo-select-btn">
+                            <button type="button" id="editPhotoBtn" class="photo-select-btn" title="नयाँ फोटो छान्नुहोस्">
                                 <i class="fas fa-cloud-upload-alt"></i> नयाँ फोटो छान्नुहोस्
                             </button>
                             <div id="editPhotoFileNameDisplay" class="photo-file-name">कुनै फोटो छानिएको छैन</div>
@@ -165,15 +163,47 @@
                     </div>
                 </div>
                 <div class="btn-group">
-                    <button type="button" id="closeEditModalBtn" class="btn-close">रद्द गर्नुहोस्</button>
-                    <button type="submit" id="saveEditBtn" class="btn-success"><i class="fas fa-save"></i> सुझाव अपडेट गर्नुहोस्</button>
+                    <button type="button" id="closeEditModalBtn" class="btn-close" title="सम्पादन रद्द गर्नुहोस्">रद्द गर्नुहोस्</button>
+                    <button type="submit" id="saveEditBtn" class="btn-success" title="सुझाव अपडेट गर्नुहोस्"><i class="fas fa-save"></i> सुझाव अपडेट गर्नुहोस्</button>
                 </div>
             </form>
         </div>
     </div>
-    
+
+    <!-- ============================================================
+         VIEW MODAL: All submitted data + 4 action buttons
+         ============================================================ -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content view-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-eye"></i> सुझावको पूर्ण विवरण</h2>
+                <span class="close" id="closeViewModal" title="बन्द गर्नुहोस्">&times;</span>
+            </div>
+
+            <div id="viewModalBody" class="view-modal-body">
+                <!-- Filled dynamically by JS -->
+            </div>
+
+            <!-- 4 action buttons -->
+            <div class="view-modal-actions btn-group">
+                <button type="button" id="viewActionEdit" class="btn-action btn-action-edit" title="यो सुझाव सम्पादन गर्नुहोस्">
+                    <i class="fas fa-edit"></i> सम्पादन गर्नुहोस्
+                </button>
+                <button type="button" id="viewActionAdd" class="btn-action btn-action-add" title="यसलाई नयाँ सदस्यको रूपमा थप्नुहोस्">
+                    <i class="fas fa-user-plus"></i> सदस्य थप्नुहोस्
+                </button>
+                <button type="button" id="viewActionDownload" class="btn-action btn-action-download" title="फोटो डाउनलोड गर्नुहोस्">
+                    <i class="fas fa-download"></i> फोटो डाउनलोड
+                </button>
+                <button type="button" id="viewActionDelete" class="btn-action btn-action-delete" title="यो सुझाव मेटाउनुहोस्">
+                    <i class="fas fa-trash"></i> मेटाउनुहोस्
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer Part -->
-     <div id="FooterBox">
+    <div id="FooterBox">
         <nav id="FooterPublicLinks">
             <a href="../../index.html"><i class="fas fa-house"></i> गृह पृष्ठ</a>
             <a href="../../SearchPage/SearchIndex.html"><i class="fas fa-search"></i>विवरण खोज्नुहोस्</a>
@@ -183,9 +213,8 @@
             <a href="../CreateNoticePage/CreateNoticeIndex.html"><i class="fas fa-inbox"></i> सुचना तयार गर्नुहोस्</a>
             <a href="../AdminDashboardPage/AdminDashboardIndex.html"><i class="fas fa-user-plus"></i> एडमिन ड्यासबोर्ड</a>
             <a href="../AddMemberPage/AddMemberIndex.html"><i class="fas fa-user-plus"></i> सदस्य थप्नुहोस्</a>
-        </nav>        
+        </nav>
         <p id="copyright">© <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान, दमक</a></p>
-    </div>
     </div>
 
     <!-- Scripts -->

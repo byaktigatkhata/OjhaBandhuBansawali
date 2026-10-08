@@ -20,7 +20,11 @@
         <div id="MainDescription">ओझा बन्धुहरूको वंशावली संकलन तथा विवरण हेर्ने, खोज्ने सुविधाको लागि यो सफ्टवेयर तयार पारिएको हो ।
              यस सम्बन्धमा तपाइँको प्रतिक्रिया र सुझावहरू तलको इमेल ठेगानामा पठाएर सहयोग गर्नुहुनेछ भन्ने विस्वास सहित यो सफ्टवेयर तयार पारिएको हो ।
               तपाइँका सबै किसिमका सहयोगहरूलाई हामी सदा स्वागत गर्नेछौं ।</div>
-
+              
+        <div id="buttonBox">
+            <button onclick="location.href='SearchPage/SearchIndex.html'">आफुलाई खोज्नुहोस्</button>
+            <button onclick="location.href='RequestPage/RequestIndex.html'">तथ्य र विवरण सिफारिस</button>
+        </div>
         <!-- ============================================================
         NOTICE SECTION
         ============================================================ -->
@@ -42,13 +46,8 @@
             </div>
 
             <div id="pageInfo" class="page-info"></div>
-        </section>
-
-        <div id="buttonBox">
-            <button onclick="location.href='SearchPage/SearchIndex.html'">आफुलाई खोज्नुहोस्</button>
-            <button onclick="location.href='RequestPage/RequestIndex.html'">तथ्य र विवरण सिफारिस</button>
-        </div>
-    </div>
+        </section>        
+    </div>   
 
     <!-- ============================================================
     NOTICE POPUP
@@ -66,8 +65,7 @@
                 </div>
             </div>
         </div>
-    </div>
-
+    </div>    
     <div id="FooterBox">
         <div id="FooterLinks">
             <a href="SearchPage/SearchIndex.html">खोज्नुहोस्</a>
@@ -98,5 +96,8 @@
             });
         }
     </script>
+    <!-- Facebook SDK for Page Plugin -->
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0" nonce="randomNonce"></script>
 </body>
 </html>

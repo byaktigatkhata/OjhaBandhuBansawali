@@ -46,7 +46,9 @@ body {
     color: #ffaa00;
 }
 
-/* Filter Box */
+/* ============================================================
+   Filter Box
+   ============================================================ */
 #FilterBox {
     width: 100%;
     display: flex;
@@ -70,6 +72,13 @@ body {
 }
 .filter-group label {
     color: #2c3e4e;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.filter-group label i {
+    color: #b8864b;
 }
 .filter-group select,
 .filter-group input {
@@ -101,7 +110,9 @@ body {
     color: #ff0;
 }
 
-/* Table Container - SCROLLABLE WITH MIN HEIGHT */
+/* ============================================================
+   Table Container — SCROLLABLE IN BOTH DIRECTIONS
+   ============================================================ */
 #TableContainer {
     width: 100%;
     min-height: 400px;
@@ -109,14 +120,18 @@ body {
     border-radius: 12px;
     border: 2px solid #000;
     background: #f9f6f0;
-    overflow: auto;
+    overflow: auto;               /* both horizontal and vertical scroll */
     position: relative;
 }
+
+/* Ensure the table is at least as wide as the sum of its column min-widths */
 #SuggestionTable {
-    width: 100%;
     border-collapse: collapse;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+    width: 100%;
+    table-layout: auto;
 }
+
 #SuggestionTable thead {
     background: linear-gradient(180deg, #333, #555);
     color: #fff;
@@ -124,23 +139,98 @@ body {
     top: 0;
     z-index: 10;
 }
+
 #SuggestionTable th {
     padding: 12px 15px;
     text-align: left;
     font-weight: bold;
     white-space: nowrap;
+    border-right: 1px solid rgba(255,255,255,0.15);
+    vertical-align: middle;
 }
+#SuggestionTable th:last-child {
+    border-right: none;
+}
+
 #SuggestionTable td {
     padding: 10px 15px;
     border-bottom: 1px solid #ddd;
+    border-right: 1px solid #eee;
     vertical-align: middle;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
+#SuggestionTable td:last-child {
+    border-right: none;
+}
+
 #SuggestionTable tbody tr:hover {
     background: #e8e0d4;
 }
 #SuggestionTable tbody tr:last-child td {
     border-bottom: none;
 }
+
+/* ============================================================
+   Column width hints — scoped by layout.
+   The JS sets `data-layout="edit"` or `data-layout="add"` on the table.
+   ============================================================ */
+
+/* ---- EDIT/ALL LAYOUT (10 columns) ---- */
+#SuggestionTable[data-layout="edit"] th:nth-child(1),
+#SuggestionTable[data-layout="edit"] td:nth-child(1) {
+    width: 70px; min-width: 70px; text-align: center;
+}
+#SuggestionTable[data-layout="edit"] th:nth-child(2),
+#SuggestionTable[data-layout="edit"] td:nth-child(2) { min-width: 220px; }
+#SuggestionTable[data-layout="edit"] th:nth-child(3),
+#SuggestionTable[data-layout="edit"] td:nth-child(3) { min-width: 130px; white-space: nowrap; }
+#SuggestionTable[data-layout="edit"] th:nth-child(4),
+#SuggestionTable[data-layout="edit"] td:nth-child(4) { min-width: 200px; }
+#SuggestionTable[data-layout="edit"] th:nth-child(5),
+#SuggestionTable[data-layout="edit"] td:nth-child(5) { min-width: 200px; }
+#SuggestionTable[data-layout="edit"] th:nth-child(6),
+#SuggestionTable[data-layout="edit"] td:nth-child(6) { min-width: 130px; white-space: nowrap; }
+#SuggestionTable[data-layout="edit"] th:nth-child(7),
+#SuggestionTable[data-layout="edit"] td:nth-child(7) { min-width: 200px; }
+#SuggestionTable[data-layout="edit"] th:nth-child(8),
+#SuggestionTable[data-layout="edit"] td:nth-child(8) { min-width: 110px; text-align: center; }
+#SuggestionTable[data-layout="edit"] th:nth-child(9),
+#SuggestionTable[data-layout="edit"] td:nth-child(9) { min-width: 150px; white-space: nowrap; }
+#SuggestionTable[data-layout="edit"] th:nth-child(10),
+#SuggestionTable[data-layout="edit"] td:nth-child(10) { min-width: 480px; }
+
+/* ---- ADD LAYOUT (12 columns) ---- */
+#SuggestionTable[data-layout="add"] th:nth-child(1),
+#SuggestionTable[data-layout="add"] td:nth-child(1) {
+    width: 70px; min-width: 70px; text-align: center;
+}
+#SuggestionTable[data-layout="add"] th:nth-child(2),
+#SuggestionTable[data-layout="add"] td:nth-child(2) { min-width: 220px; }
+#SuggestionTable[data-layout="add"] th:nth-child(3),
+#SuggestionTable[data-layout="add"] td:nth-child(3) { min-width: 200px; }
+#SuggestionTable[data-layout="add"] th:nth-child(4),
+#SuggestionTable[data-layout="add"] td:nth-child(4) { min-width: 140px; white-space: nowrap; text-align: center; }
+#SuggestionTable[data-layout="add"] th:nth-child(5),
+#SuggestionTable[data-layout="add"] td:nth-child(5) { min-width: 130px; white-space: nowrap; }
+#SuggestionTable[data-layout="add"] th:nth-child(6),
+#SuggestionTable[data-layout="add"] td:nth-child(6) { min-width: 200px; }
+#SuggestionTable[data-layout="add"] th:nth-child(7),
+#SuggestionTable[data-layout="add"] td:nth-child(7) { min-width: 200px; }
+#SuggestionTable[data-layout="add"] th:nth-child(8),
+#SuggestionTable[data-layout="add"] td:nth-child(8) { min-width: 130px; white-space: nowrap; }
+#SuggestionTable[data-layout="add"] th:nth-child(9),
+#SuggestionTable[data-layout="add"] td:nth-child(9) { min-width: 200px; }
+#SuggestionTable[data-layout="add"] th:nth-child(10),
+#SuggestionTable[data-layout="add"] td:nth-child(10) { min-width: 110px; text-align: center; }
+#SuggestionTable[data-layout="add"] th:nth-child(11),
+#SuggestionTable[data-layout="add"] td:nth-child(11) { min-width: 150px; white-space: nowrap; }
+#SuggestionTable[data-layout="add"] th:nth-child(12),
+#SuggestionTable[data-layout="add"] td:nth-child(12) { min-width: 480px; }
+
+/* ============================================================
+   Status / Type badges
+   ============================================================ */
 .status-badge {
     display: inline-block;
     padding: 4px 12px;
@@ -148,52 +238,79 @@ body {
     font-size: 0.9rem;
     font-weight: bold;
 }
-.status-pending {
-    background: #ffc107;
-    color: #333;
+.status-pending  { background: #ffc107; color: #333; }
+.status-approved { background: #28a745; color: #fff; }
+.status-rejected { background: #dc3545; color: #fff; }
+
+.type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: bold;
+    white-space: nowrap;
 }
-.status-approved {
-    background: #28a745;
-    color: #fff;
-}
-.status-rejected {
-    background: #dc3545;
-    color: #fff;
-}
-.btn-view {
-    padding: 5px 12px;
-    background: linear-gradient(180deg, #007, #009, #007);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-.btn-view:hover {
-    background: linear-gradient(180deg, #005, #007, #005);
-    color: #ff0;
-}
-.btn-delete {
-    padding: 5px 12px;
-    background: linear-gradient(180deg, #700, #900, #700);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    margin-left: 5px;
-}
-.btn-delete:hover {
-    background: linear-gradient(180deg, #500, #700, #500);
-    color: #ff0;
-}
+.type-edit { background: #1f4e79; color: #fff; }
+.type-add  { background: #b8864b; color: #fff; }
+
+/* ============================================================
+   Action buttons (row)
+   ============================================================ */
 .action-buttons {
     display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
+    gap: 6px;
+    flex-wrap: nowrap;
+    align-items: center;
 }
 
-/* Pagination */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    font-size: 0.88rem;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    font-family: inherit;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-action:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    filter: brightness(1.08);
+}
+
+.btn-action:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.btn-action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+}
+
+.btn-action-view     { background: linear-gradient(180deg, #0a6b3e, #0c9e40, #0a6b3e); }
+.btn-action-view:hover:not(:disabled)     { background: linear-gradient(180deg, #075030, #0a6b3e, #075030); color: #ff0; }
+.btn-action-edit     { background: linear-gradient(180deg, #007, #009, #007); }
+.btn-action-edit:hover:not(:disabled)     { background: linear-gradient(180deg, #005, #007, #005); color: #ff0; }
+.btn-action-add      { background: linear-gradient(180deg, #a50, #c70, #a50); }
+.btn-action-add:hover:not(:disabled)      { background: linear-gradient(180deg, #830, #a50, #830); color: #ff0; }
+.btn-action-download { background: linear-gradient(180deg, #077, #099, #077); }
+.btn-action-download:hover:not(:disabled) { background: linear-gradient(180deg, #055, #077, #055); color: #ff0; }
+.btn-action-delete   { background: linear-gradient(180deg, #700, #900, #700); }
+.btn-action-delete:hover:not(:disabled)   { background: linear-gradient(180deg, #500, #700, #500); color: #ff0; }
+
+/* ============================================================
+   Pagination
+   ============================================================ */
 #PaginationBox {
     width: 100%;
     display: flex;
@@ -228,7 +345,9 @@ body {
     color: #333;
 }
 
-/* Edit Modal Styles */
+/* ============================================================
+   Modals — shared shell
+   ============================================================ */
 .modal {
     display: none;
     position: fixed;
@@ -269,12 +388,16 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: 0.2s;
+    line-height: 1;
 }
 .close:hover {
     color: #f00;
     font-size: 36px;
 }
-/* Edit Modal - Single Column */
+
+/* ============================================================
+   Edit modal form
+   ============================================================ */
 .modal .form-grid {
     display: flex;
     flex-direction: column;
@@ -336,9 +459,7 @@ body {
     min-height: 40px;
 }
 
-.modal .full-width {
-    width: 100%;
-}
+.modal .full-width { width: 100%; }
 
 .modal .btn-group {
     display: flex;
@@ -412,11 +533,136 @@ body {
 .modal .photo-upload-area input[type="file"] {
     display: none !important;
 }
+
+/* ============================================================
+   VIEW MODAL — full data display
+   ============================================================ */
+.view-modal-content {
+    max-width: 900px;
+}
+
+.view-modal-body {
+    max-height: 65vh;
+    overflow-y: auto;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.view-section {
+    border: 2px solid #d4c9b8;
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: #fbf9f4;
+}
+
+.view-section-title {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #0000aa;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #d4c9b8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-section-title i {
+    color: #b8864b;
+}
+
+.view-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+
+.view-row:last-child {
+    border-bottom: none;
+}
+
+.view-label {
+    min-width: 220px;
+    flex-shrink: 0;
+    font-weight: bold;
+    color: #2c3e4e;
+}
+
+.view-value {
+    flex: 1;
+    color: #1f2933;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.view-photo-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.view-photo {
+    width: 180px;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 3px solid #b8864b;
+    background: #f0ebe4;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.view-no-photo {
+    padding: 30px 20px;
+    color: #888;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f3f3f3;
+    border-radius: 12px;
+    border: 2px dashed #ccc;
+}
+
+.view-no-photo i {
+    font-size: 1.6rem;
+}
+
+/* View modal — 4 action buttons */
+.view-modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding-top: 16px;
+    margin-top: 16px;
+    border-top: 2px solid #ddd6cb;
+}
+
+.view-modal-actions .btn-action {
+    justify-content: center;
+    padding: 12px 10px;
+    font-size: 1rem;
+    border-radius: 14px;
+    width: 100%;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
 #FooterBox {
     font-family: 'MySanskritFont';
     padding: 22px 25px;
     background: #07351f;
     text-align: center;
+    margin-top: 24px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 1200px;
 }
 #FooterPublicLinks {
     display: flex;
@@ -461,17 +707,15 @@ body {
     font-size: 16px;
     color: #f0f;
 }
+.type-edited { background: #6a3d9a; color: #fff; }   /* purple — edit applied */
+.type-added  { background: #1f7b4d; color: #fff; }   /* dark green — add applied */
 
 /* ============================================================
    RESPONSIVE — TABLET (≤ 900px)
    ============================================================ */
 @media (max-width: 900px) {
-    body {
-        padding: 1.5rem 0.75rem;
-    }
-    #MainBody {
-        padding: 1.5rem 1.25rem;
-    }
+    body { padding: 1.5rem 0.75rem; }
+    #MainBody { padding: 1.5rem 1.25rem; }
     #MainHeading {
         font-size: 2.2rem;
         gap: 8px;
@@ -482,58 +726,34 @@ body {
         gap: 12px;
         padding: 12px 14px;
     }
-    .filter-group {
-        font-size: 1.05rem;
-        gap: 8px;
-    }
+    .filter-group { font-size: 1.05rem; gap: 8px; }
     .filter-group select,
     .filter-group input {
         padding: 7px 12px;
         font-size: 1.05rem;
     }
-    #btnRefresh {
-        font-size: 1.05rem;
-        padding: 8px 16px;
-    }
-    #SuggestionTable {
-        font-size: 1rem;
-    }
+    #btnRefresh { font-size: 1.05rem; padding: 8px 16px; }
+    #SuggestionTable { font-size: 1rem; }
     #SuggestionTable th,
-    #SuggestionTable td {
-        padding: 10px 12px;
-    }
-    #PaginationBox {
-        gap: 14px;
-    }
-    #PaginationBox button {
-        font-size: 1.05rem;
-        padding: 8px 16px;
-    }
-    #pageInfo {
-        font-size: 1.05rem;
-    }
-    .modal-content {
-        padding: 24px;
-        margin: 20px auto;
-    }
-    .modal-header h2 {
-        font-size: 1.6rem;
-    }
+    #SuggestionTable td { padding: 10px 12px; }
+    #PaginationBox { gap: 14px; }
+    #PaginationBox button { font-size: 1.05rem; padding: 8px 16px; }
+    #pageInfo { font-size: 1.05rem; }
+    .modal-content { padding: 24px; margin: 20px auto; }
+    .modal-header h2 { font-size: 1.6rem; }
 }
 
 /* ============================================================
    RESPONSIVE — MOBILE (≤ 768px)
    ============================================================ */
 @media (max-width: 768px) {
-    body {
-        padding: 1rem 0.5rem;
-    }
+    body { padding: 1rem 0.5rem; }
     #MainBody {
         padding: 1.1rem 0.9rem;
         border-radius: 10px;
     }
 
-    /* ---------- Heading ---------- */
+    /* Heading */
     #MainHeading {
         font-size: 1.6rem;
         gap: 6px;
@@ -541,11 +761,9 @@ body {
         padding-bottom: 0.6rem;
         border-bottom-width: 2px;
     }
-    #MainHeading i {
-        font-size: 1.35rem;
-    }
+    #MainHeading i { font-size: 1.35rem; }
 
-    /* ---------- Filter box — stack everything ---------- */
+    /* Filter box */
     #FilterBox {
         flex-direction: column;
         align-items: stretch;
@@ -559,9 +777,7 @@ body {
         gap: 4px;
         font-size: 1rem;
     }
-    .filter-group label {
-        font-size: 0.95rem;
-    }
+    .filter-group label { font-size: 0.95rem; }
     .filter-group select,
     .filter-group input {
         width: 100%;
@@ -577,36 +793,21 @@ body {
         border-radius: 14px;
     }
 
-    /* ---------- Table ---------- */
+    /* Table — horizontal scroll stays enabled, min-width still applied */
     #TableContainer {
         min-height: 300px;
         max-height: 60vh;
         border-radius: 10px;
     }
-    #SuggestionTable {
-        font-size: 0.92rem;
-    }
-    #SuggestionTable th {
-        padding: 8px 10px;
-        font-size: 0.88rem;
-    }
-    #SuggestionTable td {
-        padding: 8px 10px;
-    }
-    .status-badge {
-        font-size: 0.78rem;
-        padding: 3px 10px;
-    }
-    .btn-view,
-    .btn-delete {
-        font-size: 0.82rem;
-        padding: 5px 10px;
-    }
-    .action-buttons {
-        gap: 4px;
-    }
+    #SuggestionTable { font-size: 0.92rem; }
+    #SuggestionTable th { padding: 8px 10px; font-size: 0.88rem; }
+    #SuggestionTable td { padding: 8px 10px; }
+    .status-badge,
+    .type-badge { font-size: 0.78rem; padding: 3px 10px; }
+    .btn-action { font-size: 0.82rem; padding: 5px 10px; }
+    .action-buttons { gap: 4px; }
 
-    /* ---------- Pagination ---------- */
+    /* Pagination */
     #PaginationBox {
         flex-direction: column;
         gap: 8px;
@@ -618,13 +819,9 @@ body {
         padding: 10px 14px;
         border-radius: 14px;
     }
-    #pageInfo {
-        font-size: 0.95rem;
-        text-align: center;
-        order: -1;
-    }
+    #pageInfo { font-size: 0.95rem; text-align: center; order: -1; }
 
-    /* ---------- Edit Modal ---------- */
+    /* Modals */
     .modal-content {
         margin: 10px auto;
         padding: 16px 14px;
@@ -636,33 +833,13 @@ body {
         padding-bottom: 10px;
         margin-bottom: 12px;
     }
-    .modal-header h2 {
-        font-size: 1.25rem;
-    }
-    .close {
-        font-size: 26px;
-    }
-    .close:hover {
-        font-size: 28px;
-    }
-    .modal .form-grid {
-        gap: 10px;
-        max-height: 65vh;
-        padding-right: 6px;
-    }
-    .modal .form-group {
-        padding: 8px 10px;
-        gap: 4px;
-        border-radius: 10px;
-    }
-    .modal .form-group label {
-        font-size: 0.98rem;
-        gap: 6px;
-    }
-    .modal .form-group label i {
-        width: 16px;
-        font-size: 0.95rem;
-    }
+    .modal-header h2 { font-size: 1.25rem; }
+    .close { font-size: 26px; }
+    .close:hover { font-size: 28px; }
+    .modal .form-grid { gap: 10px; max-height: 65vh; padding-right: 6px; }
+    .modal .form-group { padding: 8px 10px; gap: 4px; border-radius: 10px; }
+    .modal .form-group label { font-size: 0.98rem; gap: 6px; }
+    .modal .form-group label i { width: 16px; font-size: 0.95rem; }
     .modal .form-group input,
     .modal .form-group textarea,
     .modal .form-group select {
@@ -670,9 +847,7 @@ body {
         padding: 7px 10px;
         border-radius: 8px;
     }
-    .modal .form-group textarea {
-        min-height: 45px;
-    }
+    .modal .form-group textarea { min-height: 45px; }
     .modal .btn-group {
         flex-direction: column;
         gap: 10px;
@@ -702,15 +877,16 @@ body {
         text-align: center;
         padding: 6px 10px;
     }
-    .modal .photo-preview {
-        width: 64px;
-        margin: 0 auto;
-    }
+    .modal .photo-preview { width: 64px; margin: 0 auto; }
 
-    /* ---------- Footer ---------- */
-    #FooterBox {
-        padding: 16px 14px;
-    }
+    /* View modal */
+    .view-label { min-width: 140px; font-size: 0.95rem; }
+    .view-value { font-size: 0.95rem; }
+    .view-modal-actions { grid-template-columns: 1fr 1fr; }
+    .view-photo { width: 140px; height: 187px; }
+
+    /* Footer */
+    #FooterBox { padding: 16px 14px; }
     #FooterPublicLinks,
     #FooterPrivateLinks {
         flex-direction: column;
@@ -719,112 +895,43 @@ body {
         margin-bottom: 8px;
     }
     #FooterPublicLinks a,
-    #FooterPrivateLinks a {
-        font-size: 1rem;
-    }
-    #copyright, #copyright a {
-        font-size: 0.85rem;
-        line-height: 1.5;
-    }
+    #FooterPrivateLinks a { font-size: 1rem; }
+    #copyright, #copyright a { font-size: 0.85rem; line-height: 1.5; }
 }
 
 /* ============================================================
    RESPONSIVE — SMALL PHONES (≤ 480px)
    ============================================================ */
 @media (max-width: 480px) {
-    body {
-        padding: 0.75rem 0.4rem;
-    }
-    #MainBody {
-        padding: 0.9rem 0.75rem;
-        border-radius: 10px;
-    }
+    body { padding: 0.75rem 0.4rem; }
+    #MainBody { padding: 0.9rem 0.75rem; border-radius: 10px; }
 
-    /* ---------- Heading ---------- */
-    #MainHeading {
-        font-size: 1.25rem;
-        gap: 5px;
-        margin-bottom: 0.75rem;
-    }
-    #MainHeading i {
-        font-size: 1.1rem;
-    }
+    #MainHeading { font-size: 1.25rem; gap: 5px; margin-bottom: 0.75rem; }
+    #MainHeading i { font-size: 1.1rem; }
 
-    /* ---------- Filter box ---------- */
-    #FilterBox {
-        padding: 10px;
-        gap: 8px;
-        border-radius: 10px;
-    }
-    .filter-group label {
-        font-size: 0.9rem;
-    }
+    #FilterBox { padding: 10px; gap: 8px; border-radius: 10px; }
+    .filter-group label { font-size: 0.9rem; }
     .filter-group select,
-    .filter-group input {
-        font-size: 0.95rem;
-        padding: 7px 9px;
-    }
-    #btnRefresh {
-        font-size: 0.95rem;
-        padding: 9px 12px;
-        border-radius: 12px;
-    }
+    .filter-group input { font-size: 0.95rem; padding: 7px 9px; }
+    #btnRefresh { font-size: 0.95rem; padding: 9px 12px; border-radius: 12px; }
 
-    /* ---------- Table ---------- */
-    #TableContainer {
-        min-height: 260px;
-        max-height: 65vh;
-    }
-    #SuggestionTable {
-        font-size: 0.85rem;
-    }
-    #SuggestionTable th {
-        padding: 6px 8px;
-        font-size: 0.8rem;
-    }
-    #SuggestionTable td {
-        padding: 6px 8px;
-    }
-    .status-badge {
-        font-size: 0.72rem;
-        padding: 2px 8px;
-    }
-    .btn-view,
-    .btn-delete {
-        font-size: 0.78rem;
-        padding: 4px 8px;
-    }
+    #TableContainer { min-height: 260px; max-height: 65vh; }
+    #SuggestionTable { font-size: 0.85rem; }
+    #SuggestionTable th { padding: 6px 8px; font-size: 0.8rem; }
+    #SuggestionTable td { padding: 6px 8px; }
+    .status-badge,
+    .type-badge { font-size: 0.72rem; padding: 2px 8px; }
+    .btn-action { font-size: 0.78rem; padding: 4px 8px; }
 
-    /* ---------- Pagination ---------- */
-    #PaginationBox button {
-        font-size: 0.95rem;
-        padding: 9px 12px;
-        border-radius: 12px;
-    }
-    #pageInfo {
-        font-size: 0.88rem;
-    }
+    #PaginationBox button { font-size: 0.95rem; padding: 9px 12px; border-radius: 12px; }
+    #pageInfo { font-size: 0.88rem; }
 
-    /* ---------- Edit modal ---------- */
-    .modal-content {
-        padding: 14px 10px;
-        border-radius: 12px;
-    }
-    .modal-header h2 {
-        font-size: 1.1rem;
-    }
-    .close {
-        font-size: 22px;
-    }
-    .close:hover {
-        font-size: 24px;
-    }
-    .modal .form-group {
-        padding: 7px 9px;
-    }
-    .modal .form-group label {
-        font-size: 0.9rem;
-    }
+    .modal-content { padding: 14px 10px; border-radius: 12px; }
+    .modal-header h2 { font-size: 1.1rem; }
+    .close { font-size: 22px; }
+    .close:hover { font-size: 24px; }
+    .modal .form-group { padding: 7px 9px; }
+    .modal .form-group label { font-size: 0.9rem; }
     .modal .form-group input,
     .modal .form-group textarea,
     .modal .form-group select {
@@ -836,19 +943,16 @@ body {
         padding: 9px 12px;
         border-radius: 12px;
     }
-    .modal .photo-preview {
-        width: 56px;
-    }
+    .modal .photo-preview { width: 56px; }
 
-    /* ---------- Footer ---------- */
-    #FooterBox {
-        padding: 14px 12px;
-    }
+    /* View modal */
+    .view-label { min-width: 0; width: 100%; }
+    .view-row { flex-direction: column; gap: 2px; }
+    .view-modal-actions { grid-template-columns: 1fr; }
+    .view-photo { width: 120px; height: 160px; }
+
+    #FooterBox { padding: 14px 12px; }
     #FooterPublicLinks a,
-    #FooterPrivateLinks a {
-        font-size: 0.95rem;
-    }
-    #copyright, #copyright a {
-        font-size: 0.78rem;
-    }
+    #FooterPrivateLinks a { font-size: 0.95rem; }
+    #copyright, #copyright a { font-size: 0.78rem; }
 }
