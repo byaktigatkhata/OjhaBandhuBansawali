@@ -1,16 +1,23 @@
 /* ============================================================
    Ojha Bandhu Bansawali — Service Worker
-   Strategy: Basic offline — cache the app shell, network-first
-   for HTML so updates are seen quickly, cache-first for static
-   assets (CSS, JS, images, fonts).
+   ------------------------------------------------------------
+   Strategy:
+     • HTML (navigation)      → network-first, fallback cache
+     • JS / CSS / JSON        → network-first, fallback cache
+     • Images / fonts / icons → cache-first (stale-while-revalidate)
+     • Cross-origin requests  → pass through (Supabase, Facebook, etc.)
+   ------------------------------------------------------------
+   IMPORTANT: Bump CACHE_VERSION on every deployment so the
+   browser installs a fresh service worker and purges stale files.
    ============================================================ */
 
-const CACHE_VERSION = 'ojha-v1';
-const SHELL_CACHE = `${CACHE_VERSION}-shell`;
+const CACHE_VERSION = 'ojha-v3';                 // ← bump each deploy
+const SHELL_CACHE    = `${CACHE_VERSION}-shell`;
+const ASSET_CACHE    = `${CACHE_VERSION}-assets`;
+const OFFLINE_URL    = '/OjhaBandhuBansawali/offline.html';
 
-// Files that make up the app shell. These are cached on install.
-// Paths use the /OjhaBandhuBansawali/ prefix because the site is
-// published at a subfolder on GitHub Pages.
+// App shell — must be fetchable for offline use.
+// Paths use the /OjhaBandhuBansawali/ prefix (GitHub Pages subfolder).
 const SHELL_FILES = [
   '/OjhaBandhuBansawali/',
   '/OjhaBandhuBansawali/index.html',
@@ -27,102 +34,187 @@ const SHELL_FILES = [
   '/OjhaBandhuBansawali/Sanskrit-Text.ttf'
 ];
 
+// Files that must ALWAYS be checked against the network first.
+// If they're fresh from the server, cache is updated automatically.
+const NETWORK_FIRST_PATTERNS = [
+  /\/OjhaBandhuBansawali\/(index\.html|offline\.html)$/,
+  /\/OjhaBandhuBansawali\/[^/]+\.(js|css|json)$/,
+  /\/OjhaBandhuBansawali\/$/,
+  /\/OjhaBandhuBansawali\/[^/]+\/$/   // subpage folders like /SearchPage/
+];
+
 // ------------------------------------------------------------
-// Install — pre-cache the shell
+// Install — pre-cache the shell and skip waiting immediately
 // ------------------------------------------------------------
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(SHELL_CACHE).then((cache) => {
-      // addAll fails if ANY file is missing. Use add() in a loop
-      // so one bad path doesn't break the whole install.
-      return Promise.all(
+    (async () => {
+      const cache = await caches.open(SHELL_CACHE);
+
+      // add() per file so one missing asset doesn't fail the install
+      await Promise.all(
         SHELL_FILES.map((url) =>
-          cache.add(url).catch((err) => {
-            console.warn('[SW] Failed to cache:', url, err);
-          })
+          cache.add(new Request(url, { cache: 'reload' }))
+            .catch((err) => console.warn('[SW] Could not cache:', url, err))
         )
       );
-    }).then(() => self.skipWaiting())
+
+      // Activate the new SW without waiting for tabs to close
+      await self.skipWaiting();
+    })()
   );
 });
 
 // ------------------------------------------------------------
-// Activate — clean up old caches
+// Activate — purge old caches and take control of open pages
 // ------------------------------------------------------------
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(
         keys
-          .filter((key) => key.startsWith('ojha-') && key !== SHELL_CACHE)
-          .map((key) => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
+          .filter((key) =>
+            key.startsWith('ojha-') &&
+            key !== SHELL_CACHE &&
+            key !== ASSET_CACHE
+          )
+          .map((key) => {
+            console.log('[SW] Deleting old cache:', key);
+            return caches.delete(key);
+          })
+      );
+
+      // Claim existing clients so the new SW is in charge right away
+      await self.clients.claim();
+
+      // Tell every open tab to reload with the new SW
+      const clients = await self.clients.matchAll({ type: 'window' });
+      clients.forEach((client) =>
+        client.postMessage({ type: 'SW_UPDATED', version: CACHE_VERSION })
+      );
+    })()
   );
 });
 
 // ------------------------------------------------------------
-// Fetch — serve from cache or network
+// Helpers
+// ------------------------------------------------------------
+function isSameOrigin(url) {
+  return url.origin === self.location.origin;
+}
+
+function isNavigationRequest(request) {
+  return (
+    request.mode === 'navigate' ||
+    (request.headers.get('accept') || '').includes('text/html')
+  );
+}
+
+function matchesNetworkFirst(url) {
+  const path = url.pathname;
+  return NETWORK_FIRST_PATTERNS.some((re) => re.test(path));
+}
+
+function isAsset(url) {
+  return /\.(png|jpg|jpeg|gif|webp|svg|ico|woff2?|ttf|otf|eot)$/i.test(url.pathname);
+}
+
+// Network-first strategy: try network, cache the fresh copy, fall
+// back to cache if offline. Guarantees updates are seen promptly.
+async function networkFirst(request, cacheName, fallbackUrl) {
+  try {
+    const response = await fetch(request);
+    if (response && response.status === 200) {
+      const copy = response.clone();
+      caches.open(cacheName).then((cache) => cache.put(request, copy));
+    }
+    return response;
+  } catch (err) {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    if (fallbackUrl) {
+      const fallback = await caches.match(fallbackUrl);
+      if (fallback) return fallback;
+    }
+    return new Response('Offline', {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+    });
+  }
+}
+
+// Cache-first strategy: serve cached, then fetch + store in the
+// background so the next visit sees the latest version.
+async function cacheFirst(request, cacheName) {
+  const cached = await caches.match(request);
+  if (cached) {
+    // Revalidate in the background (stale-while-revalidate)
+    fetch(request)
+      .then((response) => {
+        if (response && response.status === 200 && response.type === 'basic') {
+          caches.open(cacheName).then((cache) => cache.put(request, response.clone()));
+        }
+      })
+      .catch(() => { /* ignore offline errors */ });
+    return cached;
+  }
+
+  // Not in cache — fetch and store
+  try {
+    const response = await fetch(request);
+    if (response && response.status === 200 && response.type === 'basic') {
+      const copy = response.clone();
+      caches.open(cacheName).then((cache) => cache.put(request, copy));
+    }
+    return response;
+  } catch (err) {
+    return new Response('', { status: 504, statusText: 'Offline' });
+  }
+}
+
+// ------------------------------------------------------------
+// Fetch — route requests to the right strategy
 // ------------------------------------------------------------
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
-  // Only handle GET requests. POST/PUT/DELETE go straight to network.
+  // Only handle GET — everything else goes to the network
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
 
-  // Only handle same-origin requests. Supabase API, Cloudflare CDN,
-  // jsDelivr, etc. all go straight to the network untouched.
-  if (url.origin !== self.location.origin) return;
+  // Cross-origin (Supabase, jsDelivr, Facebook, YouTube…) — untouched
+  if (!isSameOrigin(url)) return;
 
-  // ------------------------------------------------------------
-  // HTML navigation requests — network-first, fallback to cache,
-  // fallback to /offline.html
-  // ------------------------------------------------------------
-  const isHTML =
-    request.mode === 'navigate' ||
-    (request.headers.get('accept') || '').includes('text/html');
-
-  if (isHTML) {
+  // 1. Navigation / HTML — network-first, fallback to shell + offline
+  if (isNavigationRequest(request)) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Fresh copy — store it
-          const copy = response.clone();
-          caches.open(SHELL_CACHE).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(() =>
-          caches.match(request).then((cached) => {
-            if (cached) return cached;
-            return caches.match('/OjhaBandhuBansawali/offline.html');
-          })
-        )
+      networkFirst(request, SHELL_CACHE, OFFLINE_URL)
     );
     return;
   }
 
-  // ------------------------------------------------------------
-  // Static assets (CSS, JS, images, fonts) — cache-first,
-  // then network, and store whatever we get.
-  // ------------------------------------------------------------
+  // 2. JS / CSS / JSON that affects app behavior — network-first
+  if (matchesNetworkFirst(url)) {
+    event.respondWith(
+      networkFirst(request, SHELL_CACHE)
+    );
+    return;
+  }
+
+  // 3. Images, fonts, icons — cache-first with background revalidate
+  if (isAsset(url)) {
+    event.respondWith(
+      cacheFirst(request, ASSET_CACHE)
+    );
+    return;
+  }
+
+  // 4. Anything else same-origin — network-first with cache fallback
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).then((response) => {
-        // Only cache successful, basic responses
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
-        }
-        const copy = response.clone();
-        caches.open(SHELL_CACHE).then((cache) => cache.put(request, copy));
-        return response;
-      }).catch(() => {
-        // No cached copy, no network. If it's an image, return nothing.
-        return new Response('', { status: 504, statusText: 'Offline' });
-      });
-    })
+    networkFirst(request, SHELL_CACHE)
   );
 });
 
@@ -130,7 +222,7 @@ self.addEventListener('fetch', (event) => {
 // Message — allows the page to trigger an immediate update
 // ------------------------------------------------------------
 self.addEventListener('message', (event) => {
-  if (event.data === 'SKIP_WAITING') {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
