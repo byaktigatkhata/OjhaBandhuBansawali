@@ -11,7 +11,7 @@
    browser installs a fresh service worker and purges stale files.
    ============================================================ */
 
-const CACHE_VERSION = 'ojha-v3';                 // ← bump each deploy
+const CACHE_VERSION = 'ojha-v4';                 // ← bump each deploy
 const SHELL_CACHE    = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE    = `${CACHE_VERSION}-assets`;
 const OFFLINE_URL    = '/OjhaBandhuBansawali/offline.html';
