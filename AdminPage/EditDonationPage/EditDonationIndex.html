@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Edit Donation | OjhaBandhuBansawali Admin">
+    <title>Edit Donation</title>
+    <link rel="icon" type="image/x-icon" href="../../ojhag.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="EditDonationStyle.css">
+</head>
+<body>
+    <div id="MainBody">
+        <div id="NavigationBar">
+            <div id="NavigationHead"><i class="fas fa-bullhorn"></i><span>डोनेसन सम्पादन गर्नुहोस्</span></div>
+            <div id="NavigationAction">
+                <button id="btnBackToDashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Back</button>
+                <button id="btnLogout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <div id="FormBox">
+            <form id="editDonationForm" novalidate>
+
+                <div class="form-card">
+                    <label for="orgName"><i class="fas fa-building"></i> संस्थाको नाम (Name of Organization)</label>
+                    <input type="text" id="orgName" name="Name" placeholder="उदा. ओझा बन्धु प्रतिष्ठान" required>
+                </div>
+
+                <div class="form-card">
+                    <label for="orgAddress"><i class="fas fa-map-pin"></i> संस्थाको ठेगाना (Address of Organization)</label>
+                    <input type="text" id="orgAddress" name="Address" placeholder="उदा. दमक, झापा" required>
+                </div>
+
+                <div class="form-card">
+                    <label><i class="fas fa-file-pdf"></i> विधान (Bidhan / Constitution - PDF)</label>
+                    <div class="file-upload-group">
+                        <input type="file" id="bidhanFileInput" accept="application/pdf">
+                        <input type="hidden" id="bidhanFileUrl" name="BidhanUrl">
+                        <input type="hidden" id="bidhanPublicId" name="BidhanPublicId">
+                        <div class="pdf-preview" id="bidhanPreview">
+                            <span class="placeholder-text">कुनै विधान PDF छैन</span>
+                        </div>
+                        <button type="button" class="btn-remove-file" id="removeBidhanBtn" style="display:none;">
+                            <i class="fas fa-trash"></i> विधान हटाउनुहोस्
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <label><i class="fas fa-users"></i> संस्थाको कार्यसमिति (Body of Organization)</label>
+                    <div id="bodySubForm">
+                        <div id="bodyRowsContainer"></div>
+                        <button type="button" id="btnAddBodyRow" class="btn-add-row">
+                            <i class="fas fa-plus-circle"></i> सदस्य थप्नुहोस् (Add Member)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <label><i class="fas fa-qrcode"></i> बैंक खाता QR कोड (Bank Account QR Code)</label>
+                    <div class="image-upload-group">
+                        <input type="file" id="qrImageInput" accept="image/*">
+                        <input type="hidden" id="qrImageUrl" name="QrCodeUrl">
+                        <div class="image-preview" id="qrPreview">
+                            <span class="placeholder-text">कुनै QR कोड छैन</span>
+                        </div>
+                        <button type="button" class="btn-remove-image" id="removeQrBtn" style="display:none;">
+                            <i class="fas fa-trash"></i> QR हटाउनुहोस्
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <label><i class="fas fa-image"></i> संस्थाको लोगो (Organization Logo)</label>
+                    <div class="image-upload-group">
+                        <input type="file" id="logoImageInput" accept="image/*">
+                        <input type="hidden" id="logoImageUrl" name="LogoUrl">
+                        <div class="image-preview" id="logoPreview">
+                            <span class="placeholder-text">कुनै लोगो छैन</span>
+                        </div>
+                        <button type="button" class="btn-remove-image" id="removeLogoBtn" style="display:none;">
+                            <i class="fas fa-trash"></i> लोगो हटाउनुहोस्
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-card submit-card">
+                    <button type="submit" id="btnSaveDonation" class="btn-save">
+                        <i class="fas fa-save"></i> सुरक्षित गर्नुहोस् (Save Changes)
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="FooterBox">
+            <nav id="FooterPublicLinks">
+                <a href="../../index.html"><i class="fas fa-house"></i> गृह पृष्ठ</a>
+                <a href="../../SearchPage/SearchIndex.html"><i class="fas fa-search"></i> खोज्नुहोस्</a>
+                <a href="../../RequestPage/RequestIndex.html"><i class="fas fa-chalkboard"></i> अनुरोध पठाउनुहोस्</a>
+                <a href="../../DonationPage/DonationIndex.html"><i class="fas fa-coins"></i> डोनेसन पठाउनुहोस्</a>
+            </nav>
+            <nav id="FooterPrivateLinks">
+                <a href="../ViewRequestPage/ViewRequestIndex.html"><i class="fas fa-inbox"></i> अनुरोध हेर्नुहोस्</a>
+                <a href="../AdminDashboardPage/AdminDashboardIndex.html"><i class="fas fa-user-plus"></i> एडमिन ड्यासबोर्ड</a>
+                <a href="../AddMemberPage/AddMemberIndex.html"><i class="fas fa-user-plus"></i> सदस्य थप्नुहोस्</a>
+                <a href="../EditNoticePage/EditNoticeIndex.html"><i class="fas fa-user-plus"></i> नोटिस सम्पादन गर्नुहोस्</a>
+            </nav>
+            <p id="copyright">© <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान, दमक</a></p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../SupabaseConfig.js"></script>
+    <script src="../AddMemberPage/PhotoCropper.js"></script>
+    <script src="EditDonationScript.js"></script>
+</body>
+</html>

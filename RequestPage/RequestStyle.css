@@ -1036,6 +1036,33 @@ body {
     flex-direction: column;
     width: 100%;
 }
+/* ============================================================
+   FAMILY POSITION DROPDOWN — animated appearance
+   ============================================================ */
+#FamilyPositionGroup {
+    animation: familyPosFadeIn 0.25s ease;
+}
+@keyframes familyPosFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+#FamilyPositionGroup.highlight {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+#FamilyPositionGroup select:disabled {
+    background: var(--bg-section-soft);
+    color: var(--text-soft);
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+#newPositionHelper {
+    color: var(--accent-dark);
+    font-weight: var(--fw-semibold);
+    font-size: 0.82rem;
+    margin-top: 0.15rem;
+}
 
 /* ============================================================
    RESPONSIVE

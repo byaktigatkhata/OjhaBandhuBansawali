@@ -1,0 +1,1185 @@
+@font-face {
+    font-family: 'MySanskritFont';
+    src: url('../../Sanskrit-Text.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+body {
+    font-family: 'Segoe UI', Arial, sans-serif, 'MySanskritFont';
+    background: #aaa;
+    color: #000;
+    min-height: 100vh;
+}
+#MainBody { width: 100%; }
+
+#NavigationBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: #555;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+#NavigationHead {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+}
+#NavigationHead i { color: #ff0; }
+#NavigationAction {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+#btnBackToDashboard {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    background: linear-gradient(180deg, #00c, #00f, #00c);
+    color: #fff;
+    gap: 10px;
+    transition: .2s;
+}
+#btnBackToDashboard:hover {
+    background: linear-gradient(180deg, #00a, #00c, #00a);
+    color: #ff0;
+}
+#btnLogout {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    background: linear-gradient(180deg, #c00, #f00, #c00);
+    color: #fff;
+    gap: 10px;
+    transition: .2s;
+}
+#btnLogout:hover {
+    background: linear-gradient(180deg, #a00, #c00, #a00);
+    color: #ff0;
+}
+#FormBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: #000 2px solid;
+    background: #bbb;
+    padding: 20px 0 40px;
+}
+.form-card {
+    width: 90%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+    padding: 16px 20px;
+    margin: 12px 0;
+    box-shadow: 4px 4px 8px #000;
+    background: #e8e8e8;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+.form-card label {
+    width: 100%;
+    text-align: left;
+    padding: 6px 0 10px;
+    font-size: 20px;
+}
+.form-card input[type="text"],
+.form-card textarea,
+.form-card select {
+    width: 100%;
+    font-size: 18px;
+    padding: 10px 12px;
+    border: #000 2px solid;
+    border-radius: 8px;
+    font-family: inherit;
+    background: #fff;
+    color: #000;
+    box-sizing: border-box;
+}
+.form-card input[type="text"]:focus,
+.form-card textarea:focus,
+.form-card select:focus {
+    outline: none;
+    border-color: #00c;
+    box-shadow: 0 0 6px #00c;
+}
+
+/* ============================================================
+   IMAGE / PDF UPLOAD — button right-aligned, compact
+   ============================================================ */
+.image-upload-group,
+.file-upload-group {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    align-items: stretch;
+    box-sizing: border-box;
+}
+
+.image-upload-group input[type="file"],
+.file-upload-group input[type="file"] {
+    padding: 8px;
+    background: #ddd;
+    border: 2px dashed #555;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    grid-column: 1;
+}
+
+.image-preview,
+.pdf-preview {
+    grid-column: 1;
+    justify-self: start;
+    box-sizing: border-box;
+}
+
+.pdf-preview {
+    width: 100%;
+    min-height: 60px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    padding: 12px;
+    margin-top: 0;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: center;
+    word-break: break-all;
+}
+.pdf-preview a {
+    color: #00c;
+    text-decoration: none;
+}
+.pdf-preview a:hover { text-decoration: underline; }
+.pdf-preview .placeholder-text {
+    color: #888;
+    font-style: italic;
+}
+
+.image-preview {
+    width: 160px;
+    height: 160px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    overflow: hidden;
+    margin-top: 0;
+}
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.image-preview .placeholder-text {
+    color: #888;
+    font-size: 16px;
+    font-style: italic;
+    text-align: center;
+    padding: 8px;
+}
+
+/* Remove buttons — bottom-right, compact */
+.btn-remove-image,
+.btn-remove-file {
+    grid-column: 1;
+    justify-self: end;
+    background: #c00;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 22px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: .2s;
+    width: auto;
+    max-width: max-content;
+}
+.btn-remove-image:hover,
+.btn-remove-file:hover {
+    background: #900;
+    color: #ff0;
+}
+
+/* ============================================================
+   DYNAMIC BODY ROWS — stacked Post / Member, ✕ top-right
+   ============================================================ */
+#bodySubForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+#bodyRowsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.body-row {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: #f4f4f4;
+    padding: 16px 58px 16px 16px;
+    border-radius: 10px;
+    border: 1px solid #999;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.body-row .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.body-row .field-group label {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0;
+    color: #333;
+}
+
+.body-row .field-group input.body-post-input {
+    font-size: 16px;
+    padding: 8px 12px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.body-row .member-combo-wrap {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+.body-row .member-combo-input {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    padding: 8px 32px 8px 12px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.body-row .member-combo-input:focus {
+    outline: none;
+    border-color: #00c;
+    box-shadow: 0 0 6px #00c;
+}
+
+.body-row .btn-remove-row {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #c00;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .2s;
+    padding: 0;
+    z-index: 5;
+}
+.body-row .btn-remove-row:hover {
+    background: #900;
+    color: #ff0;
+}
+
+.body-row .selected-member-card {
+    margin-top: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn-add-row {
+    margin-top: 10px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(180deg, #080, #0b0, #080);
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    align-self: flex-start;
+    transition: .2s;
+    box-shadow: 0 3px 8px #000;
+}
+.btn-add-row:hover {
+    background: linear-gradient(180deg, #060, #090, #060);
+    color: #ff0;
+}
+
+/* ---------- member combobox ---------- */
+.member-combo-wrap {
+    position: relative;
+    width: 100%;
+}
+.member-combo-input {
+    width: 100%;
+    font-size: 16px;
+    padding: 8px 32px 8px 10px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.member-combo-input:focus {
+    outline: none;
+    border-color: #00c;
+    box-shadow: 0 0 6px #00c;
+}
+.member-combo-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #333;
+    font-size: 14px;
+}
+.member-combo-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    background: #fff;
+    border: 2px solid #00c;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+.member-combo-list.open { display: block; }
+.member-combo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    font-weight: normal;
+}
+.member-combo-item:last-child { border-bottom: none; }
+.member-combo-item:hover,
+.member-combo-item.active {
+    background: #d6ecff;
+}
+.member-combo-item .combo-photo {
+    width: 45px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid #999;
+    border-radius: 4px;
+    background: #eee;
+    flex-shrink: 0;
+}
+.member-combo-item .combo-photo.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 18px;
+}
+.member-combo-item .combo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.member-combo-item .combo-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.member-combo-item .combo-code {
+    font-size: 13px;
+    color: #555;
+}
+.member-combo-empty {
+    padding: 10px;
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    font-weight: normal;
+}
+
+/* ---------- selected member card ---------- */
+.selected-member-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 10px;
+    background: #fffbe6;
+    border: 2px solid #d4a017;
+    border-radius: 10px;
+    min-height: 72px;
+}
+.selected-member-card.empty {
+    border-style: dashed;
+    border-color: #aaa;
+    background: #f9f9f9;
+    justify-content: center;
+    color: #888;
+    font-style: italic;
+    font-weight: normal;
+    font-size: 14px;
+}
+.selected-member-card .sel-photo {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border: 1px solid #999;
+    border-radius: 6px;
+    background: #eee;
+    flex-shrink: 0;
+}
+.selected-member-card .sel-photo.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 22px;
+}
+.selected-member-card .sel-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+.selected-member-card .sel-name {
+    font-size: 17px;
+    font-weight: bold;
+    color: #000;
+    word-break: break-word;
+}
+.selected-member-card .sel-code {
+    font-size: 14px;
+    color: #444;
+}
+
+/* ---------- save button ---------- */
+.submit-card {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    align-items: center;
+}
+.btn-save {
+    padding: 14px 60px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+    background: linear-gradient(180deg, #080, #0b0, #080);
+    color: #fff;
+    box-shadow: 0 4px 10px #000;
+    transition: .2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.btn-save:hover {
+    background: linear-gradient(180deg, #060, #090, #060);
+    color: #ff0;
+}
+.btn-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ---------- footer ---------- */
+#FooterBox {
+    font-family: 'MySanskritFont';
+    padding: 22px 25px;
+    background: #07351f;
+    text-align: center;
+}
+#FooterPublicLinks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    font-weight: bold;
+    gap: 50px;
+    padding: 12px 0;
+    margin-bottom: 12px;
+}
+#FooterPublicLinks a {
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+    transition: .2s;
+}
+#FooterPublicLinks a:hover {
+    color: #a8e6c3;
+    text-decoration: underline;
+}
+#FooterPrivateLinks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 50px;
+    padding: 12px 0;
+    margin-bottom: 12px;
+}
+#FooterPrivateLinks a {
+    color: #0ff;
+    font-size: 20px;
+    text-decoration: none;
+    transition: .2s;
+}
+#FooterPrivateLinks a:hover {
+    color: #ff0;
+    text-decoration: underline;
+}
+#copyright,
+#copyright a {
+    font-size: 16px;
+    color: #f0f;
+}
+
+/* ============================================================
+   PHOTO CROPPER MODAL — matched to this page's theme
+   ============================================================ */
+.cropper-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Segoe UI', Arial, sans-serif, 'MySanskritFont';
+    animation: cropperFadeIn 0.2s ease;
+}
+@keyframes cropperFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.cropper-dialog {
+    background: #e8e8e8;
+    color: #000;
+    border: 2px solid #000;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 720px;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 6px 6px 14px #000;
+}
+.cropper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    background: #555;
+    color: #fff;
+    border-bottom: 3px solid #000;
+}
+.cropper-header h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #ff0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.cropper-header h2 i { color: #ff0; }
+.cropper-close {
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #fff;
+    padding: 0 8px;
+    transition: color 0.2s, transform 0.2s;
+}
+.cropper-close:hover {
+    color: #ff0;
+    transform: rotate(90deg);
+}
+.cropper-hint {
+    padding: 8px 18px;
+    background: #d4d4d4;
+    font-size: 0.85rem;
+    color: #222;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 2px solid #999;
+}
+.cropper-hint i { color: #00c; }
+.cropper-stage {
+    position: relative;
+    flex: 1;
+    min-height: 380px;
+    max-height: 60vh;
+    overflow: hidden;
+    background: #2b2b2b;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+}
+.cropper-stage.dragging { cursor: grabbing; }
+.cropper-image-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+#cropperImage {
+    position: absolute;
+    user-select: none;
+    -webkit-user-drag: none;
+    will-change: transform;
+}
+.cropper-box {
+    position: absolute;
+    border: 2px solid #ff0;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+    cursor: move;
+    z-index: 2;
+    box-sizing: border-box;
+}
+.cropper-box.dragging { cursor: grabbing; }
+.cropper-box .crop-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(to right, rgba(255,255,255,0.35) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.35) 1px, transparent 1px);
+    background-size: 33.333% 33.333%;
+    background-position: -1px -1px;
+}
+.crop-handle {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: #ff0;
+    border: 2px solid #000;
+    border-radius: 50%;
+    z-index: 3;
+}
+.crop-nw { top: -9px; left: -9px; cursor: nwse-resize; }
+.crop-ne { top: -9px; right: -9px; cursor: nesw-resize; }
+.crop-sw { bottom: -9px; left: -9px; cursor: nesw-resize; }
+.crop-se { bottom: -9px; right: -9px; cursor: nwse-resize; }
+.cropper-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: #d4d4d4;
+    border-top: 3px solid #000;
+    gap: 12px;
+}
+.cropper-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    color: #fff;
+}
+.cropper-btn-primary {
+    background: linear-gradient(180deg, #080, #0b0, #080);
+    box-shadow: 0 3px 8px #000;
+}
+.cropper-btn-primary:hover {
+    background: linear-gradient(180deg, #060, #090, #060);
+    color: #ff0;
+    transform: translateY(-1px);
+}
+.cropper-btn-secondary {
+    background: linear-gradient(180deg, #00c, #00f, #00c);
+    box-shadow: 0 3px 8px #000;
+}
+.cropper-btn-secondary:hover {
+    background: linear-gradient(180deg, #00a, #00c, #00a);
+    color: #ff0;
+}
+/* ============================================================
+   RESPONSIVE — TABLET & SMALL LAPTOP (≤ 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+    #NavigationBar {
+        padding: 0.9rem 1.2rem;
+    }
+    #NavigationHead {
+        font-size: 22px;
+    }
+    #NavigationAction {
+        gap: 8px;
+    }
+    #btnBackToDashboard,
+    #btnLogout {
+        font-size: 16px;
+        padding: 7px 14px;
+    }
+
+    .form-card {
+        width: 94%;
+        padding: 14px 16px;
+        font-size: 18px;
+    }
+    .form-card label {
+        font-size: 18px;
+    }
+    .form-card input[type="text"],
+    .form-card textarea,
+    .form-card select {
+        font-size: 16px;
+        padding: 9px 10px;
+    }
+
+    .btn-save {
+        font-size: 20px;
+        padding: 12px 40px;
+    }
+
+    .cropper-dialog {
+        max-width: 95%;
+    }
+    .cropper-stage {
+        min-height: 320px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — TABLET PORTRAIT / LARGE PHONE (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+    /* ---- Navigation bar: stack vertically ---- */
+    #NavigationBar {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+    }
+    #NavigationHead {
+        font-size: 20px;
+        text-align: center;
+        justify-content: center;
+    }
+    #NavigationHead i {
+        font-size: 22px;
+    }
+    #NavigationAction {
+        width: 100%;
+        justify-content: center;
+    }
+    #btnBackToDashboard,
+    #btnLogout {
+        font-size: 15px;
+        padding: 8px 14px;
+    }
+
+    /* ---- Form container ---- */
+    #FormBox {
+        padding: 16px 0 30px;
+    }
+    .form-card {
+        width: 96%;
+        padding: 14px;
+        font-size: 16px;
+        border-radius: 8px;
+    }
+    .form-card label {
+        font-size: 16px;
+        padding: 4px 0 8px;
+    }
+    .form-card input[type="text"],
+    .form-card textarea,
+    .form-card select {
+        font-size: 15px;
+        padding: 8px 10px;
+        border-radius: 6px;
+    }
+
+    /* ---- Upload groups ---- */
+    .image-preview,
+    .pdf-preview {
+        justify-self: stretch;
+    }
+    .image-preview {
+        width: 140px;
+        height: 140px;
+    }
+    .btn-remove-image,
+    .btn-remove-file {
+        padding: 7px 16px;
+        font-size: 14px;
+    }
+
+    /* ---- Body rows ---- */
+    .body-row {
+        padding: 14px 50px 14px 14px;
+        gap: 12px;
+    }
+    .body-row .btn-remove-row {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+        top: 8px;
+        right: 8px;
+    }
+    .body-row .field-group label {
+        font-size: 13px;
+    }
+    .body-row .field-group input.body-post-input,
+    .body-row .member-combo-input {
+        font-size: 15px;
+        padding: 8px 10px;
+    }
+
+    /* ---- Selected member card ---- */
+    .selected-member-card {
+        padding: 8px;
+        gap: 10px;
+        min-height: 64px;
+    }
+    .selected-member-card .sel-photo {
+        width: 52px;
+        height: 70px;
+    }
+    .selected-member-card .sel-name {
+        font-size: 15px;
+    }
+    .selected-member-card .sel-code {
+        font-size: 13px;
+    }
+
+    /* ---- Combobox list items ---- */
+    .member-combo-item {
+        padding: 8px;
+        gap: 10px;
+    }
+    .member-combo-item .combo-photo {
+        width: 40px;
+        height: 53px;
+    }
+    .member-combo-item .combo-name {
+        font-size: 14px;
+    }
+    .member-combo-item .combo-code {
+        font-size: 12px;
+    }
+
+    /* ---- Add row button ---- */
+    .btn-add-row {
+        padding: 9px 20px;
+        font-size: 16px;
+    }
+
+    /* ---- Save button ---- */
+    .btn-save {
+        font-size: 18px;
+        padding: 12px 30px;
+        gap: 8px;
+    }
+
+    /* ---- Footer ---- */
+    #FooterBox {
+        padding: 18px 14px;
+    }
+    #FooterPublicLinks,
+    #FooterPrivateLinks {
+        gap: 20px;
+        padding: 10px 0;
+        margin-bottom: 10px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 16px;
+    }
+    #copyright,
+    #copyright a {
+        font-size: 14px;
+    }
+
+    /* ---- Photo cropper ---- */
+    .cropper-dialog {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+    .cropper-header {
+        padding: 10px 14px;
+    }
+    .cropper-header h2 {
+        font-size: 1rem;
+        gap: 8px;
+    }
+    .cropper-close {
+        font-size: 24px;
+    }
+    .cropper-hint {
+        padding: 6px 14px;
+        font-size: 0.78rem;
+    }
+    .cropper-stage {
+        min-height: 280px;
+        max-height: 55vh;
+    }
+    .cropper-controls {
+        flex-direction: column;
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    .cropper-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 18px;
+        font-size: 0.95rem;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 560px)
+   ============================================================ */
+@media (max-width: 560px) {
+    #NavigationHead {
+        font-size: 17px;
+    }
+    #NavigationHead i {
+        font-size: 18px;
+    }
+    #NavigationAction {
+        flex-wrap: wrap;
+    }
+    #btnBackToDashboard,
+    #btnLogout {
+        font-size: 14px;
+        padding: 7px 12px;
+        border-radius: 16px;
+    }
+
+    .form-card {
+        width: 98%;
+        padding: 12px;
+        font-size: 15px;
+    }
+    .form-card label {
+        font-size: 15px;
+    }
+    .form-card input[type="text"],
+    .form-card textarea,
+    .form-card select {
+        font-size: 14px;
+        padding: 7px 9px;
+    }
+
+    .body-row {
+        padding: 12px 44px 12px 12px;
+        gap: 10px;
+    }
+    .body-row .btn-remove-row {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+        top: 6px;
+        right: 6px;
+    }
+    .body-row .field-group input.body-post-input,
+    .body-row .member-combo-input {
+        font-size: 14px;
+        padding: 7px 9px;
+    }
+
+    .selected-member-card {
+        gap: 8px;
+        padding: 8px;
+    }
+    .selected-member-card .sel-photo {
+        width: 46px;
+        height: 61px;
+    }
+    .selected-member-card .sel-name {
+        font-size: 14px;
+    }
+    .selected-member-card .sel-code {
+        font-size: 12px;
+    }
+
+    .image-preview {
+        width: 120px;
+        height: 120px;
+    }
+    .btn-remove-image,
+    .btn-remove-file {
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+    .btn-add-row {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .btn-save {
+        font-size: 16px;
+        padding: 11px 24px;
+    }
+
+    #FooterPublicLinks,
+    #FooterPrivateLinks {
+        flex-direction: column;
+        gap: 10px;
+    }
+    #FooterPublicLinks a,
+    #FooterPrivateLinks a {
+        font-size: 15px;
+    }
+
+    .cropper-stage {
+        min-height: 240px;
+    }
+    .cropper-btn {
+        font-size: 0.9rem;
+        padding: 9px 14px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — SMALL PHONES (≤ 400px)
+   ============================================================ */
+@media (max-width: 400px) {
+    #NavigationHead {
+        font-size: 15px;
+        gap: 6px;
+    }
+    #NavigationHead i {
+        font-size: 16px;
+    }
+    #btnBackToDashboard,
+    #btnLogout {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    .form-card {
+        padding: 10px;
+        font-size: 14px;
+    }
+    .form-card label {
+        font-size: 14px;
+    }
+    .form-card input[type="text"],
+    .form-card textarea,
+    .form-card select {
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+
+    .body-row {
+        padding: 10px 40px 10px 10px;
+    }
+    .body-row .btn-remove-row {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+    }
+
+    .selected-member-card .sel-photo {
+        width: 40px;
+        height: 53px;
+    }
+
+    .image-preview {
+        width: 100px;
+        height: 100px;
+    }
+
+    .btn-save {
+        font-size: 15px;
+        padding: 10px 20px;
+    }
+
+    .cropper-stage {
+        min-height: 200px;
+    }
+    .crop-handle {
+        width: 20px;
+        height: 20px;
+    }
+    .crop-nw { top: -10px; left: -10px; }
+    .crop-ne { top: -10px; right: -10px; }
+    .crop-sw { bottom: -10px; left: -10px; }
+    .crop-se { bottom: -10px; right: -10px; }
+}

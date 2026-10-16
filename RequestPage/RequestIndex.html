@@ -27,7 +27,7 @@
         </header>
 
         <!-- ============================================================
-             TOP ACTION BUTTONS — pick the flow
+             TOP ACTION BUTTONS
              ============================================================ -->
         <div id="TopActionButtons">
             <button type="button" id="btnEditExistingMember" class="action-btn action-btn-blue">
@@ -49,7 +49,6 @@
                 </button>
             </div>
 
-            <!-- Step 1: pick the member -->
             <div class="form-group" id="ExistingMemberSelectBox">
                 <label for="ExistingMemberSearch">
                     <i class="fas fa-search"></i>
@@ -84,9 +83,7 @@
                 </div>
             </div>
 
-            <!-- Step 2: the form (initially hidden until a member is picked) -->
             <form id="existingMemberForm" enctype="multipart/form-data" novalidate style="display:none;">
-                <!-- Section B: Personal Information -->
                 <div class="form-section">
                     <div class="form-section-title"><i class="fas fa-user"></i> व्यक्तिगत जानकारी</div>
 
@@ -128,7 +125,6 @@
                     </div>
                 </div>
 
-                <!-- Section C: Family Information -->
                 <div class="form-section">
                     <div class="form-section-title"><i class="fas fa-users"></i> पारिवारिक जानकारी</div>
 
@@ -163,7 +159,6 @@
                     </div>
                 </div>
 
-                <!-- Section D: Contact -->
                 <div class="form-section">
                     <div class="form-section-title"><i class="fas fa-address-book"></i> सम्पर्क तथा ठेगाना</div>
 
@@ -185,7 +180,6 @@
                     </div>
                 </div>
 
-                <!-- Section E: Work & Education -->
                 <div class="form-section">
                     <div class="form-section-title"><i class="fas fa-briefcase"></i> पेशा तथा शिक्षा</div>
 
@@ -200,7 +194,6 @@
                     </div>
                 </div>
 
-                <!-- Section F: Narrative -->
                 <div class="form-section">
                     <div class="form-section-title"><i class="fas fa-book-open"></i> थप विवरण</div>
 
@@ -220,7 +213,6 @@
                     </div>
                 </div>
 
-                <!-- Section G: Photo -->
                 <div class="form-section">
                     <div class="form-section-title"><i class="fas fa-image"></i> फोटो</div>
                     <div class="form-group">
@@ -239,7 +231,6 @@
                     </div>
                 </div>
 
-                <!-- Consent -->
                 <div class="form-group consent-box">
                     <label class="consent-label">
                         <input type="checkbox" id="exConsentCheck" />
@@ -269,7 +260,6 @@
                 </button>
             </div>
 
-            <!-- Step 1: connected relation + connected member -->
             <div class="form-group" id="NewConnectedRelationBox">
                 <label for="newConnectedRelation">
                     <i class="fas fa-link"></i> नयाँ सदस्य कोसँग जोडिएको छ?
@@ -321,7 +311,6 @@
                 </div>
             </div>
 
-            <!-- Step 2: the form (only shown after relation + connected member are chosen) -->
             <form id="newMemberForm" enctype="multipart/form-data" novalidate style="display:none;">
                 <div class="form-section">
                     <div class="form-section-title"><i class="fas fa-user"></i> व्यक्तिगत जानकारी</div>
@@ -341,10 +330,26 @@
                             <span class="required-badge">आवश्यक</span>
                         </label>
                         <select id="newGender">
+                            <option value="">छान्नुहोस्</option>
                             <option value="M">पुरुष</option>
                             <option value="F">महिला</option>
                             <option value="N">अन्य</option>
                         </select>
+                    </div>
+
+                    <!-- ✅ Dynamic Family Position Dropdown (only shown when relation is बाबुसँग) -->
+                    <div class="form-group" id="FamilyPositionGroup" style="display:none;">
+                        <label for="FamilyPositionDropdown">
+                            <i class="fas fa-sort-numeric-up"></i>
+                            <span id="familyPositionLabel">कुन छोरा/छोरी?</span>
+                            <span class="required-badge">आवश्यक</span>
+                        </label>
+                        <select id="FamilyPositionDropdown">
+                            <option value="">छान्नुहोस्</option>
+                        </select>
+                        <div class="helper-text" id="familyPositionHelper">
+                            कृपया पहिले माथि लिङ्ग छान्नुहोस्।
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -389,6 +394,9 @@
                     <div class="form-group">
                         <label for="newPosition"><i class="fas fa-sort-numeric-up"></i> परिवारमा स्थान <span class="optional-badge">ऐच्छिक</span></label>
                         <input type="text" id="newPosition" />
+                        <div class="helper-text" id="newPositionHelper" style="display:none;">
+                            यो माथिको छोरा/छोरी छनौटबाट स्वतः भरिन्छ।
+                        </div>
                     </div>
                 </div>
 
@@ -483,7 +491,7 @@
         </section>
 
         <!-- ============================================================
-             SUCCESS PANEL (shared)
+             SUCCESS PANEL
              ============================================================ -->
         <div id="SuccessPanel" style="display:none;">
             <div class="success-icon"><i class="fas fa-check-circle"></i></div>
@@ -514,6 +522,7 @@
                 <a href="../index.html">गृह पृष्ठ</a>
                 <a href="../SearchPage/SearchIndex.html">खोज्नुहोस्</a>
                 <a href="../RequestPage/RequestIndex.html">तथ्य र विवरण सिफारिस</a>
+                <a href="../DonationPage/DonationIndex.html">डोनेसन गर्नुहोस्</a>
                 <a href="../AdminPage/LoginPage/LoginIndex.html">लगइन गर्नुहोस्</a>
             </div>
             <div id="FooterHeading">विस्तृत जानकारीको लागि सम्पर्क गर्नुहोस्</div>
@@ -525,9 +534,7 @@
         </footer>
     </div>
 
-    <!-- ============================================================
-         CROP MODAL (shared)
-         ============================================================ -->
+    <!-- CROP MODAL -->
     <div id="cropModal" class="crop-modal" style="display:none;"
          role="dialog" aria-modal="true" aria-labelledby="cropModalTitle">
         <div class="crop-modal-content">

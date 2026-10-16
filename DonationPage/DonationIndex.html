@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>डोनेसन पठाउनुहोस्</title>
+    <link rel="icon" type="image/x-icon" href="../ojhag.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="DonationStyle.css" />
+</head>
+<body>
+    <div id="MainBody">
+
+        <!-- ============================================================
+             HEADER: Logo + Organization name + Address
+             ============================================================ -->
+        <header id="OrgHeader" class="card">
+            <div class="org-header-flex">
+                <div class="org-header-logo">
+                    <img id="orgLogo" src="" alt="Logo" style="display:none;">
+                    <div id="orgLogoPlaceholder" class="org-photo-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                </div>
+                <div class="org-header-text">
+                    <h1 id="orgNameDisplay">ओझा बन्धु प्रतिष्ठान</h1>
+                    <p id="orgAddressDisplay">दमक, झापा</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================================
+             QR CODE BOX
+             ============================================================ -->
+        <section id="QrBox" class="card">
+            <div class="qr-box-inner">
+                <div class="qr-label">
+                    <i class="fas fa-qrcode"></i> बैंक खाता QR कोड
+                </div>
+                <div class="qr-image-wrap">
+                    <img id="orgQr" src="" alt="QR" style="display:none;">
+                    <div id="orgQrPlaceholder" class="org-photo-placeholder qr-placeholder">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                </div>
+                <p class="qr-hint">माथिको QR कोड स्क्यान गरी डोनेसन पठाउनुहोस्।</p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             DONATION FORM
+             ============================================================ -->
+        <section id="DonationFormBox" class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-coins"></i> डोनेसन विवरण</h2>
+                <p class="card-subtitle">
+                    कृपया आफ्नो नाम, ठेगाना, डोनेसन रकम र मिति भर्नुहोस्।
+                </p>
+            </div>
+
+            <form id="donationForm" novalidate>
+                <div class="form-group">
+                    <label for="donnerName">
+                        <i class="fas fa-user"></i> दान गर्नेको नाम <span class="req">*</span>
+                    </label>
+                    <input type="text" id="donnerName" placeholder="जस्तोः राम बहादुर ओझा" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="donnerAddress">
+                        <i class="fas fa-map-pin"></i> दान गर्नेको ठेगाना <span class="req">*</span>
+                    </label>
+                    <input type="text" id="donnerAddress" placeholder="जस्तोः दमक-६, झापा" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="donationAmount">
+                        <i class="fas fa-money-bill-wave"></i> डोनेसन रकम (रु.) <span class="req">*</span>
+                    </label>
+                    <input type="number" id="donationAmount" min="1" step="1"
+                           placeholder="जस्तोः 5000" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="donationDate">
+                        <i class="fas fa-calendar-alt"></i> डोनेसन मिति <span class="req">*</span>
+                    </label>
+                    <input type="date" id="donationDate" required />
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-image"></i> भुक्तानीको स्क्रिनसट (ऐच्छिक)
+                    </label>
+                    <div class="photo-upload-area">
+                        <input type="file" id="photoInput" accept="image/*" style="display:none;" />
+                        <button type="button" id="choosePhotoBtn" class="photo-select-btn">
+                            <i class="fas fa-cloud-upload-alt"></i> फोटो छान्नुहोस्
+                        </button>
+                        <div id="photoFileName" class="photo-file-name">कुनै फोटो छानिएको छैन</div>
+                    </div>
+                    <div class="photo-preview-wrap">
+                        <img id="photoPreview" class="photo-preview" src="" alt="preview" style="display:none;" />
+                        <button type="button" id="removePhotoBtn" class="btn-remove-photo" style="display:none;">
+                            <i class="fas fa-trash"></i> फोटो हटाउनुहोस्
+                        </button>
+                    </div>
+                    <input type="hidden" id="photoUrl" value="" />
+                </div>
+
+                <div id="formFeedback" class="form-feedback"></div>
+
+                <div class="form-actions">
+                    <button type="button" id="btnBidhan" class="btn-info">
+                        <i class="fas fa-file-pdf"></i> विधान हेर्नुहोस्
+                    </button>
+                    <button type="reset" id="btnReset" class="btn-secondary">
+                        <i class="fas fa-undo-alt"></i> रिसेट
+                    </button>
+                    <button type="submit" id="btnSubmit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> डोनेसन पठाउनुहोस्
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- ============================================================
+             BODY OF ORGANIZATION (collapsible)
+             ============================================================ -->
+        <section id="BodyBox" class="card">
+            <button type="button" id="bodyToggleBtn" class="body-toggle">
+                <span><i class="fas fa-users"></i> संस्थाको कार्यसमिति</span>
+                <i class="fas fa-chevron-down toggle-chevron" id="bodyToggleChevron"></i>
+            </button>
+            <div id="orgBodySection" class="org-body-section" style="display:none;">
+                <div id="orgBodyList" class="org-body-list"></div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             FOOTER
+             ============================================================ -->
+        <footer id="FooterBox">
+            <div id="FooterLinks">
+                <a href="../index.html">गृह पृष्ठ</a>
+                <a href="../SearchPage/SearchIndex.html">खोज्नुहोस्</a>
+                <a href="../RequestPage/RequestIndex.html">तथ्य र विवरण सिफारिस</a>
+                <a href="../AdminPage/LoginPage/LoginIndex.html">लगइन गर्नुहोस्</a>
+                <a href="../RequestPage/RequestIndex.html">अनुरोध पठाउनुहोस्</a>
+            </div>
+            <div id="FooterHeading">विस्तृत जानकारीको लागि सम्पर्क गर्नुहोस्</div>
+            <div id="FooterContacts">
+                <div>ईमेल: <a href="mailto:ojhagsoftware@gmail.com">ojhagsoftware@gmail.com</a></div>
+                <div>फोन: +977-9849926900</div>
+                <div>फेसबुक: <a href="https://www.facebook.com/profile.php?id=100014476511307" target="_blank">ओझा बन्धु प्रतिष्ठान</a></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ============================================================
+         CROP MODAL (matches EditDonationPage style)
+         ============================================================ -->
+    <div id="cropModal" class="crop-modal" style="display:none;">
+        <div class="crop-modal-box">
+            <div class="crop-modal-header">
+                <span id="cropModalTitle"><i class="fas fa-crop-alt"></i> फोटो क्रप गर्नुहोस् (3:4)</span>
+                <button type="button" class="crop-modal-close" id="cropModalClose">&times;</button>
+            </div>
+            <div class="crop-stage" id="cropStage">
+                <img id="cropImage" draggable="false" alt="crop">
+                <div class="crop-overlay">
+                    <div class="crop-frame" id="cropFrame"></div>
+                </div>
+            </div>
+            <div class="crop-controls">
+                <label for="cropZoom">Zoom</label>
+                <input type="range" id="cropZoom" min="0.2" max="3" step="0.01" value="1">
+                <button type="button" id="cropResetBtn" class="cropper-btn-secondary">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
+            <div class="crop-modal-actions">
+                <button type="button" id="cropCancelBtn" class="cropper-btn-cancel">
+                    <i class="fas fa-times"></i> रद्द गर्नुहोस्
+                </button>
+                <button type="button" id="cropConfirmBtn" class="cropper-btn-confirm">
+                    <i class="fas fa-check"></i> क्रप र प्रयोग गर्नुहोस्
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MEMBER DETAIL MODAL
+         ============================================================ -->
+    <div id="memberModal" class="member-modal" style="display:none;">
+        <div class="member-modal-box">
+            <div class="member-modal-header">
+                <span id="memberModalTitle">सदस्यको विवरण</span>
+                <button type="button" class="member-modal-close" id="memberModalClose">&times;</button>
+            </div>
+            <div class="member-modal-body" id="memberModalBody"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         BIDHAN PDF MODAL
+         ============================================================ -->
+    <div id="bidhanModal" class="bidhan-modal" style="display:none;">
+        <div class="bidhan-modal-box">
+            <div class="bidhan-modal-header">
+                <span><i class="fas fa-file-pdf"></i> विधान</span>
+                <button type="button" class="bidhan-modal-close" id="bidhanModalClose">&times;</button>
+            </div>
+            <div class="bidhan-modal-body">
+                <iframe id="bidhanFrame" src="" title="Bidhan"></iframe>
+            </div>
+            <div class="bidhan-modal-footer">
+                <a id="bidhanDownloadLink" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                    <i class="fas fa-external-link-alt"></i> नयाँ ट्याबमा खोल्नुहोस्
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../SupabaseConfig.js"></script>
+    <script src="DonationScript.js"></script>
+</body>
+</html>

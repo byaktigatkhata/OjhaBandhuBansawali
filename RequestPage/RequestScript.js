@@ -1,5 +1,5 @@
-// RequestScript.js - Public suggestion form (v6)
-// Robust roman search that works even without Sanscript CDN.
+// RequestScript.js - Public suggestion form (v7)
+// Dynamic gender + Family Position dropdown based on relation.
 
 (function() {
     'use strict';
@@ -51,13 +51,28 @@
     let cropSourceFile = null;
 
     // ------------------------------------------------------------
-    // 2b. Roman (transliteration) index
+    // 2b. Family Position option lists
+    // ------------------------------------------------------------
+    const MALE_POSITIONS = [
+        'जेठो छोरा', 'माइलो छोरा', 'साइँलो छोरा', 'काइँलो छोरा',
+        'अन्तरे छोरा', 'जन्तरे छोरा', 'मन्तरे छोरा', 'लखन्तरे छोरा',
+        'बखन्तरे छोरा', 'पानी मन्तरे छोरा', 'एघारन्तरे छोरा', 'बारन्तरे छोरा',
+        'तेरन्तरे छोरा', 'चौधन्तरे छोरा', 'पन्द्रन्तरे छोरा', 'कान्छा छोरा'
+    ];
+
+    const FEMALE_POSITIONS = [
+        'जेठी छोरी', 'माइली छोरी', 'साइँली छोरी', 'काइँली छोरी',
+        'अन्तरी छोरी', 'जन्तरी छोरी', 'मन्तरी छोरी', 'लखन्तरी छोरी',
+        'बखन्तरी छोरी', 'पानी मन्तरी छोरी', 'एघारन्तरी छोरी', 'बारन्तरी छोरी',
+        'तेरन्तरी छोरी', 'चौधन्तरी छोरी', 'पन्द्रन्तरी छोरी', 'कान्छी छोरी'
+    ];
+
+    // ------------------------------------------------------------
+    // 2c. Roman (transliteration) index
     // ------------------------------------------------------------
     const memberRomanIndex = new Map();
 
-    /** Built-in Devanagari → Roman fallback (used when Sanscript is absent). */
     const DEV_FALLBACK = [
-        // conjuncts / vowel signs first
         ['क्‍ष', 'chh'], ['त्र', 'tra'], ['ज्ञ', 'gya'], ['श्र', 'shra'],
         ['क्', 'k'], ['ख्', 'kh'], ['ग्', 'g'], ['घ्', 'gh'], ['ङ्', 'ng'],
         ['च्', 'ch'], ['छ्', 'chh'], ['ज्', 'j'], ['झ्', 'jh'], ['ञ्', 'n'],
@@ -84,9 +99,7 @@
 
     function devanagariToRomanFallback(text) {
         let out = String(text);
-        for (const [dev, rom] of DEV_FALLBACK) {
-            out = out.split(dev).join(rom);
-        }
+        for (const [dev, rom] of DEV_FALLBACK) out = out.split(dev).join(rom);
         return out;
     }
 
@@ -118,7 +131,6 @@
     }
 
     const ROMAN_OVERRIDES = {
-        //थरहरू
         'ओझा':    ['ojha', 'ozha'], 'शर्मा':   ['sharma'], 'भट्ट':   ['bhatta', 'bhatt'],
         'आचार्य': ['acharya', 'achariya'], 'पौडेल':  ['paudel', 'poudel'], 'अधिकारी': ['adhikari'],
         'दाहाल':   ['dahal'], 'खनाल':   ['khanal'], 'श्रेष्ठ': ['shrestha', 'srestha'], 'महर्जन': ['maharjan'],
@@ -143,11 +155,9 @@
         'कार्की': ['karki'], 'थापा': ['thapa'], 'बस्नेत': ['basnet'], 'रावल': ['raval'],
         'तामाङ': ['tamang'], 'मगर': ['magar'], 'गुरुङ': ['gurung'], 'शेर्पा': ['sherpa'],
         'लामा': ['lama'],
-        //बिचका नामहरू
         'प्रसाद':  ['prasad', 'prashad'], 'बहादुर':  ['bahadur'], 'कुमार':   ['kumar'],
         'कुमारी': ['kumari'], 'देवी':    ['devi'], 'लाल':    ['lal'],
-        'नारायण':  ['narayan', 'narayana','naran'],        
-        //शुरूका नामहरू        
+        'नारायण':  ['narayan', 'narayana','naran'],
         'विष्णु':  ['bishnu', 'bisnu', 'vishnu'], 'लक्ष्मी': ['laxmi', 'lakshmi'],
         'गणेश':   ['ganesh'], 'कृष्ण':   ['krishna', 'krisna'], 'राम':    ['ram'],
         'श्याम':   ['shyam', 'syam'], 'सीता':    ['sita'], 'गीता':    ['gita', 'geeta'],
@@ -155,69 +165,7 @@
         'जय':     ['jay', 'jai', 'jaya'], 'नारायन':  ['narayan', 'narayana'],
         'प्रेम': ['prem'], 'यज्ञ': ['yajna'], 'मनोज': ['manoj'], 'सनोज': ['sonoj'],
         'भिम': ['bhim'], 'सन्तोष': ['santosh'], 'विपिन': ['vipin'], 'रमेश': ['ramesh'],
-        'उमेश': ['umesh'], 'तारा': ['tara'],'अ': ['a'], 'आ': ['aa'], 'इ': ['i'],
-        'ई': ['ii'], 'उ': ['u'], 'ऊ': ['uu'], 'ए': ['e'], 'ऐ': ['ai'], 'ओ': ['o'], 'औ': ['au'],
-        'अं': ['am'], 'क': ['k'], 'का': ['ka'], 'कि': ['ki'], 'की': ['ki'], 'कु': ['ku'],
-        'कू': ['ku'], 'के': ['ke'], 'कै': ['kai'], 'को': ['ko'], 'कौ': ['kau'], 'कं': ['kam'],
-        'ख': ['kh'], 'खा': ['kha'], 'खि': ['khi'], 'खी': ['khi'], 'खु': ['khu'], 'खू': ['khu'],
-        'खे': ['khe'], 'खै': ['khai'], 'खो': ['kho'], 'खौ': ['khou'], 'ग': ['g'], 'गा': ['ga'],
-        'गि': ['gi'], 'गी': ['gi'], 'गु': ['gu'], 'गू': ['gu'], 'गे': ['ge'], 'गै': ['gai'],
-        'गो': ['go'], 'गौ': ['gau'], 'गं': ['gam'], 'घ': ['gh'], 'घा': ['gha'], 'घि': ['ghi'],
-        'घी': ['ghi'], 'घु': ['ghu'], 'घू': ['ghu'], 'घे': ['ghe'], 'घै': ['ghai'], 'घो': ['gho'],
-        'घौ': ['ghou'], 'ङ': ['nga'], 'च': ['ch'], 'चा': ['cha'], 'चि': ['chi'], 'ची': ['chi'],
-        'चु': ['chu'], 'चू': ['chu'], 'चे': ['che'], 'चै': ['chai'], 'चो': ['cho'], 'चौ': ['chou'],
-        'चं': ['cham'], 'छ': ['ch'], 'छा': ['cha'], 'छि': ['chi'], 'छी': ['chi'], 'छु': ['chu'],
-        'छू': ['chu'], 'छे': ['che'], 'छै': ['chai'], 'छो': ['cho'], 'छौ': ['chou'], 'ज': ['j'],
-        'जा': ['ja'], 'जि': ['ji'], 'जी': ['ji'], 'जु': ['ju'], 'जू': ['ju'], 'जे': ['je'],
-        'जै': ['jai'], 'जो': ['jo'], 'जौ': ['jau'], 'जं': ['jam'], 'झ': ['jha'], 'झा': ['jha'],
-        'झि': ['jhi'], 'झी': ['jhi'], 'झु': ['jhu'], 'झू': ['jhu'], 'झे': ['jhe'], 'झै': ['jhai'],
-        'झो': ['jho'], 'झौ': ['jhau'], 'ञ': ['nya'], 'ट': ['t'], 'टा': ['ta'], 'टि': ['ti'],
-        'टी': ['ti'], 'टु': ['tu'], 'टू': ['tu'], 'टे': ['te'], 'टै': ['tai'], 'टो': ['to'],
-        'टौ': ['tau'], 'टं': ['tam'], 'ठ': ['th'], 'ठा': ['tha'], 'ठि': ['thi'], 'ठी': ['thi'],
-        'ठु': ['thu'], 'ठू': ['thu'], 'ठे': ['the'], 'ठै': ['thai'], 'ठो': ['tho'], 'ठौ': ['thou'],
-        'ठं': ['tham'], 'ड': ['d'], 'डा': ['da'], 'डि': ['di'], 'डी': ['di'], 'डु': ['du'],
-        'डू': ['du'], 'डे': ['de'], 'डै': ['dai'], 'डो': ['do'], 'डौ': ['dau'], 'डं': ['dam'],
-        'ण': ['na'], 'त': ['t'], 'ता': ['ta'], 'ति': ['ti'], 'ती': ['ti'], 'तु': ['tu'],
-        'तू': ['tu'], 'ते': ['te'], 'तै': ['tai'], 'तो': ['to'], 'तौ': ['tou'], 'तं': ['tam'],
-        'थ': ['th'], 'था': ['tha'], 'थि': ['thi'], 'थी': ['thi'], 'थु': ['thu'], 'थू': ['thu'],
-        'थे': ['the'], 'थै': ['thai'], 'थो': ['tho'], 'थौ': ['thou'], 'थं': ['tham'], 'द': ['d'],
-        'दा': ['da'], 'दि': ['di'], 'दी': ['di'], 'दु': ['du'], 'दू': ['du'], 'दे': ['de'],
-        'दै': ['dai'], 'दो': ['do'], 'दौ': ['dau'], 'दं': ['dam'], 'ध': ['dh'], 'धा': ['dha'],
-        'धि': ['dhi'], 'धी': ['dhi'], 'धु': ['dhu'], 'धू': ['dhu'], 'धे': ['dhe'], 'धै': ['dhai'],
-        'धो': ['dho'], 'धौ': ['dhau'], 'धं': ['dham'], 'न': ['na'], 'ना': ['na'], 'नि': ['ni'],
-        'नी': ['ni'], 'नु': ['nu'], 'नू': ['nu'], 'ने': ['ne'], 'नै': ['nai'], 'नो': ['no'],
-        'नौ': ['nau'], 'नं': ['nam'], 'प': ['p'], 'पा': ['pa'], 'पि': ['pi'], 'पी': ['pi'],
-        'पु': ['pu'], 'पू': ['pu'], 'पे': ['pe'], 'पै': ['pai'], 'पो': ['po'], 'पौ': ['pau'],
-        'पं': ['pam'], 'फ': ['ph'], 'फा': ['pha'], 'फि': ['phi'], 'फी': ['phi'], 'फु': ['phu'],
-        'फू': ['phu'], 'फे': ['phe'], 'फै': ['phai'], 'फो': ['pho'], 'फौ': ['phou'],
-        'फं': ['pham'], 'ब': ['b'], 'बा': ['ba'], 'बि': ['bi'], 'बी': ['bi'], 'बु': ['bu'],
-        'बू': ['bu'], 'बे': ['be'], 'बै': ['bai'], 'बो': ['bo'], 'बौ': ['bau'], 'बं': ['bam'],
-        'भ': ['bh'], 'भा': ['bha'], 'भि': ['bhi'], 'भी': ['bhi'], 'भु': ['bhu'], 'भू': ['bhu'],
-        'भे': ['bhe'], 'भै': ['bhai'], 'भो': ['bho'], 'भौ': ['bhou'], 'भं': ['bham'],
-        'म': ['m'], 'मा': ['ma'], 'मि': ['mi'], 'मी': ['mi'], 'मु': ['mu'], 'मू': ['mu'],
-        'मे': ['me'], 'मै': ['mai'], 'मो': ['mo'], 'मौ': ['mau'], 'मं': ['nam'], 'य': ['y'],
-        'या': ['ya'], 'यि': ['yi'], 'यी': ['yi'], 'यु': ['yu'], 'यू': ['yu'], 'ये': ['ye'],
-        'यै': ['yai'], 'यो': ['yo'], 'यौ': ['yau'], 'यं': ['yam'],  'र': ['r'], 'रा': ['ra'],
-        'रि': ['ri'], 'री': ['ri'], 'रु': ['ru'], 'रू': ['ru'], 'रे': ['re'], 'रै': ['rai'],
-        'रो': ['ro'], 'रौ': ['rau'], 'रं': ['ram'], 'ल': ['l'], 'ला': ['la'], 'लि': ['li'],
-        'ली': ['li'], 'लु': ['lu'], 'लू': ['lu'], 'ले': ['le'], 'लै': ['lai'], 'लो': ['lo'],
-        'लौ': ['lau'], 'लं': ['lam'], 'व': ['v'], 'वा': ['va'], 'वि': ['vi'], 'वी': ['vi'],
-        'वु': ['vu'], 'वू': ['vu'], 'वे': ['ve'], 'वै': ['vai'], 'वो': ['vo'], 'वौ': ['vau'],
-        'वं': ['vam'], 'श': ['sh'], 'शा': ['sha'], 'शि': ['shi'], 'शी': ['shi'], 'शु': ['shu'],
-        'शू': ['shu'], 'शे': ['she'], 'शै': ['shai'], 'शो': ['sho'],  'शौ': ['shou'], 'शं': ['sham'],
-        'ष': ['sh'], 'षा': ['sha'], 'षि': ['shi'], 'षी': ['shi'], 'षु': ['shu'], 'षू': ['shu'],
-        'षे': ['she'], 'षै': ['shai'], 'षो': ['sho'], 'षौ': ['shou'], 'षं': ['sham'], 'स': ['s'],
-        'सा': ['sa'], 'सि': ['si'], 'सी': ['si'], 'सु': ['su'], 'सू': ['su'], 'से': ['se'],
-        'सै': ['sai'], 'सो': ['so'], 'सौ': ['sau'], 'सं': ['sam'], 'ह': ['h'], 'हा': ['ha'],
-        'हि': ['hi'], 'ही': ['hi'], 'हु': ['hu'], 'हू': ['hu'], 'हे': ['he'], 'है': ['hai'],
-        'हो': ['ho'], 'हौ': ['hou'], 'हं': ['ham'], 'क्ष': ['ksh'], 'क्षा': ['ksha'], 'क्षि': ['kshi'],
-        'क्षी': ['kshi'], 'क्षु': ['kshu'], 'क्षू': ['kshu'], 'क्षे': ['kshe'], 'क्षै': ['kshai'],
-        'क्षो': ['ksho'], 'क्षौ': ['kshou'], 'क्षं': ['ksham'], 'त्र': ['tr'], 'त्रा': ['tra'],
-        'त्रि': ['tri'], 'त्री': ['tri'], 'त्रु': ['tru'], 'त्रू': ['tru'], 'त्रे': ['tre'], 'त्रै': ['trai'],
-        'त्रो': ['tro'], 'त्रौ': ['trou'], 'त्रं': ['tram'], 'ज्ञ': ['jnya'], 'ज्ञा': ['jnyaa'],
-        'ज्ञि': ['jnyi'], 'ज्ञी': ['jnyi'], 'ज्ञु': ['jnyu'], 'ज्ञू': ['jnyu'], 'ज्ञे': ['jnye'],
-        'ज्ञै': ['jnyai'], 'ज्ञो': ['jnyo'], 'ज्ञौ': ['jnyou'], 'ज्ञं': ['jnyam'],
-        
+        'उमेश': ['umesh'], 'तारा': ['tara'],
     };
 
     function expandNameWithOverrides(devanagariName) {
@@ -236,9 +184,7 @@
         const words = roman.split(/\s+/).filter(Boolean);
         words.forEach(word => {
             set.add(word);
-            for (let len = 2; len <= word.length; len++) {
-                set.add(word.substring(0, len));
-            }
+            for (let len = 2; len <= word.length; len++) set.add(word.substring(0, len));
         });
     }
 
@@ -247,25 +193,20 @@
         allMembers.forEach(m => {
             if (!m || !m.PersonalCode) return;
             const variants = new Set();
-
             const romanFull = toRoman(m.FullName || '');
             if (romanFull) {
                 variants.add(romanFull);
                 romanFull.split(/\s+/).forEach(w => { if (w) variants.add(w); });
                 addPrefixVariants(romanFull, variants);
             }
-
             expandNameWithOverrides(m.FullName || '').forEach(v => variants.add(v));
-
             if (m.FullNameEn) {
                 const en = String(m.FullNameEn).toLowerCase();
                 variants.add(en);
                 en.split(/\s+/).forEach(w => { if (w) variants.add(w); });
                 addPrefixVariants(en, variants);
             }
-
             variants.add(String(m.PersonalCode).toLowerCase());
-
             memberRomanIndex.set(m.PersonalCode, variants);
         });
         console.log('✅ Roman name index built for', memberRomanIndex.size, 'members');
@@ -279,9 +220,7 @@
         if (!variants) return false;
         const queryWords = q.split(/\s+/).filter(Boolean);
         const variantsArr = Array.from(variants);
-        return queryWords.every(word =>
-            variantsArr.some(v => v.includes(word))
-        );
+        return queryWords.every(word => variantsArr.some(v => v.includes(word)));
     }
 
     // ------------------------------------------------------------
@@ -290,34 +229,34 @@
     const $ = (id) => document.getElementById(id);
 
     function safeVal(id) {
-        const el = $ (id);
+        const el = $(id);
         if (!el) { console.warn(`⚠️ safeVal: #${id} missing`); return ''; }
         return String(el.value == null ? '' : el.value).trim();
     }
     function safeSelectVal(id, fallback) {
-        const el = $ (id);
+        const el = $(id);
         if (!el) { console.warn(`⚠️ safeSelectVal: #${id} missing`); return fallback; }
         return String(el.value == null ? fallback : el.value);
     }
     function setSafeVal(id, value) {
-        const el = $ (id);
+        const el = $(id);
         if (!el) return;
         el.value = value == null ? '' : value;
     }
     function setChecked(id, value) {
-        const el = $ (id);
+        const el = $(id);
         if (el) el.checked = !!value;
     }
 
     function updateExistingSubmitVisibility() {
-        const chk = $ ('exConsentCheck');
-        const btn = $ ('exBtnSubmit');
+        const chk = $('exConsentCheck');
+        const btn = $('exBtnSubmit');
         if (!chk || !btn) return;
         btn.style.display = chk.checked ? '' : 'none';
     }
     function updateNewSubmitVisibility() {
-        const chk = $ ('newConsentCheck');
-        const btn = $ ('newBtnSubmit');
+        const chk = $('newConsentCheck');
+        const btn = $('newBtnSubmit');
         if (!chk || !btn) return;
         btn.style.display = chk.checked ? '' : 'none';
     }
@@ -372,26 +311,23 @@
     // 5. Feedback / errors
     // ------------------------------------------------------------
     function showFeedback(msg, kind) {
-        const el = $ ('formFeedback');
+        const el = $('formFeedback');
         if (!el) return;
         el.className = 'is-visible ' + (kind ? 'is-' + kind : 'is-info');
         el.innerHTML = msg;
         setTimeout(() => {
-            if (el.innerHTML === msg) {
-                el.className = '';
-                el.innerHTML = '';
-            }
+            if (el.innerHTML === msg) { el.className = ''; el.innerHTML = ''; }
         }, 5000);
     }
     function clearFeedback() {
-        const el = $ ('formFeedback');
+        const el = $('formFeedback');
         if (!el) return;
         el.className = '';
         el.innerHTML = '';
     }
     function setFieldError(fieldId, message) {
-        const field = $ (fieldId);
-        const errEl = $ ('err-' + fieldId);
+        const field = $(fieldId);
+        const errEl = $('err-' + fieldId);
         if (field) {
             const group = field.closest('.form-group');
             if (group) group.classList.add('has-error');
@@ -399,8 +335,8 @@
         if (errEl) errEl.textContent = message || '';
     }
     function clearFieldError(fieldId) {
-        const field = $ (fieldId);
-        const errEl = $ ('err-' + fieldId);
+        const field = $(fieldId);
+        const errEl = $('err-' + fieldId);
         if (field) {
             const group = field.closest('.form-group');
             if (group) group.classList.remove('has-error');
@@ -408,7 +344,7 @@
         if (errEl) errEl.textContent = '';
     }
     function clearAllFieldErrorsInForm(formId) {
-        const form = $ (formId);
+        const form = $(formId);
         if (!form) return;
         form.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
         form.querySelectorAll('.field-error').forEach(el => el.textContent = '');
@@ -518,32 +454,32 @@
     // 7. Flows
     // ------------------------------------------------------------
     function hideAllFlows() {
-        const ex = $ ('ExistingMemberFlow');
-        const nw = $ ('NewMemberFlow');
-        const sp = $ ('SuccessPanel');
+        const ex = $('ExistingMemberFlow');
+        const nw = $('NewMemberFlow');
+        const sp = $('SuccessPanel');
         if (ex) ex.style.display = 'none';
         if (nw) nw.style.display = 'none';
         if (sp) sp.style.display = 'none';
-        $ ('btnEditExistingMember')?.classList.remove('active');
-        $ ('btnAddNewMember')?.classList.remove('active');
+        $('btnEditExistingMember')?.classList.remove('active');
+        $('btnAddNewMember')?.classList.remove('active');
     }
     function showExistingFlow() {
         hideAllFlows();
-        const ex = $ ('ExistingMemberFlow');
+        const ex = $('ExistingMemberFlow');
         if (ex) ex.style.display = 'flex';
-        $ ('btnEditExistingMember')?.classList.add('active');
+        $('btnEditExistingMember')?.classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function showNewFlow() {
         hideAllFlows();
-        const nw = $ ('NewMemberFlow');
+        const nw = $('NewMemberFlow');
         if (nw) nw.style.display = 'flex';
-        $ ('btnAddNewMember')?.classList.add('active');
+        $('btnAddNewMember')?.classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function showSuccessPanel() {
         hideAllFlows();
-        const sp = $ ('SuccessPanel');
+        const sp = $('SuccessPanel');
         if (sp) sp.style.display = 'flex';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -552,7 +488,7 @@
     // 8. Pop-up
     // ------------------------------------------------------------
     function ensurePreviewModal() {
-        if ($ ('memberPreviewModal')) return;
+        if ($('memberPreviewModal')) return;
         const modal = document.createElement('div');
         modal.id = 'memberPreviewModal';
         modal.className = 'member-preview-modal';
@@ -582,13 +518,13 @@
         `;
         document.body.appendChild(modal);
 
-        $ ('memberPreviewPrev').addEventListener('click', () => navigatePreview(-1));
-        $ ('memberPreviewNext').addEventListener('click', () => navigatePreview(1));
-        $ ('memberPreviewReject').addEventListener('click', closePreviewModal);
-        $ ('memberPreviewConfirm').addEventListener('click', confirmPreviewSelection);
+        $('memberPreviewPrev').addEventListener('click', () => navigatePreview(-1));
+        $('memberPreviewNext').addEventListener('click', () => navigatePreview(1));
+        $('memberPreviewReject').addEventListener('click', closePreviewModal);
+        $('memberPreviewConfirm').addEventListener('click', confirmPreviewSelection);
         modal.addEventListener('click', (e) => { if (e.target === modal) closePreviewModal(); });
         document.addEventListener('keydown', (e) => {
-            if ($ ('memberPreviewModal').style.display !== 'flex') return;
+            if ($('memberPreviewModal').style.display !== 'flex') return;
             if (e.key === 'Escape') closePreviewModal();
             else if (e.key === 'ArrowLeft') navigatePreview(-1);
             else if (e.key === 'ArrowRight') navigatePreview(1);
@@ -599,12 +535,12 @@
         ensurePreviewModal();
         previewContext = { flow, results, index };
         renderPreviewMember();
-        const modal = $ ('memberPreviewModal');
+        const modal = $('memberPreviewModal');
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
     function closePreviewModal() {
-        const modal = $ ('memberPreviewModal');
+        const modal = $('memberPreviewModal');
         if (modal) modal.style.display = 'none';
         document.body.style.overflow = '';
         previewContext = null;
@@ -625,9 +561,9 @@
         if (results.length === 0) return;
         const m = results[index];
         if (!m) return;
-        const counter = $ ('memberPreviewCounter');
+        const counter = $('memberPreviewCounter');
         if (counter) counter.textContent = `${index + 1} / ${results.length}`;
-        const body = $ ('memberPreviewBody');
+        const body = $('memberPreviewBody');
         if (!body) return;
         const photo = (m.PhotoUrl && String(m.PhotoUrl).trim() !== '') ? m.PhotoUrl : '../no_pic.png';
         const row = (label, value) => {
@@ -674,8 +610,8 @@
     // 9. Existing Member flow
     // ------------------------------------------------------------
     function refreshExistingResults() {
-        const input = $ ('ExistingMemberSearch');
-        const resultsEl = $ ('existingMemberResults');
+        const input = $('ExistingMemberSearch');
+        const resultsEl = $('existingMemberResults');
         if (!input || !resultsEl) return;
         const q = input.value || '';
         existingCurrentResults = filterMembers(q, { includeSpouses: true });
@@ -683,25 +619,25 @@
         renderResults(resultsEl, existingCurrentResults, existingHighlightedIndex, previewExisting);
     }
     function previewExisting(member) {
-        closeCombobox($ ('existingMemberResults'));
+        closeCombobox($('existingMemberResults'));
         const idx = existingCurrentResults.findIndex(x => x.PersonalCode === member.PersonalCode);
         openPreviewModal('existing', existingCurrentResults, Math.max(0, idx));
     }
     function acceptExistingMember(member) {
         selectedExistingMember = member;
-        const input = $ ('ExistingMemberSearch');
+        const input = $('ExistingMemberSearch');
         if (input) input.value = member.PersonalCode || '';
-        closeCombobox($ ('existingMemberResults'));
-        const confirmBox = $ ('ExistingMemberConfirmBox');
-        const codeEl = $ ('ExistingMemberCode');
-        const nameEl = $ ('ExistingMemberName');
+        closeCombobox($('existingMemberResults'));
+        const confirmBox = $('ExistingMemberConfirmBox');
+        const codeEl = $('ExistingMemberCode');
+        const nameEl = $('ExistingMemberName');
         if (confirmBox) confirmBox.style.display = 'block';
         if (codeEl) codeEl.textContent = member.PersonalCode || '—';
         if (nameEl) nameEl.textContent = member.FullName || '—';
         prefillExistingForm(member);
-        const form = $ ('existingMemberForm');
+        const form = $('existingMemberForm');
         if (form) form.style.display = 'block';
-        const selectBox = $ ('ExistingMemberSelectBox');
+        const selectBox = $('ExistingMemberSelectBox');
         if (selectBox) selectBox.style.display = 'none';
         updateExistingSubmitVisibility();
         setTimeout(() => form?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
@@ -728,8 +664,8 @@
         setSafeVal('exLifeStory', m.LifeStory || '');
         setSafeVal('exPhotoUrl', m.PhotoUrl || '');
         setSafeVal('exPublicId', m.PublicId || '');
-        const photo = $ ('exPhotoPreview');
-        const fileName = $ ('exPhotoFileNameDisplay');
+        const photo = $('exPhotoPreview');
+        const fileName = $('exPhotoFileNameDisplay');
         if (photo) {
             if (m.PhotoUrl) { photo.src = m.PhotoUrl; photo.style.display = 'block'; }
             else { photo.src = ''; photo.style.display = 'none'; }
@@ -741,48 +677,154 @@
     function resetExistingFlow() {
         selectedExistingMember = null;
         setSafeVal('ExistingMemberSearch', '');
-        closeCombobox($ ('existingMemberResults'));
-        const confirmBox = $ ('ExistingMemberConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
-        const form = $ ('existingMemberForm'); if (form) { form.reset(); form.style.display = 'none'; }
-        const selectBox = $ ('ExistingMemberSelectBox'); if (selectBox) selectBox.style.display = 'flex';
-        const photo = $ ('exPhotoPreview'); if (photo) { photo.src = ''; photo.style.display = 'none'; }
-        const fileName = $ ('exPhotoFileNameDisplay'); if (fileName) fileName.textContent = 'कुनै फोटो छानिएको छैन';
-        const status = $ ('exUploadStatus'); if (status) status.innerHTML = '';
+        closeCombobox($('existingMemberResults'));
+        const confirmBox = $('ExistingMemberConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
+        const form = $('existingMemberForm'); if (form) { form.reset(); form.style.display = 'none'; }
+        const selectBox = $('ExistingMemberSelectBox'); if (selectBox) selectBox.style.display = 'flex';
+        const photo = $('exPhotoPreview'); if (photo) { photo.src = ''; photo.style.display = 'none'; }
+        const fileName = $('exPhotoFileNameDisplay'); if (fileName) fileName.textContent = 'कुनै फोटो छानिएको छैन';
+        const status = $('exUploadStatus'); if (status) status.innerHTML = '';
         setSafeVal('exPhotoUrl', ''); setSafeVal('exPublicId', '');
         clearAllFieldErrorsInForm('existingMemberForm');
         updateExistingSubmitVisibility();
     }
 
     // ------------------------------------------------------------
-    // 10. New Member flow
+    // 10. New Member flow — DYNAMIC gender + family position
     // ------------------------------------------------------------
+
+    /** Auto-select gender based on relation */
+    function applyGenderForRelation(relation) {
+        const genderSel = $('newGender');
+        if (!genderSel) return;
+        if (relation === 'श्रीमान') {
+            genderSel.value = 'F';   // husband connected → new member is wife
+        } else if (relation === 'श्रीमती') {
+            genderSel.value = 'M';   // wife connected → new member is husband
+        } else {
+            genderSel.value = '';    // बाबु or empty → no default
+        }
+    }
+
+    /** Populate FamilyPositionDropdown based on gender + relation */
+    function populateFamilyPosition() {
+        const group = $('FamilyPositionGroup');
+        const dropdown = $('FamilyPositionDropdown');
+        const helper = $('familyPositionHelper');
+        const label = $('familyPositionLabel');
+        if (!group || !dropdown) return;
+
+        // Only visible when relation is बाबु
+        if (newRelation !== 'बाबु') {
+            group.style.display = 'none';
+            dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+            return;
+        }
+
+        group.style.display = 'flex';
+
+        const genderSel = $('newGender');
+        const g = genderSel ? genderSel.value : '';
+
+        let options = [];
+        let helperText = '';
+        let labelText = 'कुन छोरा/छोरी?';
+
+        if (g === 'M' || g === 'N') {
+            options = MALE_POSITIONS;
+            labelText = 'कुन छोरा?';
+            helperText = 'कृपया छोराको परिवारमा स्थान छान्नुहोस्।';
+        } else if (g === 'F') {
+            options = FEMALE_POSITIONS;
+            labelText = 'कुन छोरी?';
+            helperText = 'कृपया छोरीको परिवारमा स्थान छान्नुहोस्।';
+        } else {
+            // No gender chosen yet
+            labelText = 'कुन छोरा/छोरी?';
+            helperText = 'कृपया पहिले माथि लिङ्ग छान्नुहोस्।';
+        }
+
+        if (label) label.textContent = labelText;
+        if (helper) helper.textContent = helperText;
+
+        // Preserve previous selection if still valid
+        const previous = dropdown.value;
+
+        dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+        if (options.length > 0) {
+            options.forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt;
+                o.textContent = opt;
+                dropdown.appendChild(o);
+            });
+            if (previous && options.includes(previous)) dropdown.value = previous;
+        }
+    }
+
+    /** When user picks from FamilyPositionDropdown → auto-fill newPosition */
+    function onFamilyPositionChange() {
+        const dropdown = $('FamilyPositionDropdown');
+        const posInput = $('newPosition');
+        const helper = $('newPositionHelper');
+        if (!dropdown || !posInput) return;
+
+        const val = dropdown.value || '';
+        if (val) {
+            posInput.value = val;
+            if (helper) helper.style.display = 'block';
+        } else {
+            posInput.value = '';
+            if (helper) helper.style.display = 'none';
+        }
+    }
+
+    /** When gender changes and relation is बाबु → reload positions */
+    function onNewGenderChange() {
+        if (newRelation === 'बाबु') {
+            populateFamilyPosition();
+            // Clear the position input when gender changes
+            const dropdown = $('FamilyPositionDropdown');
+            const posInput = $('newPosition');
+            if (dropdown) dropdown.value = '';
+            if (posInput) posInput.value = '';
+        }
+    }
+
     function onRelationChange() {
-        const sel = $ ('newConnectedRelation');
+        const sel = $('newConnectedRelation');
         if (!sel) return;
         newRelation = sel.value || '';
         selectedConnectedMember = null;
         setSafeVal('NewConnectedMemberSearch', '');
-        closeCombobox($ ('newConnectedMemberResults'));
-        const confirmBox = $ ('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
-        const form = $ ('newMemberForm'); if (form) form.style.display = 'none';
+        closeCombobox($('newConnectedMemberResults'));
+        const confirmBox = $('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
+        const form = $('newMemberForm'); if (form) form.style.display = 'none';
+
+        // Reset family position group first
+        const group = $('FamilyPositionGroup');
+        if (group) group.style.display = 'none';
+
         if (!newRelation) {
-            const box = $ ('NewConnectedMemberBox'); if (box) box.style.display = 'none';
+            const box = $('NewConnectedMemberBox'); if (box) box.style.display = 'none';
             return;
         }
-        const box = $ ('NewConnectedMemberBox'); if (box) box.style.display = 'flex';
-        const label = $ ('newConnectedMemberLabel');
+
+        const box = $('NewConnectedMemberBox'); if (box) box.style.display = 'flex';
+        const label = $('newConnectedMemberLabel');
         if (label) {
             if (newRelation === 'बाबु') label.textContent = 'बाबु छान्नुहोस्';
             else if (newRelation === 'श्रीमान') label.textContent = 'श्रीमान छान्नुहोस्';
             else if (newRelation === 'श्रीमती') label.textContent = 'श्रीमती छान्नुहोस्';
         }
-        const input = $ ('NewConnectedMemberSearch');
+        const input = $('NewConnectedMemberSearch');
         if (input) {
             input.placeholder = 'कोड, नेपाली नाम, वा अंग्रेजी नाम टाइप गर्नुहोस्...';
             input.focus();
         }
         refreshNewResults();
     }
+
     function getNewGenderFilter() {
         if (newRelation === 'बाबु') return 'M';
         if (newRelation === 'श्रीमान') return 'M';
@@ -790,8 +832,8 @@
         return null;
     }
     function refreshNewResults() {
-        const input = $ ('NewConnectedMemberSearch');
-        const resultsEl = $ ('newConnectedMemberResults');
+        const input = $('NewConnectedMemberSearch');
+        const resultsEl = $('newConnectedMemberResults');
         if (!input || !resultsEl) return;
         if (!newRelation) { closeCombobox(resultsEl); return; }
         const q = input.value || '';
@@ -800,21 +842,21 @@
         renderResults(resultsEl, newCurrentResults, newHighlightedIndex, previewNew);
     }
     function previewNew(member) {
-        closeCombobox($ ('newConnectedMemberResults'));
+        closeCombobox($('newConnectedMemberResults'));
         const idx = newCurrentResults.findIndex(x => x.PersonalCode === member.PersonalCode);
         openPreviewModal('new', newCurrentResults, Math.max(0, idx));
     }
     function acceptConnectedMember(member) {
         selectedConnectedMember = member;
-        const input = $ ('NewConnectedMemberSearch');
+        const input = $('NewConnectedMemberSearch');
         if (input) input.value = member.PersonalCode || '';
-        closeCombobox($ ('newConnectedMemberResults'));
-        const confirmBox = $ ('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'block';
-        const codeEl = $ ('NewConnectedCode'); if (codeEl) codeEl.textContent = member.PersonalCode || '—';
-        const nameEl = $ ('NewConnectedName'); if (nameEl) nameEl.textContent = member.FullName || '—';
-        const selectBox = $ ('NewConnectedMemberBox'); if (selectBox) selectBox.style.display = 'none';
+        closeCombobox($('newConnectedMemberResults'));
+        const confirmBox = $('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'block';
+        const codeEl = $('NewConnectedCode'); if (codeEl) codeEl.textContent = member.PersonalCode || '—';
+        const nameEl = $('NewConnectedName'); if (nameEl) nameEl.textContent = member.FullName || '—';
+        const selectBox = $('NewConnectedMemberBox'); if (selectBox) selectBox.style.display = 'none';
         prefillNewForm(member, newRelation);
-        const form = $ ('newMemberForm'); if (form) form.style.display = 'block';
+        const form = $('newMemberForm'); if (form) form.style.display = 'block';
         updateNewSubmitVisibility();
         setTimeout(() => form?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
@@ -822,25 +864,37 @@
         if (!connected) return;
         const connectedName = connected.FullName || '';
         const connectedCode = connected.PersonalCode || '';
-        setSafeVal('newFather', ''); setSafeVal('newSpouse', '');
+        setSafeVal('newFather', '');
+        setSafeVal('newSpouse', '');
         if (relation === 'बाबु') setSafeVal('newFather', `${connectedName} (${connectedCode})`);
         else if (relation === 'श्रीमान') setSafeVal('newSpouse', `${connectedName} (${connectedCode})`);
         else if (relation === 'श्रीमती') setSafeVal('newSpouse', `${connectedName} (${connectedCode})`);
+
+        // ✅ Auto-select gender based on relation
+        applyGenderForRelation(relation);
+
+        // ✅ Populate FamilyPositionDropdown if relation is बाबु
+        populateFamilyPosition();
+
         setChecked('newConsentCheck', false);
         updateNewSubmitVisibility();
     }
     function resetNewFlow() {
         newRelation = ''; selectedConnectedMember = null;
         setSafeVal('newConnectedRelation', ''); setSafeVal('NewConnectedMemberSearch', '');
-        closeCombobox($ ('newConnectedMemberResults'));
-        const selectBox = $ ('NewConnectedMemberBox'); if (selectBox) selectBox.style.display = 'none';
-        const confirmBox = $ ('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
-        const form = $ ('newMemberForm'); if (form) { form.reset(); form.style.display = 'none'; }
-        const photo = $ ('newPhotoPreview'); if (photo) { photo.src = ''; photo.style.display = 'none'; }
-        const fileName = $ ('newPhotoFileNameDisplay'); if (fileName) fileName.textContent = 'कुनै फोटो छानिएको छैन';
-        const status = $ ('newUploadStatus'); if (status) status.innerHTML = '';
+        closeCombobox($('newConnectedMemberResults'));
+        const selectBox = $('NewConnectedMemberBox'); if (selectBox) selectBox.style.display = 'none';
+        const confirmBox = $('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
+        const form = $('newMemberForm'); if (form) { form.reset(); form.style.display = 'none'; }
+        const photo = $('newPhotoPreview'); if (photo) { photo.src = ''; photo.style.display = 'none'; }
+        const fileName = $('newPhotoFileNameDisplay'); if (fileName) fileName.textContent = 'कुनै फोटो छानिएको छैन';
+        const status = $('newUploadStatus'); if (status) status.innerHTML = '';
         setSafeVal('newPhotoUrl', ''); setSafeVal('newPublicId', '');
         clearAllFieldErrorsInForm('newMemberForm');
+        // Reset family position group
+        const group = $('FamilyPositionGroup'); if (group) group.style.display = 'none';
+        const dropdown = $('FamilyPositionDropdown'); if (dropdown) dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+        const helper = $('newPositionHelper'); if (helper) helper.style.display = 'none';
         updateNewSubmitVisibility();
     }
 
@@ -848,8 +902,8 @@
     // 11. Combobox wiring
     // ------------------------------------------------------------
     function wireCombobox(inputId, resultsId, refreshFn, state) {
-        const input = $ (inputId);
-        const results = $ (resultsId);
+        const input = $(inputId);
+        const results = $(resultsId);
         if (!input || !results) return;
         input.addEventListener('focus', refreshFn);
         input.addEventListener('input', refreshFn);
@@ -889,10 +943,10 @@
         pick: previewNew
     });
     document.addEventListener('click', (e) => {
-        const exCb = $ ('existingMemberCombobox');
-        if (exCb && !exCb.contains(e.target)) closeCombobox($ ('existingMemberResults'));
-        const newCb = $ ('newConnectedCombobox');
-        if (newCb && !newCb.contains(e.target)) closeCombobox($ ('newConnectedMemberResults'));
+        const exCb = $('existingMemberCombobox');
+        if (exCb && !exCb.contains(e.target)) closeCombobox($('existingMemberResults'));
+        const newCb = $('newConnectedCombobox');
+        if (newCb && !newCb.contains(e.target)) closeCombobox($('newConnectedMemberResults'));
     });
 
     // ------------------------------------------------------------
@@ -905,7 +959,7 @@
         cropSourceFile = file; cropTargetFlow = flow;
         const reader = new FileReader();
         reader.onload = function(e) {
-            const modal = $ ('cropModal'); const imgEl = $ ('cropImage');
+            const modal = $('cropModal'); const imgEl = $('cropImage');
             if (!modal || !imgEl) return;
             modal.style.display = 'flex'; document.body.style.overflow = 'hidden';
             cropZoom = 1; cropRotation = 0; imgEl.style.transform = 'none';
@@ -916,7 +970,7 @@
         reader.readAsDataURL(file);
     }
     function hideCropModal() {
-        const modal = $ ('cropModal'); if (modal) modal.style.display = 'none';
+        const modal = $('cropModal'); if (modal) modal.style.display = 'none';
         document.body.style.overflow = ''; cropImageData = null; cropImage = null; cropSourceFile = null;
         document.removeEventListener('mousemove', onGlobalMouseMove);
         document.removeEventListener('mouseup', onGlobalMouseUp);
@@ -924,7 +978,7 @@
         document.removeEventListener('touchend', onGlobalTouchEnd);
     }
     function initCropBox() {
-        const imgEl = $ ('cropImage'); const boxEl = $ ('cropBox');
+        const imgEl = $('cropImage'); const boxEl = $('cropBox');
         if (!imgEl || !boxEl) return;
         if (!imgEl.complete || !imgEl.naturalWidth) { setTimeout(initCropBox, 100); return; }
         const wrapper = imgEl.parentElement;
@@ -937,13 +991,13 @@
         updateCropBoxDisplay(); setupCropEvents();
     }
     function updateCropBoxDisplay() {
-        const box = $ ('cropBox'); if (!box) return;
+        const box = $('cropBox'); if (!box) return;
         box.style.left = cropBox.x + 'px'; box.style.top = cropBox.y + 'px';
         box.style.width = cropBox.w + 'px'; box.style.height = cropBox.h + 'px';
         box.style.display = 'block';
     }
     function setupCropEvents() {
-        const box = $ ('cropBox'); if (!box) return;
+        const box = $('cropBox'); if (!box) return;
         box.removeEventListener('mousedown', onCropMouseDown);
         box.removeEventListener('touchstart', onCropTouchStart);
         box.addEventListener('mousedown', onCropMouseDown);
@@ -959,7 +1013,7 @@
     }
     function onCropMouseDown(e) {
         e.preventDefault(); e.stopPropagation();
-        const imgEl = $ ('cropImage'); const boxEl = $ ('cropBox');
+        const imgEl = $('cropImage'); const boxEl = $('cropBox');
         if (!imgEl || !boxEl) return;
         const wrapperRect = imgEl.parentElement.getBoundingClientRect();
         const imgRect = imgEl.getBoundingClientRect();
@@ -976,7 +1030,7 @@
     }
     function onCropTouchStart(e) {
         e.preventDefault(); e.stopPropagation();
-        const imgEl = $ ('cropImage'); if (!imgEl) return;
+        const imgEl = $('cropImage'); if (!imgEl) return;
         const touch = e.touches[0];
         const wrapperRect = imgEl.parentElement.getBoundingClientRect();
         const imgRect = imgEl.getBoundingClientRect();
@@ -992,14 +1046,14 @@
     }
     function onGlobalMouseMove(e) {
         if (!isDragging && !isResizing) return;
-        const imgEl = $ ('cropImage'); if (!imgEl) return;
+        const imgEl = $('cropImage'); if (!imgEl) return;
         const wr = imgEl.parentElement.getBoundingClientRect();
         handleCropMove(e.clientX - wr.left, e.clientY - wr.top);
     }
     function onGlobalTouchMove(e) {
         if (!isDragging && !isResizing) return;
         e.preventDefault();
-        const imgEl = $ ('cropImage'); if (!imgEl) return;
+        const imgEl = $('cropImage'); if (!imgEl) return;
         const touch = e.touches[0];
         const wr = imgEl.parentElement.getBoundingClientRect();
         handleCropMove(touch.clientX - wr.left, touch.clientY - wr.top);
@@ -1007,7 +1061,7 @@
     function onGlobalMouseUp() {
         if (isDragging || isResizing) {
             isDragging = false; isResizing = false; resizeHandle = null;
-            const box = $ ('cropBox'); if (box) box.style.cursor = 'move';
+            const box = $('cropBox'); if (box) box.style.cursor = 'move';
         }
     }
     function onGlobalTouchEnd() {
@@ -1080,7 +1134,7 @@
     }
     function performCrop() {
         if (!cropImage) return;
-        const imgEl = $ ('cropImage'); if (!imgEl) return;
+        const imgEl = $('cropImage'); if (!imgEl) return;
         const imgRect = imgEl.getBoundingClientRect();
         const sx = cropImage.width / imgRect.width;
         const sy = cropImage.height / imgRect.height;
@@ -1092,12 +1146,12 @@
         const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
         cropImageData = dataUrl;
         if (cropTargetFlow === 'existing') {
-            const preview = $ ('exPhotoPreview'); const fileName = $ ('exPhotoFileNameDisplay');
+            const preview = $('exPhotoPreview'); const fileName = $('exPhotoFileNameDisplay');
             if (preview) { preview.src = dataUrl; preview.style.display = 'block'; }
             if (fileName) fileName.textContent = 'काटिएको फोटो';
             setSafeVal('exPhotoUrl', dataUrl);
         } else if (cropTargetFlow === 'new') {
-            const preview = $ ('newPhotoPreview'); const fileName = $ ('newPhotoFileNameDisplay');
+            const preview = $('newPhotoPreview'); const fileName = $('newPhotoFileNameDisplay');
             if (preview) { preview.src = dataUrl; preview.style.display = 'block'; }
             if (fileName) fileName.textContent = 'काटिएको फोटो';
             setSafeVal('newPhotoUrl', dataUrl);
@@ -1108,7 +1162,7 @@
     function zoomImage(delta) { cropZoom = Math.max(0.3, Math.min(3, cropZoom + delta)); applyTransform(); }
     function resetTransform() { cropZoom = 1; cropRotation = 0; applyTransform(); }
     function applyTransform() {
-        const img = $ ('cropImage'); if (!img) return;
+        const img = $('cropImage'); if (!img) return;
         img.style.transform = `scale(${cropZoom}) rotate(${cropRotation}deg)`;
     }
 
@@ -1172,7 +1226,7 @@
         const email = safeVal(prefix + 'Email');
         if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError(prefix + 'Email', 'कृपया मान्य इमेल ठेगाना लेख्नुहोस्।'); ok = false; }
         else clearFieldError(prefix + 'Email');
-        const consent = $ (prefix + 'ConsentCheck');
+        const consent = $(prefix + 'ConsentCheck');
         if (consent && !consent.checked) { showFeedback('<i class="fas fa-exclamation-circle"></i> कृपया सहमति बाकसमा चिन्ह लगाउनुहोस्।', 'error'); ok = false; }
         if (!ok) { const firstErr = document.querySelector('.has-error'); if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
         return ok;
@@ -1188,7 +1242,7 @@
         if (!selectedExistingMember) { showFeedback('<i class="fas fa-exclamation-circle"></i> कृपया पहिले सदस्य छान्नुहोस्।', 'error'); return; }
         if (!validateForm('ex', 'exFullName')) return;
         existingSubmitting = true;
-        const submitBtn = $ ('exBtnSubmit');
+        const submitBtn = $('exBtnSubmit');
         setButtonLoading(submitBtn, true, 'पठाउँदै...');
         try {
             let photoUrl = safeVal('exPhotoUrl');
@@ -1223,8 +1277,17 @@
         if (!newRelation) { showFeedback('<i class="fas fa-exclamation-circle"></i> कृपया सम्बन्ध छान्नुहोस्।', 'error'); return; }
         if (!selectedConnectedMember) { showFeedback('<i class="fas fa-exclamation-circle"></i> कृपया जोडिने सदस्य छान्नुहोस्।', 'error'); return; }
         if (!validateForm('new', 'newFullName')) return;
+        // If relation is बाबु, require FamilyPositionDropdown selection
+        if (newRelation === 'बाबु') {
+            const fp = $('FamilyPositionDropdown');
+            if (!fp || !fp.value) {
+                showFeedback('<i class="fas fa-exclamation-circle"></i> कृपया कुन छोरा/छोरी छान्नुहोस्।', 'error');
+                $('FamilyPositionGroup')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+        }
         newSubmitting = true;
-        const submitBtn = $ ('newBtnSubmit');
+        const submitBtn = $('newBtnSubmit');
         setButtonLoading(submitBtn, true, 'पठाउँदै...');
         try {
             let photoUrl = safeVal('newPhotoUrl');
@@ -1232,13 +1295,19 @@
                 const r = await uploadToImgBB(photoUrl, safeVal('newFullName') || 'member', 'new');
                 if (r.success) photoUrl = r.url; else photoUrl = '';
             }
+            // Use family position value if provided, else manual newPosition
+            let placeValue = safeVal('newPosition');
+            if (newRelation === 'बाबु') {
+                const fp = $('FamilyPositionDropdown');
+                if (fp && fp.value) placeValue = fp.value;
+            }
             const payload = {
                 MemberFullName: safeVal('newFullName'), MemberCode: '',
                 MemberGender: normalizeGender(safeSelectVal('newGender', 'M')) || 'M',
                 MemberAddress: safeVal('newAddress'), MemberMobile: safeVal('newMobile'), MemberEmail: safeVal('newEmail'),
                 MemberFather: safeVal('newFather'), MemberMother: safeVal('newMother'), MemberSpouse: safeVal('newSpouse'),
                 MemberDOB: safeVal('newDob'), MemberSons: safeVal('newSonsInput'), MemberDaughters: safeVal('newDaughtersInput'),
-                MemberQualification: safeVal('newQualification'), MemberPlace: safeVal('newPosition'),
+                MemberQualification: safeVal('newQualification'), MemberPlace: placeValue,
                 MemberDetailAddress: safeVal('newDetailAddress'), MemberDetailProfession: safeVal('newDetailProfession'),
                 MemberLifeStory: safeVal('newLifeStory'), MemberDOD: safeVal('newDodAge'),
                 MemberPhotoUrl: photoUrl, MemberProfession: safeVal('newProfession'),
@@ -1258,15 +1327,15 @@
     // 17. Wire events
     // ------------------------------------------------------------
     function wireEvents() {
-        $ ('btnEditExistingMember')?.addEventListener('click', () => {
+        $('btnEditExistingMember')?.addEventListener('click', () => {
             resetNewFlow(); resetExistingFlow(); clearFeedback();
-            const active = $ ('ExistingMemberFlow')?.style.display !== 'none';
+            const active = $('ExistingMemberFlow')?.style.display !== 'none';
             if (active) { hideAllFlows(); return; }
             showExistingFlow();
         });
-        $ ('btnAddNewMember')?.addEventListener('click', () => {
+        $('btnAddNewMember')?.addEventListener('click', () => {
             resetExistingFlow(); resetNewFlow(); clearFeedback();
-            const active = $ ('NewMemberFlow')?.style.display !== 'none';
+            const active = $('NewMemberFlow')?.style.display !== 'none';
             if (active) { hideAllFlows(); return; }
             showNewFlow();
         });
@@ -1279,65 +1348,74 @@
                 hideAllFlows();
             });
         });
-        $ ('btnChangeExistingMember')?.addEventListener('click', () => {
+        $('btnChangeExistingMember')?.addEventListener('click', () => {
             selectedExistingMember = null;
-            const input = $ ('ExistingMemberSearch'); if (input) input.value = '';
-            const confirmBox = $ ('ExistingMemberConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
-            const selectBox = $ ('ExistingMemberSelectBox'); if (selectBox) selectBox.style.display = 'flex';
-            const form = $ ('existingMemberForm'); if (form) form.style.display = 'none';
+            const input = $('ExistingMemberSearch'); if (input) input.value = '';
+            const confirmBox = $('ExistingMemberConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
+            const selectBox = $('ExistingMemberSelectBox'); if (selectBox) selectBox.style.display = 'flex';
+            const form = $('existingMemberForm'); if (form) form.style.display = 'none';
             updateExistingSubmitVisibility(); input?.focus();
         });
-        $ ('btnChangeNewConnected')?.addEventListener('click', () => {
+        $('btnChangeNewConnected')?.addEventListener('click', () => {
             selectedConnectedMember = null;
-            const input = $ ('NewConnectedMemberSearch'); if (input) input.value = '';
-            const confirmBox = $ ('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
-            const selectBox = $ ('NewConnectedMemberBox'); if (selectBox) selectBox.style.display = 'flex';
-            const form = $ ('newMemberForm'); if (form) form.style.display = 'none';
+            const input = $('NewConnectedMemberSearch'); if (input) input.value = '';
+            const confirmBox = $('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
+            const selectBox = $('NewConnectedMemberBox'); if (selectBox) selectBox.style.display = 'flex';
+            const form = $('newMemberForm'); if (form) form.style.display = 'none';
+            // Hide family position group
+            const group = $('FamilyPositionGroup'); if (group) group.style.display = 'none';
             updateNewSubmitVisibility(); input?.focus();
         });
-        $ ('newConnectedRelation')?.addEventListener('change', onRelationChange);
-        $ ('exConsentCheck')?.addEventListener('change', updateExistingSubmitVisibility);
-        $ ('newConsentCheck')?.addEventListener('change', updateNewSubmitVisibility);
-        $ ('exUploadPhotoBtn')?.addEventListener('click', () => $ ('exPhotoFile')?.click());
-        $ ('exPhotoFile')?.addEventListener('change', function() {
+        $('newConnectedRelation')?.addEventListener('change', onRelationChange);
+
+        // ✅ New: gender change → update family position dropdown
+        $('newGender')?.addEventListener('change', onNewGenderChange);
+
+        // ✅ New: family position change → auto-fill newPosition
+        $('FamilyPositionDropdown')?.addEventListener('change', onFamilyPositionChange);
+
+        $('exConsentCheck')?.addEventListener('change', updateExistingSubmitVisibility);
+        $('newConsentCheck')?.addEventListener('change', updateNewSubmitVisibility);
+        $('exUploadPhotoBtn')?.addEventListener('click', () => $('exPhotoFile')?.click());
+        $('exPhotoFile')?.addEventListener('change', function() {
             if (this.files && this.files[0]) openCropModal(this.files[0], 'existing');
             this.value = '';
         });
-        $ ('newUploadPhotoBtn')?.addEventListener('click', () => $ ('newPhotoFile')?.click());
-        $ ('newPhotoFile')?.addEventListener('change', function() {
+        $('newUploadPhotoBtn')?.addEventListener('click', () => $('newPhotoFile')?.click());
+        $('newPhotoFile')?.addEventListener('change', function() {
             if (this.files && this.files[0]) openCropModal(this.files[0], 'new');
             this.value = '';
         });
-        $ ('cropModalClose')?.addEventListener('click', hideCropModal);
-        $ ('cropCancel')?.addEventListener('click', hideCropModal);
-        $ ('cropConfirm')?.addEventListener('click', performCrop);
-        $ ('cropChooseAnother')?.addEventListener('click', () => {
+        $('cropModalClose')?.addEventListener('click', hideCropModal);
+        $('cropCancel')?.addEventListener('click', hideCropModal);
+        $('cropConfirm')?.addEventListener('click', performCrop);
+        $('cropChooseAnother')?.addEventListener('click', () => {
             const flow = cropTargetFlow; hideCropModal();
             setTimeout(() => {
-                if (flow === 'existing') $ ('exPhotoFile')?.click();
-                else if (flow === 'new') $ ('newPhotoFile')?.click();
+                if (flow === 'existing') $('exPhotoFile')?.click();
+                else if (flow === 'new') $('newPhotoFile')?.click();
             }, 100);
         });
-        $ ('cropZoomIn')?.addEventListener('click', () => zoomImage(0.1));
-        $ ('cropZoomOut')?.addEventListener('click', () => zoomImage(-0.1));
-        $ ('cropRotateLeft')?.addEventListener('click', () => rotateImage(-90));
-        $ ('cropRotateRight')?.addEventListener('click', () => rotateImage(90));
-        $ ('cropReset')?.addEventListener('click', resetTransform);
-        $ ('cropModal')?.addEventListener('click', (e) => { if (e.target === $ ('cropModal')) hideCropModal(); });
+        $('cropZoomIn')?.addEventListener('click', () => zoomImage(0.1));
+        $('cropZoomOut')?.addEventListener('click', () => zoomImage(-0.1));
+        $('cropRotateLeft')?.addEventListener('click', () => rotateImage(-90));
+        $('cropRotateRight')?.addEventListener('click', () => rotateImage(90));
+        $('cropReset')?.addEventListener('click', resetTransform);
+        $('cropModal')?.addEventListener('click', (e) => { if (e.target === $('cropModal')) hideCropModal(); });
         document.addEventListener('keydown', (e) => {
-            const modal = $ ('cropModal');
+            const modal = $('cropModal');
             if (e.key === 'Escape' && modal && modal.style.display === 'flex') hideCropModal();
         });
-        $ ('existingMemberForm')?.addEventListener('submit', submitExisting);
-        $ ('newMemberForm')?.addEventListener('submit', submitNew);
-        $ ('exBtnReset')?.addEventListener('click', (e) => {
+        $('existingMemberForm')?.addEventListener('submit', submitExisting);
+        $('newMemberForm')?.addEventListener('submit', submitNew);
+        $('exBtnReset')?.addEventListener('click', (e) => {
             e.preventDefault();
             if (!confirm('तपाईंले भरेको सबै विवरण मेटिनेछ। निश्चित हुनुहुन्छ?')) return;
             if (selectedExistingMember) prefillExistingForm(selectedExistingMember);
             clearAllFieldErrorsInForm('existingMemberForm');
             updateExistingSubmitVisibility();
         });
-        $ ('newBtnReset')?.addEventListener('click', (e) => {
+        $('newBtnReset')?.addEventListener('click', (e) => {
             e.preventDefault();
             if (!confirm('तपाईंले भरेको सबै विवरण मेटिनेछ। निश्चित हुनुहुन्छ?')) return;
             if (selectedConnectedMember) prefillNewForm(selectedConnectedMember, newRelation);
@@ -1345,7 +1423,7 @@
             updateNewSubmitVisibility();
         });
         ['exMobile', 'exEmail', 'newMobile', 'newEmail'].forEach(id => {
-            const el = $ (id); if (!el) return;
+            const el = $(id); if (!el) return;
             el.addEventListener('blur', () => {
                 const v = el.value.trim();
                 if (id.endsWith('Mobile') && v && !/^9[678]\d{8}$/.test(v)) setFieldError(id, 'कृपया 10 अंकको मान्य मोबाइल नम्बर लेख्नुहोस्।');
@@ -1353,7 +1431,7 @@
                 else clearFieldError(id);
             });
         });
-        $ ('btnSubmitAnother')?.addEventListener('click', () => {
+        $('btnSubmitAnother')?.addEventListener('click', () => {
             hideAllFlows(); resetExistingFlow(); resetNewFlow(); clearFeedback();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
@@ -1364,8 +1442,8 @@
     // ------------------------------------------------------------
     async function init() {
         hideAllFlows();
-        const exBtn = $ ('exBtnSubmit'); if (exBtn) exBtn.style.display = 'none';
-        const newBtn = $ ('newBtnSubmit'); if (newBtn) newBtn.style.display = 'none';
+        const exBtn = $('exBtnSubmit'); if (exBtn) exBtn.style.display = 'none';
+        const newBtn = $('newBtnSubmit'); if (newBtn) newBtn.style.display = 'none';
         ensurePreviewModal();
         await loadMembers();
         wireEvents();
