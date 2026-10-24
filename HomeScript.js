@@ -668,6 +668,8 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> बन्दैछ...';
         btn.disabled = true;
 
+        let wrapper = null;
+
         try {
             const sortedMembers = [...allMembers].sort((a, b) => {
                 const codeA = String(a.PersonalCode || '').trim();
@@ -679,22 +681,31 @@
                 return codeA.localeCompare(codeB);
             });
 
-            // Off-screen container setup
+            // 1. Create a container locked strictly to top-left (0,0) of screen
+            wrapper = document.createElement('div');
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = '0';
+            wrapper.style.top = '0';
+            wrapper.style.width = '794px'; // Fixed A4 pixel width
+            wrapper.style.zIndex = '-99999';
+            wrapper.style.opacity = '0'; // Hidden visually but rendered in layout
+            wrapper.style.background = '#ffffff';
+            wrapper.style.pointerEvents = 'none';
+            
             const printContainer = document.createElement('div');
-            printContainer.style.width = '794px'; // Fixed 96 DPI A4 width
+            printContainer.style.width = '794px';
             printContainer.style.background = '#ffffff';
             printContainer.style.color = '#000000';
             printContainer.style.fontFamily = "'Sanskrit-Text', 'MySanskritFont', sans-serif";
             printContainer.style.boxSizing = 'border-box';
 
-            // Increased rows per page from 18 to 25 to fill standard A4 vertical space
+            // 25 rows per page
             const rowsPerPage = 25;
             const chunks = [];
             for (let i = 0; i < sortedMembers.length; i += rowsPerPage) {
                 chunks.push(sortedMembers.slice(i, i + rowsPerPage));
             }
 
-            // Generate HTML for each page with balanced margins and 6 equal columns
             let pagesHtml = '';
             chunks.forEach((chunk, index) => {
                 let rowsHtml = chunk.map(m => `
@@ -740,6 +751,8 @@
             });
 
             printContainer.innerHTML = pagesHtml;
+            wrapper.appendChild(printContainer);
+            document.body.appendChild(wrapper);
 
             const opt = {
                 margin:       0,
@@ -748,8 +761,10 @@
                 html2canvas:  { 
                     scale: 2, 
                     useCORS: true, 
-                    scrollY: 0,
                     scrollX: 0,
+                    scrollY: 0,
+                    x: 0,
+                    y: 0,
                     windowWidth: 794,
                     width: 794
                 },
@@ -763,16 +778,33 @@
             console.error('PDF Error:', err);
             alert('PDF बनाउन सकिएन। कृपया पुनः प्रयास गर्नुहोस्।');
         } finally {
+            if (wrapper && wrapper.parentNode) {
+                wrapper.parentNode.removeChild(wrapper);
+            }
             btn.innerHTML = orig;
             btn.disabled = false;
         }
     }
 
-    // ------------------------------------------------------------
-    // 25. SYSTEMATIC RELATION FINDER
-    // ------------------------------------------------------------
     function openFindRelationModal() {
-        document.getElementById('relationModal').style.display = 'flex';
+        const modal = document.getElementById('relationModal');
+        const body = modal.querySelector('.relation-body');
+        
+        // Ensure the inputs are wrapped in our new grid
+        if (body && !body.querySelector('.relation-inputs-grid')) {
+            const groups = body.querySelectorAll('.relation-select-group');
+            if (groups.length >= 2) {
+                const grid = document.createElement('div');
+                grid.className = 'relation-inputs-grid';
+                // Insert grid before the first group
+                groups[0].parentNode.insertBefore(grid, groups[0]);
+                // Move the two groups into the grid
+                grid.appendChild(groups[0]);
+                grid.appendChild(groups[1]);
+            }
+        }
+
+        modal.style.display = 'flex';
         document.getElementById('personA').value = '';
         document.getElementById('personB').value = '';
         document.getElementById('relationResultBox').innerHTML = '<p class="relation-placeholder">नाता पत्ता लगाउन दुबै व्यक्ति छान्नुहोस्।</p>';
@@ -822,6 +854,7 @@
                         if (isA) selectedMemberA = member;
                         else selectedMemberB = member;
                         el.hidden = true;
+                        inputEl.blur(); // Force close dropdown by blurring input
                     }
                 });
             });
@@ -848,7 +881,6 @@
             return;
         }
 
-        // Call the RelationCalculator
         const result = RelationCalculator.calculateRelation(selectedMemberA, selectedMemberB, allMembers);
 
         if (!result.success) {
@@ -859,26 +891,58 @@
         const nameA = selectedMemberA.FullName;
         const nameB = selectedMemberB.FullName;
 
+        const photoA = selectedMemberA.PhotoUrl || 'https://via.placeholder.com/100x133?text=No+Photo';
+        const photoB = selectedMemberB.PhotoUrl || 'https://via.placeholder.com/100x133?text=No+Photo';
+
+        let lcaHtml = '';
+        if (result.lcaName && result.lcaCode) {
+            lcaHtml = `
+                <div class="relation-lca" style="background: #f8f9fa; padding: 12px; border-radius: 8px; width: 100%; border: 1px solid #eee; box-sizing: border-box; text-align: center; font-size: 0.9rem; color: #555; margin-bottom: 10px;">
+                    <strong>साझा पुर्खा:</strong> ${result.lcaName} (${result.lcaCode})
+                </div>
+            `;
+        }
+
         const html = `
-            <div class="relation-card">
-                <div class="relation-person"><strong>${nameA}</strong><br><small>${selectedMemberA.PersonalCode}</small></div>
-                <div class="relation-link-icon"><i class="fas fa-link"></i></div>
-                <div class="relation-person"><strong>${nameB}</strong><br><small>${selectedMemberB.PersonalCode}</small></div>
+            <div class="relation-photos-wrapper">
+                <div class="relation-person-col">
+                    <div class="relation-img-box">
+                        <img src="${photoA}" alt="${nameA}">
+                    </div>
+                    <div style="font-weight: 600; color: #064b2b;">${nameA}</div>
+                    <div style="font-size: 0.85rem; color: #6c757d;">${selectedMemberA.PersonalCode}</div>
+                </div>
+                
+                <div class="relation-link-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                
+                <div class="relation-person-col">
+                    <div class="relation-img-box">
+                        <img src="${photoB}" alt="${nameB}">
+                    </div>
+                    <div style="font-weight: 600; color: #064b2b;">${nameB}</div>
+                    <div style="font-size: 0.85rem; color: #6c757d;">${selectedMemberB.PersonalCode}</div>
+                </div>
             </div>
             
-            <div class="relation-text-container" style="text-align: center; margin-top: 15px;">
-                <p style="margin-bottom: 5px; font-size: 1rem; color: #333;">
-                    <strong>${nameA} र ${nameB} बिचको सम्बन्ध:</strong>
-                </p>
-                <p class="relation-highlight" style="font-size: 1.2rem; margin-bottom: 5px;">
-                    ${result.message}
-                </p>
-                <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">
-                    <strong>पुस्ता अन्तर:</strong> ${result.genDiff}
-                </p>
+            <div class="relation-result-title">
+                <strong>${nameA} र ${nameB} बिचको सम्बन्ध:</strong>
             </div>
             
-            <p class="relation-lca"><strong>साझा पुर्खा:</strong> ${result.lcaName} (${result.lcaCode})</p>
+            <div class="relation-highlight">
+                ${result.message}
+            </div>
+            
+            <div style="font-size: 0.9rem; color: #555; margin-bottom: 5px;">
+                <strong>पुस्ता अन्तर:</strong> ${result.genDiff}
+            </div>
+
+            <div style="font-size: 0.9rem; color: #555; margin-bottom: 15px;">
+                <strong>पिण्ड अन्तरः</strong> ${result.pindaAntar} (साझा पुस्ता: ${result.commonGen})
+            </div>
+            
+            ${lcaHtml}
         `;
 
         document.getElementById('relationResultBox').innerHTML = html;
