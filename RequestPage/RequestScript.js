@@ -2,6 +2,7 @@
 // Fixed: escapeRegex missing error
 // Fixed: newFullName incorrectly prefilled with connected member's name
 // Added: Spouse duplicate detection rules
+// Improved: Dynamic label for connected member confirmation based on relation
 
 (function() {
     'use strict';
@@ -1134,12 +1135,26 @@
         const idx = newCurrentResults.findIndex(x => x.PersonalCode === member.PersonalCode);
         openPreviewModal('new', newCurrentResults, Math.max(0, idx));
     }
+    
+    // ✅ IMPROVEMENT: Dynamic label in confirm box based on relation
     function acceptConnectedMember(member) {
         selectedConnectedMember = member;
         const input = $('NewConnectedMemberSearch');
         if (input) input.value = member.PersonalCode || '';
         closeCombobox($('newConnectedMemberResults'));
-        const confirmBox = $('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'block';
+        
+        const confirmBox = $('NewConnectedConfirmBox'); 
+        if (confirmBox) confirmBox.style.display = 'block';
+        
+        // Update the label dynamically
+        const labelEl = confirmBox?.querySelector('.member-confirm-label');
+        if (labelEl) {
+            if (newRelation === 'बाबु') labelEl.textContent = 'बाबु:';
+            else if (newRelation === 'श्रीमान') labelEl.textContent = 'श्रीमान:';
+            else if (newRelation === 'श्रीमती') labelEl.textContent = 'श्रीमती:';
+            else labelEl.textContent = 'छानिएको जोडिने सदस्य:'; // Fallback
+        }
+
         const codeEl = $('NewConnectedCode'); if (codeEl) codeEl.textContent = member.PersonalCode || '—';
         const nameEl = $('NewConnectedName'); if (nameEl) nameEl.textContent = member.FullName || '—';
         const selectBox = $('NewConnectedMemberBox'); if (selectBox) selectBox.style.display = 'none';

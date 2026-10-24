@@ -173,7 +173,9 @@
 
             memberRomanIndex.set(m.PersonalCode, variants);
         });
-        console.log('✅ Roman name index built for', memberRomanIndex.size, 'members');
+        if (memberRomanIndex.size > 0) {
+            console.log('✅ Roman name index built for', memberRomanIndex.size, 'members');
+        }
     }
 
     function memberMatchesRoman(member, query) {
@@ -382,7 +384,8 @@
     // 4. Load Members
     // ------------------------------------------------------------
     async function loadMembers() {
-        if (!supabase) return;
+        // Safety: ensure supabase client is ready
+        if (!supabase && !initSupabase()) return;
         try {
             const { data, error } = await supabase
                 .from('MemberDataTable')
@@ -541,9 +544,10 @@
             return;
         }
         resultsEl.hidden = false;
+        resultsEl.setAttribute('role', 'listbox');
         resultsEl.innerHTML = results.map((m, i) => {
             const cls = 'combobox-item' + (i === highlightedIndex ? ' is-highlighted' : '');
-            return `<div class="${cls}" data-index="${i}" role="option">${buildTextSearchRow(m)}</div>`;
+            return `<div class="${cls}" data-index="${i}" role="option" aria-selected="${i === highlightedIndex}">${buildTextSearchRow(m)}</div>`;
         }).join('');
         resultsEl.querySelectorAll('.combobox-item').forEach(el => {
             el.addEventListener('mousedown', (e) => {
@@ -572,8 +576,8 @@
 
         if (!q) {
             return allMembers.slice().sort((a, b) => {
-                const an = a.PersonalCode || '';
-                const bn = b.PersonalCode || '';
+                const an = String(a.PersonalCode || '');
+                const bn = String(b.PersonalCode || '');
                 return an.localeCompare(bn);
             });
         }
@@ -583,7 +587,7 @@
             const name = (m.FullName || '').toLowerCase();
             if (name.includes(q)) return true;
             return memberMatchesRoman(m, q);
-        }).sort((a, b) => a.PersonalCode.localeCompare(b.PersonalCode));
+        }).sort((a, b) => String(a.PersonalCode || '').localeCompare(String(b.PersonalCode || '')));
     }
 
     function refreshNameResults() {
@@ -617,8 +621,8 @@
 
         if (!q) {
             return allMembers.slice().sort((a, b) => {
-                const an = a.PersonalCode || '';
-                const bn = b.PersonalCode || '';
+                const an = String(a.PersonalCode || '');
+                const bn = String(b.PersonalCode || '');
                 return an.localeCompare(bn);
             });
         }
@@ -626,7 +630,7 @@
         return allMembers.filter(m => {
             if (!m || !m.PersonalCode) return false;
             return String(m.PersonalCode).toLowerCase().includes(q);
-        }).sort((a, b) => a.PersonalCode.localeCompare(b.PersonalCode));
+        }).sort((a, b) => String(a.PersonalCode || '').localeCompare(String(b.PersonalCode || '')));
     }
 
     function refreshCodeResults() {
@@ -663,29 +667,21 @@
         }
 
         // ----- TOGGLE on mousedown -----
-        // Browser would normally focus the input on mousedown. We use this
-        // to implement "click to open, click again to close".
-        input.addEventListener('mousedown', (e) => {
-            // If the input is already focused AND the dropdown is visible,
-            // this click means "close me".
+        // "click to open, click again to close" behavior.
+        input.addEventListener('mousedown', () => {
             if (document.activeElement === input && !results.hidden) {
-                e.preventDefault();          // stop the browser from re-focusing
+                // Second click while focused+open => close
                 input.blur();
                 closeTextResults(results);
-                return;
             }
-            // Otherwise let the browser focus the input. We defer the open
-            // to a microtask so focus lands first.
-            // (no preventDefault here)
+            // Otherwise let the browser focus the input; focus handler opens.
         });
 
-        // When the input receives focus (including via click, Tab, etc.),
-        // open the dropdown — UNLESS it's holding a picked label that the
-        // user hasn't modified yet.
+        // When the input receives focus (click, Tab, etc.), open the dropdown
+        // UNLESS it's holding a picked label the user hasn't modified yet.
         input.addEventListener('focus', () => {
             const picked = state.getPicked();
             if (picked && input.value === state.getRawValue()) {
-                // Input still shows the picked label; don't auto-open.
                 return;
             }
             refreshFn();
@@ -693,8 +689,6 @@
 
         // Filter on every keystroke
         input.addEventListener('input', () => {
-            // If user edits after a pick, treat as cleared so view buttons
-            // get disabled again.
             const picked = state.getPicked();
             if (picked) {
                 if (input.value !== state.getRawValue()) {
@@ -983,7 +977,6 @@
             occupation: document.getElementById('occupation-output'),
             education: document.getElementById('education-output'),
             position: document.getElementById('position-output'),
-            dod: document.getElementById('dod-output'),
             sons: document.getElementById('sons-output'),
             daughters: document.getElementById('daughters-output')
         };
@@ -1013,7 +1006,6 @@
         if (outputs.occupation) outputs.occupation.textContent = selectedMember.Profession || '-';
         if (outputs.education) outputs.education.textContent = selectedMember.Education || '-';
         if (outputs.position) outputs.position.textContent = selectedMember.Position || '-';
-        if (outputs.dod) outputs.dod.textContent = selectedMember.DOD_Age || '-';
         if (outputs.sons) {
             const v = selectedMember.Sons;
             outputs.sons.textContent = (v && v.trim() !== '') ? v : '-';
@@ -1083,7 +1075,6 @@
         setText('detail-mobile', m.Mobile);
         setText('detail-email', m.Email);
         setText('detail-dob', m.DOB);
-        setText('detail-dod', m.DOD_Age);
         setText('detail-gender', getGenderLabel(m));
         setText('detail-education', m.Qualification);
         setText('detail-occupation', m.Profession);
@@ -1323,6 +1314,7 @@
     function getAncestorChain(m) {
         if (!m || !m.PersonalCode) return [];
         const blood = getBloodRelative(m);
+        if (!blood || !blood.PersonalCode) return [];
         const chain = [];
         let code = String(blood.PersonalCode).trim();
         let safety = 40;
@@ -1429,7 +1421,7 @@
             width: clone.scrollWidth, height: clone.scrollHeight,
             windowWidth: clone.scrollWidth, windowHeight: clone.scrollHeight
         }).then(canvas => {
-            document.body.removeChild(tempContainer);
+            try { document.body.removeChild(tempContainer); } catch (_) {}
             const link = document.createElement('a');
             link.download = filename || 'member-details.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
@@ -1437,7 +1429,7 @@
             if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fas fa-save"></i>'; }
         }).catch(error => {
             console.error('Error generating image:', error);
-            document.body.removeChild(tempContainer);
+            try { document.body.removeChild(tempContainer); } catch (_) {}
             alert('तस्वीर सुरक्षित गर्न मिलेन।');
             if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fas fa-save"></i>'; }
         });
@@ -1474,7 +1466,7 @@
         initViewToggleButtons();
         initSearchModeButtons();
 
-        // ✅ Wire the text comboboxes AFTER DOM is ready
+        // Wire the text comboboxes AFTER DOM is ready
         wireTextCombobox('NameSearchInput', 'NameSearchResults', refreshNameResults, {
             getResults: () => nameCurrentResults,
             getHighlight: () => nameHighlightedIndex,

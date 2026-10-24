@@ -1059,7 +1059,6 @@
             set('spouseFather', prefillData.Father);
             set('spouseMother', prefillData.Mother);
             set('spousePosition', prefillData.Position);
-            set('spouseDodAge', prefillData.DOD_Age);
             set('spouseDetailAddress', prefillData.DetailAddress);
             set('spouseDetailProfession', prefillData.DetailProfession);
             set('spouseLifeStory', prefillData.LifeStory);
@@ -1192,7 +1191,6 @@
                 Father: document.getElementById('spouseFather').value.trim(),
                 Mother: document.getElementById('spouseMother').value.trim(),
                 Position: document.getElementById('spousePosition').value.trim(),
-                DOD_Age: document.getElementById('spouseDodAge').value.trim(),
                 DetailAddress: document.getElementById('spouseDetailAddress').value.trim(),
                 DetailProfession: document.getElementById('spouseDetailProfession').value.trim(),
                 LifeStory: document.getElementById('spouseLifeStory').value.trim(),
@@ -1284,7 +1282,7 @@
             ['editCode','editFullName','editAddress','editMobile','editEmail','editFather',
              'editMother','editSpouse','editDob','editSons','editDaughters','editProfession',
              'editQualification','editPosition','editDetailAddress','editDetailProfession',
-             'editLifeStory','editDodAge','editPhotoUrl','editPublicId'].forEach(id => {
+             'editLifeStory','editPhotoUrl','editPublicId'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.value = '';
             });
             document.getElementById('editGender').value = 'M';
@@ -1319,7 +1317,6 @@
         document.getElementById('editDetailAddress').value = selectedMember.DetailAddress || '';
         document.getElementById('editDetailProfession').value = selectedMember.DetailProfession || '';
         document.getElementById('editLifeStory').value = selectedMember.LifeStory || '';
-        document.getElementById('editDodAge').value = selectedMember.DOD_Age || '';
 
         // ✅ Populate dropdown
         populateEditPositionDropdown(selectedMember);
@@ -1437,7 +1434,6 @@
             DetailAddress: document.getElementById('editDetailAddress').value.trim(),
             DetailProfession: document.getElementById('editDetailProfession').value.trim(),
             LifeStory: document.getElementById('editLifeStory').value.trim(),
-            DOD_Age: document.getElementById('editDodAge').value.trim(),
             PhotoUrl: document.getElementById('editPhotoUrl').value.trim(),
             PublicId: document.getElementById('editPublicId').value.trim()
         };
@@ -1629,7 +1625,6 @@
             Father: suggestion.Father || '',
             Mother: suggestion.Mother || '',
             Position: suggestion.Place || suggestion.Position || '',
-            DOD_Age: suggestion.DOD_Age || '',
             DetailAddress: suggestion.DetailAddress || '',
             DetailProfession: suggestion.DetailProfession || '',
             LifeStory: suggestion.LifeStory || '',
@@ -2051,7 +2046,7 @@
                 PersonalCode: letter, FullName: fullName, Gender: 'M',
                 Father: '', Mother: '', Spouse: '', Address: '', Mobile: '', Email: '', DOB: '',
                 Sons: '', Daughters: '', Profession: '', Qualification: '', Position: '',
-                DetailAddress: '', DetailProfession: '', LifeStory: '', DOD_Age: '', PhotoUrl: '', PublicId: ''
+                DetailAddress: '', DetailProfession: '', LifeStory: '', PhotoUrl: '', PublicId: ''
             };
             const { error: insertErr } = await supabase.from('MemberDataTable').insert([ancestorPayload]);
             if (insertErr) throw insertErr;
@@ -2063,7 +2058,7 @@
                     Gender: 'M', Father: fullName, Mother: '', Spouse: '',
                     Address: '', Mobile: '', Email: '', DOB: '', Sons: '', Daughters: '',
                     Profession: '', Qualification: '', Position: `${toNepaliOrdinal(index)} छोरा`,
-                    DetailAddress: '', DetailProfession: '', LifeStory: '', DOD_Age: '', PhotoUrl: '', PublicId: ''
+                    DetailAddress: '', DetailProfession: '', LifeStory: '', PhotoUrl: '', PublicId: ''
                 }));
                 const { error: elderErr } = await supabase.from('MemberDataTable').insert(placeholders);
                 if (elderErr) console.warn('⚠️ Could not insert elder placeholders:', elderErr);

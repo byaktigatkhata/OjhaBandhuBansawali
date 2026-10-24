@@ -25,7 +25,6 @@
             <button type="button" id="editMemberBtn" class="action-btn action-btn-blue">
                 <i class="fas fa-edit"></i> छानिएको सदस्य एडिट गर्नुहोस्
             </button>
-            <!-- ✅ REMOVED: Add Generation Button -->
         </div>
     </div>
 
@@ -62,7 +61,6 @@
             </select>
         </div>
 
-        <!-- ✅ CHANGED: स्थान moved directly below gender -->
         <div class="form-group">
             <label><i class="fas fa-sort-numeric-up"></i> स्थानः:</label>
             <select id="position">
@@ -73,7 +71,6 @@
             </div>
         </div>
 
-        <!-- ✅ NEW: ElderCount -->
         <div class="form-group" id="ElderCountGroup">
             <label id="elderCountLabel" for="elderCountInput">
                 <i class="fas fa-users"></i> दाजुहरूको संख्या
@@ -263,10 +260,6 @@
                     <label><i class="fas fa-sort-numeric-up"></i> स्थानः</label>
                     <input type="text" id="spousePosition" placeholder="जेठो छोरो, साइँली बुहारी इत्यादि" />
                 </div>
-                <div class="form-group">
-                    <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति / उमेर</label>
-                    <input type="text" id="spouseDodAge" placeholder="मृत्यु भैसकेको भए मिति, जीवित भए उमेर" />
-                </div>
                 <div class="form-group full-width">
                     <label><i class="fas fa-home"></i> विस्तृत ठेगानाः:</label>
                     <textarea id="spouseDetailAddress" rows="2" placeholder="बसाइँ सराइ लगायत ठेगानाको इतिहास ..."></textarea>
@@ -324,7 +317,6 @@
                         <option value="N">अन्य</option>
                     </select>
                 </div>
-                <!-- ✅ CHANGED: स्थान moved below gender and is now a dropdown -->
                 <div class="form-group">
                     <label><i class="fas fa-sort-numeric-up"></i> परिवारमा स्थानः:</label>
                     <select id="editPosition">
@@ -386,10 +378,6 @@
                 <div class="form-group">
                     <label><i class="fas fa-book-open"></i> जीवन कथा</label>
                     <textarea id="editLifeStory" rows="2"></textarea>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति/उमेर</label>
-                    <input type="text" id="editDodAge" />
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-image"></i> फोटो छान्नुहोस्</label>

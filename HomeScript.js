@@ -655,7 +655,7 @@
     }
 
     // ------------------------------------------------------------
-    // 24. PDF EXPORT (Chunked Pages to avoid html2pdf bug)
+    // 24. PDF EXPORT (Seamless Page Breaks, No Blank Gaps)
     // ------------------------------------------------------------
     async function downloadBansawaliPDF() {
         if (allMembers.length === 0) {
@@ -681,14 +681,14 @@
                 return codeA.localeCompare(codeB);
             });
 
-            // 1. Create a container locked strictly to top-left (0,0) of screen
+            // Off-screen container locked to top-left (0,0) with exact A4 pixel width
             wrapper = document.createElement('div');
             wrapper.style.position = 'fixed';
             wrapper.style.left = '0';
             wrapper.style.top = '0';
-            wrapper.style.width = '794px'; // Fixed A4 pixel width
+            wrapper.style.width = '794px'; 
             wrapper.style.zIndex = '-99999';
-            wrapper.style.opacity = '0'; // Hidden visually but rendered in layout
+            wrapper.style.opacity = '0'; 
             wrapper.style.background = '#ffffff';
             wrapper.style.pointerEvents = 'none';
             
@@ -699,8 +699,8 @@
             printContainer.style.fontFamily = "'Sanskrit-Text', 'MySanskritFont', sans-serif";
             printContainer.style.boxSizing = 'border-box';
 
-            // 25 rows per page
-            const rowsPerPage = 25;
+            // 22 rows per page fits comfortably inside standard A4 height with header/footer margins
+            const rowsPerPage = 22;
             const chunks = [];
             for (let i = 0; i < sortedMembers.length; i += rowsPerPage) {
                 chunks.push(sortedMembers.slice(i, i + rowsPerPage));
@@ -708,38 +708,44 @@
 
             let pagesHtml = '';
             chunks.forEach((chunk, index) => {
-                let rowsHtml = chunk.map(m => `
+                let startIdx = index * rowsPerPage;
+                let rowsHtml = chunk.map((m, idx) => `
                     <tr>
-                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; text-align:center; word-break:break-word; width:16.66%;">${m.PersonalCode || ''}</td>
-                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.FullName || ''}</td>
-                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.Father || ''}</td>
-                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.Mother || ''}</td>
-                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.Spouse || ''}</td>
-                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.Address || m.Thegana || ''}</td>
+                        <td style="border:1px solid #c0c0c0; padding:5px 2px; font-size:11px; text-align:center; width:4%; box-sizing:border-box;">${startIdx + idx + 1}</td>
+                        <td style="border:1px solid #c0c0c0; padding:5px 3px; font-size:11px; text-align:center; word-break:break-word; width:13%; box-sizing:border-box;">${m.PersonalCode || ''}</td>
+                        <td style="border:1px solid #c0c0c0; padding:5px 4px; font-size:11px; word-break:break-word; width:18%; box-sizing:border-box;">${m.FullName || ''}</td>
+                        <td style="border:1px solid #c0c0c0; padding:5px 4px; font-size:11px; word-break:break-word; width:17%; box-sizing:border-box;">${m.Father || ''}</td>
+                        <td style="border:1px solid #c0c0c0; padding:5px 4px; font-size:11px; word-break:break-word; width:17%; box-sizing:border-box;">${m.Mother || ''}</td>
+                        <td style="border:1px solid #c0c0c0; padding:5px 4px; font-size:11px; word-break:break-word; width:15.5%; box-sizing:border-box;">${m.Spouse || ''}</td>
+                        <td style="border:1px solid #c0c0c0; padding:5px 4px; font-size:11px; word-break:break-word; width:15.5%; box-sizing:border-box;">${m.Address || m.Thegana || ''}</td>
                     </tr>
                 `).join('');
 
                 pagesHtml += `
                     <div class="pdf-page" style="
                         width: 794px; 
-                        min-height: 1080px; 
-                        padding: 30px; 
+                        height: 1120px; 
+                        padding: 25px 20px; 
                         box-sizing: border-box; 
                         background: #ffffff; 
                         page-break-after: always; 
+                        page-break-inside: avoid;
                         ${index === chunks.length - 1 ? 'page-break-after: auto;' : ''}
                     ">
-                        <h1 style="text-align:center; color:#0a6b3e; margin:0 0 5px 0; font-size: 22px;">ओझा बन्धु वंशावली</h1>
-                        <p style="text-align:center; margin:0 0 15px 0; color:#555; font-size:11px;">मिति: ${new Date().toLocaleDateString('ne-NP')} (पृष्ठ ${index + 1} / ${chunks.length})</p>
-                        <table style="width:100%; border-collapse:collapse; table-layout: fixed; border:1px solid #ddd;">
+                        <div style="text-align:center; margin-bottom: 10px;">
+                            <h1 style="color:#0a6b3e; margin:0 0 3px 0; font-size: 20px;">ओझा बन्धु वंशावली</h1>
+                            <p style="margin:0; color:#555; font-size:11px;">मिति: ${new Date().toLocaleDateString('ne-NP')} (पृष्ठ ${index + 1} / ${chunks.length})</p>
+                        </div>
+                        <table style="width:100%; border-collapse:collapse; table-layout: fixed; border:1px solid #c0c0c0;">
                             <thead>
                                 <tr style="background:#0a6b3e; color:#fff;">
-                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; text-align:center; width:16.66%;">कोड</th>
-                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">पुरा नाम</th>
-                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">बाबुको नाम</th>
-                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">आमाको नाम</th>
-                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">श्रीमान/श्रीमती</th>
-                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">ठेगाना</th>
+                                    <th style="border:1px solid #0a6b3e; padding:6px 2px; font-size:11px; text-align:center; width:4%; box-sizing:border-box;">क्र.सं.</th>
+                                    <th style="border:1px solid #0a6b3e; padding:6px 3px; font-size:11px; text-align:center; width:13%; box-sizing:border-box;">कोड</th>
+                                    <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:18%; box-sizing:border-box;">पुरा नाम</th>
+                                    <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:17%; box-sizing:border-box;">बाबुको नाम</th>
+                                    <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:17%; box-sizing:border-box;">आमाको नाम</th>
+                                    <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:15.5%; box-sizing:border-box;">श्रीमान/श्रीमती</th>
+                                    <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:15.5%; box-sizing:border-box;">ठेगाना</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -755,7 +761,7 @@
             document.body.appendChild(wrapper);
 
             const opt = {
-                margin:       0,
+                margin:       0, // Zero canvas margins since each .pdf-page handles internal A4 padding
                 filename:     'Ojha_Bandhu_Bansawali.pdf',
                 image:        { type: 'jpeg', quality: 1 }, 
                 html2canvas:  { 

@@ -11,7 +11,7 @@
    browser installs a fresh service worker and purges stale files.
    ============================================================ */
 
-const CACHE_VERSION = 'ojha-v5';   // प्रत्येक deployment मा यो version update गर्नुहोस्
+const CACHE_VERSION = 'ojha-v6';   // प्रत्येक deployment मा यो version update गर्नुहोस्
 const SHELL_CACHE    = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE    = `${CACHE_VERSION}-assets`;
 const OFFLINE_URL    = '/OjhaBandhuBansawali/offline.html';
