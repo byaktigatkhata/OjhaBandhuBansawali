@@ -1063,7 +1063,101 @@ body {
     font-size: 0.82rem;
     margin-top: 0.15rem;
 }
+/* ============================================================
+   ELDER COUNT DROPDOWN — animated, same style as family position
+   ============================================================ */
+#ElderCountGroup {
+    animation: elderCountFadeIn 0.25s ease;
+}
+@keyframes elderCountFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+#ElderCountGroup.highlight {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+#ElderCountGroup select:disabled {
+    background: var(--bg-section-soft);
+    color: var(--text-soft);
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+/* ============================================================
+   REQUIRED STAR — replaces the old आवश्यक / ऐच्छिक pills
+   ============================================================ */
+.req-star {
+    color: var(--danger);
+    font-weight: var(--fw-bold);
+    font-size: 1.05rem;
+    margin-left: 0.25rem;
+    line-height: 1;
+}
 
+/* Hide any legacy badges that might remain */
+.required-badge,
+.optional-badge { display: none !important; }
+
+/* ============================================================
+   FAMILY POSITION DROPDOWN (New flow) — animated
+   ============================================================ */
+#FamilyPositionGroup {
+    animation: familyPosFadeIn 0.25s ease;
+}
+@keyframes familyPosFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+#FamilyPositionGroup.highlight {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+#FamilyPositionGroup select:disabled {
+    background: var(--bg-section-soft);
+    color: var(--text-soft);
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+#newPositionHelper {
+    color: var(--accent-dark);
+    font-weight: var(--fw-semibold);
+    font-size: 0.82rem;
+    margin-top: 0.15rem;
+}
+
+/* ============================================================
+   ELDER COUNT DROPDOWN (New flow)
+   ============================================================ */
+#ElderCountGroup {
+    animation: elderCountFadeIn 0.25s ease;
+}
+@keyframes elderCountFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+#ElderCountGroup select:disabled {
+    background: var(--bg-section-soft);
+    color: var(--text-soft);
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+
+/* ============================================================
+   EXISTING FORM — position dropdown helper
+   ============================================================ */
+#exPositionHelper {
+    color: var(--text-soft);
+    font-size: 0.82rem;
+    margin-top: 0.15rem;
+}
+#exPositionDropdown:disabled {
+    background: var(--bg-section-soft);
+    color: var(--text-soft);
+    cursor: not-allowed;
+    opacity: 0.75;
+}
 /* ============================================================
    RESPONSIVE
    ============================================================ */

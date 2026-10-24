@@ -48,8 +48,27 @@
     let currentAdminRole = null;
     let currentAdminInfo = null;
 
+    // ✅ ElderCount — always tracked (default '0')
+    let elderCountForChild = '0';
+
     const supabaseDB = window.SupabaseConfig?.supabase;
     const LOGIN_PAGE_URL = '../LoginPage/LoginIndex.html';
+
+    // ------------------------------------------------------------
+    // 2b. Position option lists (स्थान dropdown)
+    // ------------------------------------------------------------
+    const MALE_POSITIONS = [
+        'जेठो छोरा', 'माइलो छोरा', 'साइँलो छोरा', 'काइँलो छोरा',
+        'अन्तरे छोरा', 'जन्तरे छोरा', 'मन्तरे छोरा', 'लखन्तरे छोरा',
+        'बखन्तरे छोरा', 'पानी मन्तरे छोरा', 'एघारन्तरे छोरा', 'बारन्तरे छोरा',
+        'तेरन्तरे छोरा', 'चौधन्तरे छोरा', 'पन्द्रन्तरे छोरा', 'कान्छो छोरा'
+    ];
+    const FEMALE_POSITIONS = [
+        'जेठी छोरी', 'माइली छोरी', 'साइँली छोरी', 'काइँली छोरी',
+        'अन्तरी छोरी', 'जन्तरी छोरी', 'मन्तरी छोरी', 'लखन्तरी छोरी',
+        'बखन्तरी छोरी', 'पानी मन्तरी छोरी', 'एघारन्तरी छोरी', 'बारन्तरी छोरी',
+        'तेरन्तरी छोरी', 'चौधन्तरी छोरी', 'पन्द्रन्तरी छोरी', 'कान्छी छोरी'
+    ];
 
     // ------------------------------------------------------------
     // 4. Admin Info Reader
@@ -57,13 +76,8 @@
     function loadAdminInfoFromSession() {
         try {
             const raw = sessionStorage.getItem('ojhaAdminInfo') || localStorage.getItem('ojhaAdminInfo');
-            if (!raw) {
-                console.log('ℹ️ No admin info found in storage.');
-                return null;
-            }
-            const parsed = JSON.parse(raw);
-            console.log('👤 Admin info loaded from storage:', parsed);
-            return parsed;
+            if (!raw) return null;
+            return JSON.parse(raw);
         } catch (e) {
             console.warn('⚠️ Could not parse admin info:', e);
             return null;
@@ -78,14 +92,10 @@
     // 5. Authentication
     // ------------------------------------------------------------
     async function checkPrivatePageAccess() {
-        console.log('🔐 Checking authentication...');
         try {
             const { data: { session }, error } = await supabaseDB.auth.getSession();
-            console.log('📊 Session data:', session ? 'Session exists' : 'No session');
-
             if (error) { console.error('Authentication check error:', error); redirectToLogin(); return false; }
-            if (!session?.user) { console.log('🚫 No authenticated user found, redirecting...'); redirectToLogin(); return false; }
-            console.log('✅ User authenticated:', session.user.email);
+            if (!session?.user) { redirectToLogin(); return false; }
             return true;
         } catch (error) {
             console.error('Private page authentication error:', error);
@@ -95,7 +105,6 @@
     }
 
     function redirectToLogin() {
-        console.log('🔄 Redirecting to login page...');
         window.location.replace(LOGIN_PAGE_URL);
     }
 
@@ -326,7 +335,7 @@
         return m ? m[1] : null;
     }
 
-    function generateCodeFromSelection(selectedParentCode, members, gender) {
+    function generateCodeFromSelection(selectedParentCode, members, gender, elderCountOverride) {
         let parentCode = selectedParentCode;
         if (!parentCode) {
             const root = findRootMember(members);
@@ -337,6 +346,14 @@
         const branch = getBaseCode(parentCode);
 
         const g = (gender === 'O') ? 'N' : gender;
+
+        if (elderCountOverride !== '' && elderCountOverride !== null && elderCountOverride !== undefined) {
+            const n = parseInt(elderCountOverride, 10);
+            if (!isNaN(n) && n >= 0) {
+                const genderLetter = (g === 'M' || g === 'F' || g === 'N') ? g : 'M';
+                return branch + '.' + genderLetter + (n + 1);
+            }
+        }
 
         if (g === 'M') return branch + '.M' + getNextGenderIndex(branch, 'M', members);
         if (g === 'F') return branch + '.F' + getNextGenderIndex(branch, 'F', members);
@@ -596,17 +613,6 @@
         updateCode();
     }
 
-    /**
-     * ✅ Select ONLY real members from the ancestor chain.
-     *
-     *   Each real member is placed at its correct generation slot:
-     *     genSelects[getGenerationFromCode(code)] = that member
-     *
-     *   Phantom codes (like "K.6" which is just a branch marker) are
-     *   skipped — their slots stay at the placeholder.
-     *
-     *   After selection, updateCode() runs to generate the new child's code.
-     */
     function selectAncestorChainInDropdowns(targetCode) {
         if (!targetCode) return false;
 
@@ -614,31 +620,14 @@
         const chain = getAncestorChain(target);
         if (chain.length === 0) return false;
 
-        console.log('🔗 Full ancestor chain:', chain);
-
-        // Filter to REAL members only, keeping their generation slot
         const realChain = [];
         chain.forEach(code => {
             const real = allMembers.find(m => String(m.PersonalCode).trim() === code);
-            if (real) {
-                realChain.push({
-                    code,
-                    gen: getGenerationFromCode(code),
-                    member: real
-                });
-            } else {
-                console.log(`⏭️ Skipping phantom code: ${code}`);
-            }
+            if (real) realChain.push({ code, gen: getGenerationFromCode(code), member: real });
         });
 
-        if (realChain.length === 0) {
-            console.warn('⚠️ No real members found in the chain.');
-            return false;
-        }
+        if (realChain.length === 0) return false;
 
-        console.log('✅ Real members in chain:', realChain.map(r => `${r.code} (gen ${r.gen})`));
-
-        // Ensure enough slots — down to deepest real member + 1 for the child
         const deepestGen = Math.max(...realChain.map(r => r.gen));
         const requiredSlots = deepestGen + 2;
         if (requiredSlots > generationCount) {
@@ -646,11 +635,9 @@
             buildGenerationDropdowns(generationCount);
         }
 
-        // Populate root first
         populateRootDropdown();
 
-        // Place each real member at its generation slot
-        for (const { code, gen, member } of realChain) {
+        for (const { code, gen } of realChain) {
             if (gen >= genSelects.length) {
                 generationCount = gen + 2;
                 buildGenerationDropdowns(generationCount);
@@ -660,25 +647,21 @@
             const sel = genSelects[gen];
             if (!sel) continue;
 
-            // Ensure option exists — if not, try to populate from previous chain code
             if (!sel.querySelector(`option[value="${code}"]`)) {
                 if (gen === 0) {
                     populateRootDropdown();
                 } else {
                     const prevCode = chain[gen - 1];
-                    if (prevCode) {
-                        populateNextGenDropdown(gen - 1, prevCode);
-                    }
+                    if (prevCode) populateNextGenDropdown(gen - 1, prevCode);
                 }
             }
 
-            // If still missing (e.g. parent code was phantom), inject directly
             let opt = sel.querySelector(`option[value="${code}"]`);
             if (!opt) {
-                console.log(`ℹ️ Injecting real member ${code} into slot ${gen}`);
+                const member = allMembers.find(m => String(m.PersonalCode).trim() === code);
                 opt = document.createElement('option');
                 opt.value = code;
-                opt.textContent = formatMemberLabel(member);
+                opt.textContent = formatMemberLabel(member || { PersonalCode: code, FullName: '' });
                 const placeholder = sel.querySelector('option[value=""]');
                 if (placeholder && placeholder.nextSibling) {
                     sel.insertBefore(opt, placeholder.nextSibling);
@@ -688,15 +671,12 @@
             }
 
             sel.value = code;
-            console.log(`✅ Slot ${gen} → ${code} (${member.FullName || ''})`);
 
-            // Populate next slot with this code's children
             if (gen + 1 < genSelects.length) {
                 populateNextGenDropdown(gen, code);
             }
         }
 
-        // Recompute the new child's PersonalCode
         updateCode();
         return true;
     }
@@ -710,7 +690,12 @@
     function updateCode() {
         const selectedParentCode = getSelectedCode();
         const gender = document.getElementById('gender')?.value || 'M';
-        const code = generateCodeFromSelection(selectedParentCode, allMembers, gender);
+        const code = generateCodeFromSelection(
+            selectedParentCode,
+            allMembers,
+            gender,
+            elderCountForChild
+        );
         if (personalCodeInput) personalCodeInput.value = code;
         if (genBadge) genBadge.textContent = `पुस्ता ${getGenerationFromCode(code)}`;
     }
@@ -731,8 +716,7 @@
     const TOGGLE_BTNS = {
         addMemberForm:    document.getElementById('toggleAddFormBtn'),
         spouseBtn:        document.getElementById('addSpouseBtn'),
-        editBtn:          document.getElementById('editMemberBtn'),
-        addGenerationBtn: document.getElementById('addGenerationBtn')
+        editBtn:          document.getElementById('editMemberBtn')
     };
 
     function showPanel(panelId) {
@@ -783,18 +767,6 @@
         });
     });
 
-    TOGGLE_BTNS.addGenerationBtn?.addEventListener('click', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        generationCount++;
-        buildGenerationDropdowns(generationCount);
-        if (allMembers.length > 0) refreshDropdowns(); else updateCode();
-        const feedbackEl = document.getElementById('formFeedback');
-        if (feedbackEl) {
-            feedbackEl.innerHTML = `<span style="color:#0066cc;"><i class="fas fa-info-circle"></i> पुस्ता थपियो। अब कुल ${generationCount - 1} पुस्ता छन्।</span>`;
-            setTimeout(() => { if (feedbackEl.innerHTML.includes('पुस्ता थपियो')) feedbackEl.innerHTML = ''; }, 3000);
-        }
-    });
-
     // ============================================================
     // 12. Sons & Daughters management
     // ============================================================
@@ -834,6 +806,76 @@
         const val = daughterInput?.value.trim();
         if (val) { daughters.push(val); daughterInput.value = ''; renderDaughters(); }
     });
+
+    // ============================================================
+    // 12b. ElderCount + स्थान dropdown
+    // ============================================================
+    const elderCountInput = document.getElementById('elderCountInput');
+    const elderCountHidden = document.getElementById('elderCountHidden');
+    const elderCountLabel = document.getElementById('elderCountLabel');
+    const positionSelect = document.getElementById('position');
+    const positionHint = document.getElementById('positionHint');
+
+    /** Set the label of ElderCount based on gender */
+    function updateElderCountLabel(gender) {
+        if (!elderCountLabel) return;
+        const g = (gender === 'O') ? 'N' : (gender || 'M');
+        elderCountLabel.innerHTML = (g === 'F')
+            ? '<i class="fas fa-users"></i> दिदीहरूको संख्या'
+            : '<i class="fas fa-users"></i> दाजुहरूको संख्या';
+    }
+
+    /** Populate the स्थान dropdown based on gender */
+    function populatePositionDropdown(gender) {
+        if (!positionSelect) return;
+        const g = (gender === 'O') ? 'N' : (gender || 'M');
+
+        const previous = positionSelect.value;
+        let list = [];
+        let label = 'छान्नुहोस्';
+
+        if (g === 'F') {
+            list = FEMALE_POSITIONS;
+            label = 'कुन छोरी?';
+        } else {
+            list = MALE_POSITIONS;
+            label = 'कुन छोरा?';
+        }
+
+        positionSelect.innerHTML = '<option value="">छान्नुहोस्</option>';
+        list.forEach(opt => {
+            const o = document.createElement('option');
+            o.value = opt;
+            o.textContent = opt;
+            positionSelect.appendChild(o);
+        });
+
+        // Restore previous if still valid
+        if (previous && list.includes(previous)) {
+            positionSelect.value = previous;
+        }
+
+        if (positionHint) positionHint.textContent = label + ' छान्नुहोस्।';
+    }
+
+    /** React when ElderCount changes → recompute code */
+    function onElderCountChange() {
+        const val = elderCountInput ? elderCountInput.value : '0';
+        elderCountForChild = val === '' ? '0' : val;
+        if (elderCountHidden) elderCountHidden.value = elderCountForChild;
+        updateCode();
+    }
+
+    /** React when gender changes → update ElderCount label + स्थान dropdown */
+    function onGenderChange() {
+        const g = document.getElementById('gender')?.value || 'M';
+        updateElderCountLabel(g);
+        populatePositionDropdown(g);
+        updateCode();
+    }
+
+    elderCountInput?.addEventListener('change', onElderCountChange);
+    document.getElementById('gender')?.addEventListener('change', onGenderChange);
 
     // ============================================================
     // 13. Cloudinary Upload for Add Member Form
@@ -917,15 +959,10 @@
             isNewFormatMode = allMembers.some(m =>
                 m && m.PersonalCode && /^[A-Z]$/.test(String(m.PersonalCode).trim())
             );
-            console.log('📐 Format mode:', isNewFormatMode ? 'NEW' : 'LEGACY');
-
-            const roots = allMembers.filter(m => getParentBranch(m.PersonalCode) === null);
-            console.log('🔍 Root candidates:', roots.length, roots.map(r => r.PersonalCode + ' (' + r.FullName + ')'));
 
             const root = findRootMember(allMembers);
             currentRootCode = root ? root.PersonalCode : null;
             currentRootLetter = root ? getRootLetterFromCode(root.PersonalCode) : null;
-            console.log('🌳 Root:', currentRootCode, '| Letter:', currentRootLetter);
 
             updateAncestorButtonState();
             updateRemoveRootButtonState();
@@ -938,7 +975,6 @@
             updateAncestorPreview();
             updateRemoveRootPreview();
 
-            // Apply pending suggestion routing once members are loaded
             if (pendingSuggestionSelection) {
                 const pending = pendingSuggestionSelection;
                 pendingSuggestionSelection = null;
@@ -976,16 +1012,20 @@
         const gender = member.Gender || 'M';
         let spouseLabel = 'श्रीमान/श्रीमती';
         let modalTitle = 'श्रीमान/श्रीमती थप्नुहोस्';
+        let targetGender = 'M';
 
         if (gender === 'M') {
             spouseLabel = existingSpouses.length === 0 ? 'श्रीमती (Wife of)' : `श्रीमती #${wifeNumber}`;
             modalTitle = existingSpouses.length === 0 ? 'श्रीमती थप्नुहोस्' : `श्रीमती #${wifeNumber} थप्नुहोस्`;
+            targetGender = 'F';
         } else if (gender === 'F') {
             spouseLabel = existingSpouses.length === 0 ? 'श्रीमान (Husband of)' : `श्रीमान #${wifeNumber}`;
             modalTitle = existingSpouses.length === 0 ? 'श्रीमान थप्नुहोस्' : `श्रीमान #${wifeNumber} थप्नुहोस्`;
+            targetGender = 'M';
         } else if (gender === 'N' || gender === 'O') {
             spouseLabel = existingSpouses.length === 0 ? 'श्रीमान/श्रीमती (Spouse of)' : `श्रीमान/श्रीमती #${wifeNumber}`;
             modalTitle = existingSpouses.length === 0 ? 'श्रीमान/श्रीमती थप्नुहोस्' : `श्रीमान/श्रीमती #${wifeNumber} थप्नुहोस्`;
+            targetGender = 'M';
         }
 
         document.getElementById('spouseOfLabel').textContent = spouseLabel;
@@ -1001,6 +1041,9 @@
         document.getElementById('spousePhotoPreview').style.display = 'none';
         window._spousePhotoUrl = null; window._spousePhotoPublicId = null;
 
+        // ✅ Auto-select gender
+        document.getElementById('spouseGender').value = targetGender;
+
         if (prefillData) {
             const set = (id, val) => {
                 const el = document.getElementById(id);
@@ -1013,8 +1056,6 @@
             set('spouseEmail', prefillData.Email);
             set('spouseDob', prefillData.DOB);
             set('spouseProfession', prefillData.Profession);
-
-            // ✅ Newly added fields
             set('spouseFather', prefillData.Father);
             set('spouseMother', prefillData.Mother);
             set('spousePosition', prefillData.Position);
@@ -1112,6 +1153,25 @@
             alert(`❌ कोड "${spouseCode}" पहिले नै अवस्थित छ।`); return;
         }
 
+        // ✅ Duplicate check for spouse
+        const baseCode = spouseCode.replace(/m+$/, '');
+        const existingSpouses = allMembers.filter(m =>
+            m.PersonalCode && new RegExp('^' + escapeRegex(baseCode) + 'm+$').test(String(m.PersonalCode).trim())
+        );
+        
+        const mainMember = allMembers.find(m => m.PersonalCode === baseCode);
+        if (mainMember) {
+            const mainGender = getGenderForCode(mainMember.PersonalCode) || mainMember.Gender || 'M';
+            if (mainGender === 'M' && existingSpouses.length > 0) {
+                if (!confirm(`⚠️ यो श्रीमानको पहिले नै श्रीमती दर्ता भइसकेको छ:\n\nश्रीमती: ${existingSpouses.map(s=>s.FullName).join(', ')}\n\nके यो नयाँ सदस्य उनको अर्को श्रीमती हो?`)) {
+                    return;
+                }
+            } else if (mainGender === 'F' && existingSpouses.length > 0) {
+                alert(`❌ यो श्रीमतीको पहिले नै श्रीमान दर्ता भइसकेको छ:\n\nश्रीमान: ${existingSpouses.map(s=>s.FullName).join(', ')}\n\nएक महिलाको एक भन्दा बढी श्रीमान हुन सक्दैन।`);
+                return;
+            }
+        }
+
         const submitBtn = document.getElementById('addSpouseModalBtn');
         if (submitBtn) setButtonLoading(submitBtn, true, 'थप्दै...');
 
@@ -1129,8 +1189,6 @@
                 DOB: document.getElementById('spouseDob').value.trim(),
                 Profession: document.getElementById('spouseProfession').value.trim(),
                 Spouse: document.getElementById('spouseOf').value.split(' (')[0],
-
-                // ✅ Newly added fields
                 Father: document.getElementById('spouseFather').value.trim(),
                 Mother: document.getElementById('spouseMother').value.trim(),
                 Position: document.getElementById('spousePosition').value.trim(),
@@ -1138,7 +1196,6 @@
                 DetailAddress: document.getElementById('spouseDetailAddress').value.trim(),
                 DetailProfession: document.getElementById('spouseDetailProfession').value.trim(),
                 LifeStory: document.getElementById('spouseLifeStory').value.trim(),
-
                 PhotoUrl: window._spousePhotoUrl || '',
                 PublicId: window._spousePhotoPublicId || ''
             };
@@ -1174,6 +1231,48 @@
     // ============================================================
     // 16. Edit Member
     // ============================================================
+    
+    /** ✅ Helper to get gender letter from code or Gender field */
+    function getGenderForCode(code, fallbackGender) {
+        if (!code) return fallbackGender || 'M';
+        const gl = getGenderLetter(code);
+        if (gl) return gl;
+        return fallbackGender || 'M';
+    }
+
+    /** ✅ Populate edit position dropdown based on personal code/gender */
+    function populateEditPositionDropdown(member) {
+        const editPosDropdown = document.getElementById('editPosition');
+        if (!editPosDropdown) return;
+
+        let list = [];
+        if (member) {
+            const gender = getGenderForCode(member.PersonalCode, member.Gender);
+            if (gender === 'F') list = FEMALE_POSITIONS;
+            else list = MALE_POSITIONS;
+        }
+
+        editPosDropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+        list.forEach(opt => {
+            const o = document.createElement('option');
+            o.value = opt;
+            o.textContent = opt;
+            editPosDropdown.appendChild(o);
+        });
+
+        // Select existing value if it exists
+        if (member && member.Position) {
+            // If it's not in the list, inject it as a custom option
+            if (!list.includes(member.Position)) {
+                const customOpt = document.createElement('option');
+                customOpt.value = member.Position;
+                customOpt.textContent = member.Position + ' (पहिले सुरक्षित)';
+                editPosDropdown.appendChild(customOpt);
+            }
+            editPosDropdown.value = member.Position;
+        }
+    }
+
     TOGGLE_BTNS.editBtn?.addEventListener('click', function(e) {
         e.preventDefault(); e.stopPropagation();
         if (PANELS.editModal?.classList.contains('is-active')) { hideAllPanels(); isEditMode = false; return; }
@@ -1217,11 +1316,13 @@
         document.getElementById('editDaughters').value = selectedMember.Daughters || '';
         document.getElementById('editProfession').value = selectedMember.Profession || '';
         document.getElementById('editQualification').value = selectedMember.Qualification || '';
-        document.getElementById('editPosition').value = selectedMember.Position || '';
         document.getElementById('editDetailAddress').value = selectedMember.DetailAddress || '';
         document.getElementById('editDetailProfession').value = selectedMember.DetailProfession || '';
         document.getElementById('editLifeStory').value = selectedMember.LifeStory || '';
         document.getElementById('editDodAge').value = selectedMember.DOD_Age || '';
+
+        // ✅ Populate dropdown
+        populateEditPositionDropdown(selectedMember);
 
         const rawPhotoUrl = selectedMember.PhotoUrl || '';
         const publicId = selectedMember.PublicId || '';
@@ -1332,7 +1433,7 @@
             Daughters: document.getElementById('editDaughters').value.trim(),
             Profession: document.getElementById('editProfession').value.trim(),
             Qualification: document.getElementById('editQualification').value.trim(),
-            Position: document.getElementById('editPosition').value.trim(),
+            Position: document.getElementById('editPosition').value,
             DetailAddress: document.getElementById('editDetailAddress').value.trim(),
             DetailProfession: document.getElementById('editDetailProfession').value.trim(),
             LifeStory: document.getElementById('editLifeStory').value.trim(),
@@ -1385,8 +1486,6 @@
             return false;
         }
 
-        console.log('📥 Suggestion received:', suggestion);
-
         returnToViewRequest = suggestion.returnToViewRequest || false;
         editingSuggestionId = suggestion.SuggestionId || null;
 
@@ -1411,11 +1510,6 @@
         if (!pending) return;
         const { raw, connectedCode, connectedRelation } = pending;
 
-        console.log('🎯 Applying suggestion routing:', {
-            connectedCode, connectedRelation,
-            requestType: pending.requestType
-        });
-
         const rel = String(connectedRelation || '').trim().toLowerCase();
 
         if (rel === 'बाबु' || rel === 'father' || rel === 'baba' || rel === 'buba') {
@@ -1425,17 +1519,13 @@
         } else if (rel === 'श्रीमती' || rel === 'wife' || rel === 'shrimati') {
             handleSuggestionForAddSpouse(raw, connectedCode, 'M');
         } else {
-            console.warn('⚠️ Unknown ConnectedRelation:', connectedRelation, '— falling back to Add Member form.');
             handleSuggestionForAddMember(raw, null);
         }
     }
 
     function handleSuggestionForAddMember(suggestion, connectedCode) {
         if (connectedCode) {
-            const ok = selectAncestorChainInDropdowns(connectedCode);
-            if (!ok) {
-                console.warn('⚠️ Could not select the ancestor chain for code:', connectedCode);
-            }
+            selectAncestorChainInDropdowns(connectedCode);
         }
 
         const set = (id, val) => {
@@ -1458,11 +1548,30 @@
         set('daughtersInput', suggestion.Daughters);
         set('profession', suggestion.Profession);
         set('qualification', suggestion.Qualification);
-        set('position', suggestion.Position);
         set('detailAddress', suggestion.DetailAddress);
         set('detailProfession', suggestion.DetailProfession);
         set('lifeStory', suggestion.LifeStory);
-        set('dodAge', suggestion.DOD_Age);
+
+        // ✅ Populate स्थान dropdown based on gender
+        populatePositionDropdown(g);
+
+        // ✅ Set स्थान value if it exists in the list
+        if (suggestion.Position) {
+            const posEl = document.getElementById('position');
+            if (posEl && posEl.querySelector(`option[value="${suggestion.Position}"]`)) {
+                posEl.value = suggestion.Position;
+            }
+        }
+
+        // ✅ Set ElderCount from suggestion (default 0)
+        const ecVal = (suggestion.ElderCount === null || suggestion.ElderCount === undefined)
+            ? '0' : String(suggestion.ElderCount);
+        if (elderCountInput) {
+            elderCountInput.value = elderCountInput.querySelector(`option[value="${ecVal}"]`) ? ecVal : '0';
+        }
+        elderCountForChild = elderCountInput ? elderCountInput.value : '0';
+        if (elderCountHidden) elderCountHidden.value = elderCountForChild;
+        updateElderCountLabel(g);
 
         if (suggestion.PhotoUrl) {
             if (photoUrlInput) photoUrlInput.value = suggestion.PhotoUrl;
@@ -1490,19 +1599,14 @@
 
     function handleSuggestionForAddSpouse(suggestion, connectedCode, forcedSpouseGender) {
         if (!connectedCode) {
-            console.warn('⚠️ No ConnectedCode for spouse suggestion — falling back to Add Member.');
             handleSuggestionForAddMember(suggestion, null);
             return;
         }
 
-        const ok = selectAncestorChainInDropdowns(connectedCode);
-        if (!ok) {
-            console.warn('⚠️ Could not select the ancestor chain for code:', connectedCode);
-        }
+        selectAncestorChainInDropdowns(connectedCode);
 
         const partner = allMembers.find(m => String(m.PersonalCode).trim() === String(connectedCode).trim());
         if (!partner) {
-            console.warn('⚠️ Connected member not found in DB:', connectedCode);
             if (feedback) {
                 feedback.innerHTML = `<span style="color:#b02b2b;"><i class="fas fa-exclamation-triangle"></i> सम्बन्धित सदस्य "${connectedCode}" भेटिएन।</span>`;
             }
@@ -1510,8 +1614,6 @@
             return;
         }
 
-        // ✅ Use the suggestion's own MemberGender (the person being added).
-        //    Fall back to forcedSpouseGender only if suggestion has no gender.
         let suggestionGender = suggestion.Gender || '';
         if (suggestionGender === 'O') suggestionGender = 'N';
         if (!suggestionGender) suggestionGender = forcedSpouseGender || 'M';
@@ -1524,7 +1626,6 @@
             Email: suggestion.Email || '',
             DOB: suggestion.DOB || '',
             Profession: suggestion.Profession || '',
-            // ✅ Newly included fields
             Father: suggestion.Father || '',
             Mother: suggestion.Mother || '',
             Position: suggestion.Place || suggestion.Position || '',
@@ -1536,12 +1637,6 @@
         };
 
         openSpouseModalFor(partner, prefill);
-
-        if (feedback) {
-            const genderWord = (suggestionGender === 'F') ? 'श्रीमती' :
-                            (suggestionGender === 'M') ? 'श्रीमान' : 'श्रीमान/श्रीमती';
-            feedback.innerHTML = `<span style="color:#0066cc;"><i class="fas fa-info-circle"></i> 📝 ${genderWord} थप्ने फारममा सुझाव डाटा लोड गरियो।</span>`;
-        }
     }
 
     function checkForSuggestionData() { if (localStorage.getItem('suggestionData')) loadSuggestionData(); }
@@ -1572,7 +1667,8 @@
         if (g === 'O') g = 'N';
 
         const payload = {
-            PersonalCode: personalCode, FullName: fullName,
+            PersonalCode: personalCode,
+            FullName: fullName,
             Gender: g,
             Address: document.getElementById('address').value.trim(),
             Mobile: document.getElementById('mobile').value.trim(),
@@ -1585,11 +1681,10 @@
             Daughters: document.getElementById('daughtersInput').value.trim(),
             Profession: document.getElementById('profession').value.trim(),
             Qualification: document.getElementById('qualification').value.trim(),
-            Position: document.getElementById('position').value.trim(),
+            Position: document.getElementById('position').value,
             DetailAddress: document.getElementById('detailAddress').value.trim(),
             DetailProfession: document.getElementById('detailProfession').value.trim(),
             LifeStory: document.getElementById('lifeStory').value.trim(),
-            DOD_Age: document.getElementById('dodAge').value.trim(),
             PhotoUrl: document.getElementById('photoUrl').value.trim(),
             PublicId: document.getElementById('publicId').value.trim()
         };
@@ -1634,9 +1729,24 @@
 
             form.querySelectorAll('input:not([type="hidden"]):not([readonly]):not([id="personalCode"]), textarea')
                 .forEach(input => { if (input.id !== 'personalCode') input.value = ''; });
-            form.querySelectorAll('select').forEach(select => { if (!select.id.startsWith('gen')) select.selectedIndex = 0; });
+            form.querySelectorAll('select').forEach(select => {
+                if (!select.id.startsWith('gen') && select.id !== 'elderCountInput') {
+                    if (select.id === 'position' || select.id === 'gender') return; 
+                    select.selectedIndex = 0;
+                }
+            });
             sons.length = 0; daughters.length = 0;
             renderSons(); renderDaughters();
+
+            // Reset ElderCount to 0
+            if (elderCountInput) elderCountInput.value = '0';
+            elderCountForChild = '0';
+            if (elderCountHidden) elderCountHidden.value = '0';
+
+            // Reload स्थान based on current gender
+            const currentGender = document.getElementById('gender')?.value || 'M';
+            populatePositionDropdown(currentGender);
+            updateElderCountLabel(currentGender);
 
             if (photoFileNameDisplay) photoFileNameDisplay.textContent = 'कुनै फोटो छानिएको छैन';
             if (photoPreview) { photoPreview.style.display = 'none'; photoPreview.src = ''; }
@@ -1673,7 +1783,9 @@
         e.preventDefault();
         form.querySelectorAll('input:not([type="hidden"]):not([readonly]):not([id="personalCode"]), textarea')
             .forEach(input => { input.value = ''; });
-        form.querySelectorAll('select').forEach(select => { if (!select.id.startsWith('gen')) select.selectedIndex = 0; });
+        form.querySelectorAll('select').forEach(select => {
+            if (!select.id.startsWith('gen') && select.id !== 'position') select.selectedIndex = 0;
+        });
 
         if (photoFileNameDisplay) photoFileNameDisplay.textContent = 'कुनै फोटो छानिएको छैन';
         if (photoPreview) { photoPreview.style.display = 'none'; photoPreview.src = ''; }
@@ -1682,6 +1794,15 @@
         if (uploadStatus) uploadStatus.innerHTML = '';
         if (photoFileInput) photoFileInput.value = '';
         if (feedback) feedback.innerHTML = '';
+
+        // Reset ElderCount to 0, reload स्थान dropdown
+        if (elderCountInput) elderCountInput.value = '0';
+        elderCountForChild = '0';
+        if (elderCountHidden) elderCountHidden.value = '0';
+        const g = document.getElementById('gender')?.value || 'M';
+        populatePositionDropdown(g);
+        updateElderCountLabel(g);
+
         updateCode();
         document.getElementById('fullName')?.focus();
     });
@@ -2342,19 +2463,25 @@
             const isAuthenticated = await checkPrivatePageAccess();
             if (!isAuthenticated) { console.log('⛔ Auth failed'); return; }
 
-            console.log('✅ Auth successful, loading page...');
-
             currentAdminInfo = loadAdminInfoFromSession();
             currentAdminRole = currentAdminInfo?.role || null;
-            console.log('👤 Current admin role:', currentAdminRole);
-            console.log('🔒 isAdminManager:', isAdminManager());
+
+            // ✅ Initialize ElderCount + स्थान based on default gender (M)
+            updateElderCountLabel('M');
+            populatePositionDropdown('M');
+            if (elderCountInput) elderCountInput.value = '0';
+            elderCountForChild = '0';
+            if (elderCountHidden) elderCountHidden.value = '0';
 
             await loadMembers();
             checkForSuggestionData();
             console.log('✅ AddMember.html ready. Root:', currentRootCode, '| Dropdowns:', generationCount);
         } catch (error) {
             console.error('❌ Init error:', error);
-            redirectToLogin();
+            // ✅ FIX: Only redirect if auth failed. Do not redirect on random JS errors.
+            if (error && error.message && error.message.includes('auth')) {
+                redirectToLogin();
+            }
         }
     })();
 

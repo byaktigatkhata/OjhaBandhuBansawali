@@ -12,13 +12,9 @@
 <div class="container" id="app">
     <h1><i class="fas fa-user-plus"></i>परिवारका सदस्यहरू थप्नुहोस्</h1>
 
-    <!-- ============================================================
-         STICKY TOP BAR — always visible when generations exist
-         ============================================================ -->
+    <!-- STICKY TOP BAR -->
     <div class="sticky-top-bar" id="stickyTopBar">
-        <div class="dropdown-row" id="genDropdownsContainer">
-            <!-- populated by JS -->
-        </div>
+        <div class="dropdown-row" id="genDropdownsContainer"></div>
         <div id="ActionButtonBox">
             <button type="button" id="toggleAddFormBtn" class="action-btn action-btn-magenta">
                 <i class="fas fa-user-plus"></i> नयाँ सदस्य थप्नुहोस्
@@ -29,9 +25,7 @@
             <button type="button" id="editMemberBtn" class="action-btn action-btn-blue">
                 <i class="fas fa-edit"></i> छानिएको सदस्य एडिट गर्नुहोस्
             </button>
-            <button type="button" id="addGenerationBtn" class="action-btn action-btn-cyan">
-                <i class="fas fa-plus-circle"></i> पुस्ता थप्नुहोस्
-            </button>
+            <!-- ✅ REMOVED: Add Generation Button -->
         </div>
     </div>
 
@@ -55,12 +49,12 @@
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-book"></i> पुरा नामः</label>
+            <label><i class="fas fa-book"></i> पुरा नामः:</label>
             <input type="text" id="fullName" placeholder="जस्तोः रामप्रसाद ओझा" required />
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-venus-mars"></i> लिङ्गः</label>
+            <label><i class="fas fa-venus-mars"></i> लिङ्गः:</label>
             <select id="gender">
                 <option value="M">पुरूष</option>
                 <option value="F">महिला</option>
@@ -68,13 +62,58 @@
             </select>
         </div>
 
+        <!-- ✅ CHANGED: स्थान moved directly below gender -->
         <div class="form-group">
-            <label><i class="fas fa-map-pin"></i> ठेगानाः</label>
+            <label><i class="fas fa-sort-numeric-up"></i> स्थानः:</label>
+            <select id="position">
+                <option value="">छान्नुहोस्</option>
+            </select>
+            <div class="inline-hint" id="positionHint">
+                लिङ्ग अनुसार विकल्पहरू स्वतः लोड हुनेछन्।
+            </div>
+        </div>
+
+        <!-- ✅ NEW: ElderCount -->
+        <div class="form-group" id="ElderCountGroup">
+            <label id="elderCountLabel" for="elderCountInput">
+                <i class="fas fa-users"></i> दाजुहरूको संख्या
+            </label>
+            <select id="elderCountInput">
+                <option value="0" selected>0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+            </select>
+            <div class="inline-hint" id="elderCountHint">
+                यो नयाँ सदस्य भन्दा अघिका दाजु/दिदीको संख्या। व्यक्तिगत कोड स्वतः मिलाइनेछ।
+            </div>
+            <input type="hidden" id="elderCountHidden" value="0" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-map-pin"></i> ठेगानाः:</label>
             <input type="text" id="address" placeholder="वर्तमान/अन्तिम स्थायी ठेगाना" />
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-phone"></i> मोबाइल नंः</label>
+            <label><i class="fas fa-phone"></i> मोबाइल नंः:</label>
             <input type="tel" id="mobile" placeholder="98XXXXXXXX" />
         </div>
 
@@ -84,17 +123,17 @@
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-male"></i> बाबुको नामः</label>
+            <label><i class="fas fa-male"></i> बाबुको नामः:</label>
             <input type="text" id="father" placeholder="बाबुको पुरा नाम" />
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-female"></i> आमाको पुरा नामः</label>
+            <label><i class="fas fa-female"></i> आमाको पुरा नामः:</label>
             <input type="text" id="mother" placeholder="आमाको पुरा नाम" />
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-ring"></i> श्रीमान/श्रीमतीको नामः</label>
+            <label><i class="fas fa-ring"></i> श्रीमान/श्रीमतीको नामः:</label>
             <input type="text" id="spouse" placeholder="श्रीमान/श्रीमतीको नाम" />
         </div>
 
@@ -104,48 +143,38 @@
         </div>
 
         <div class="form-group full-width">
-            <label><i class="fas fa-child"></i> छोराहरूः</label>
+            <label><i class="fas fa-child"></i> छोराहरूः:</label>
             <input type="text" id="sonsInput" placeholder="छोराहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
         </div>
 
         <div class="form-group full-width">
-            <label><i class="fas fa-child"></i> छोरीहरूः</label>
+            <label><i class="fas fa-child"></i> छोरीहरूः:</label>
             <input type="text" id="daughtersInput" placeholder="छोरीहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-briefcase"></i> पेशाः</label>
+            <label><i class="fas fa-briefcase"></i> पेशाः:</label>
             <input type="text" id="profession" placeholder="खेती, ब्यापार इत्यादि" />
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-graduation-cap"></i> शैक्षिक योग्यताः</label>
+            <label><i class="fas fa-graduation-cap"></i> शैक्षिक योग्यताः:</label>
             <input type="text" id="qualification" placeholder="e.g. M.A. " />
         </div>
 
-        <div class="form-group">
-            <label><i class="fas fa-sort-numeric-up"></i> स्थानः</label>
-            <input type="text" id="position" placeholder="जेठो छोरो, साइँली बुहारी इत्यादि" />
-        </div>
-
         <div class="form-group full-width">
-            <label><i class="fas fa-home"></i> विस्तृत ठेगानाः</label>
+            <label><i class="fas fa-home"></i> विस्तृत ठेगानाः:</label>
             <textarea id="detailAddress" rows="2" placeholder="बसाइँ सराइ लगायत ठेगानाको इतिहास ..."></textarea>
         </div>
 
         <div class="form-group full-width">
-            <label><i class="fas fa-tools"></i> विस्तृत व्यवसायः</label>
+            <label><i class="fas fa-tools"></i> विस्तृत व्यवसायः:</label>
             <textarea id="detailProfession" rows="2" placeholder="व्यवसाय सम्बन्धि सम्पूर्ण जानकारी ..."></textarea>
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-book-open"></i> जीवन कथाः</label>
+            <label><i class="fas fa-book-open"></i> जीवन कथाः:</label>
             <textarea id="lifeStory" rows="2" placeholder="संक्षिप्त जीवन कथा ..."></textarea>
-        </div>
-
-        <div class="form-group">
-            <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति / उमेर</label>
-            <input type="text" id="dodAge" placeholder="मृत्यु भैसकेको भए मिति, जीवित भए उमेर लेख्नुहोस्" />
         </div>
 
         <div class="form-group">
@@ -170,9 +199,7 @@
         <div id="formFeedback" style="margin-top: 18px; font-weight: 500;"></div>
     </form>
 
-    <!-- ============================================================
-        PANEL 2: Add Spouse
-        ============================================================ -->
+    <!-- PANEL 2: Add Spouse -->
     <div id="spouseModal" class="inline-panel">
         <div class="panel-header">
             <h2><i class="fas fa-ring"></i> <span id="spouseModalTitle">श्रीमान/श्रीमती थप्नुहोस्</span></h2>
@@ -205,15 +232,15 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-map-pin"></i> स्थायी ठेगानाः</label>
+                    <label><i class="fas fa-map-pin"></i> स्थायी ठेगानाः:</label>
                     <input type="text" id="spouseAddress" placeholder="हालको/अन्तिम स्थायी ठेगाना लेख्नुहोस्" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-phone"></i> मोबाइल नम्बरः</label>
+                    <label><i class="fas fa-phone"></i> मोबाइल नम्बरः:</label>
                     <input type="tel" id="spouseMobile" placeholder="जस्तोः 9808975521" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> इमेल ठेगानाः</label>
+                    <label><i class="fas fa-envelope"></i> इमेल ठेगानाः:</label>
                     <input type="email" id="spouseEmail" placeholder="जस्तोः name@domain.com" />
                 </div>
                 <div class="form-group">
@@ -241,19 +268,19 @@
                     <input type="text" id="spouseDodAge" placeholder="मृत्यु भैसकेको भए मिति, जीवित भए उमेर" />
                 </div>
                 <div class="form-group full-width">
-                    <label><i class="fas fa-home"></i> विस्तृत ठेगानाः</label>
+                    <label><i class="fas fa-home"></i> विस्तृत ठेगानाः:</label>
                     <textarea id="spouseDetailAddress" rows="2" placeholder="बसाइँ सराइ लगायत ठेगानाको इतिहास ..."></textarea>
                 </div>
                 <div class="form-group full-width">
-                    <label><i class="fas fa-tools"></i> विस्तृत व्यवसायः</label>
+                    <label><i class="fas fa-tools"></i> विस्तृत व्यवसायः:</label>
                     <textarea id="spouseDetailProfession" rows="2" placeholder="व्यवसाय सम्बन्धि सम्पूर्ण जानकारी ..."></textarea>
                 </div>
                 <div class="form-group full-width">
-                    <label><i class="fas fa-book-open"></i> जीवन कथाः</label>
+                    <label><i class="fas fa-book-open"></i> जीवन कथाः:</label>
                     <textarea id="spouseLifeStory" rows="2" placeholder="संक्षिप्त जीवन कथा ..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-image"></i> फोटो छान्नुहोस्ः</label>
+                    <label><i class="fas fa-image"></i> फोटो छान्नुहोस्ः:</label>
                     <div class="photo-upload-area">
                         <input type="file" id="spousePhoto" accept="image/*" style="display:none;" />
                         <button type="button" id="spousePhotoBtn" class="photo-select-btn">
@@ -271,9 +298,7 @@
         </form>
     </div>
 
-    <!-- ============================================================
-         PANEL 3: Edit Member
-         ============================================================ -->
+    <!-- PANEL 3: Edit Member -->
     <div id="editModal" class="inline-panel">
         <div class="panel-header">
             <h2><i class="fas fa-edit"></i> सदस्य एडिट गर्नुहोस्</h2>
@@ -284,7 +309,7 @@
         <form id="editForm">
             <div class="form-grid">
                 <div class="form-group">
-                    <label><i class="fas fa-qrcode"></i> ब्यक्तिगत कोडः</label>
+                    <label><i class="fas fa-qrcode"></i> ब्यक्तिगत कोडः:</label>
                     <input type="text" id="editCode" readonly style="background:#ede7de; font-weight:600;" />
                 </div>
                 <div class="form-group">
@@ -299,16 +324,23 @@
                         <option value="N">अन्य</option>
                     </select>
                 </div>
+                <!-- ✅ CHANGED: स्थान moved below gender and is now a dropdown -->
+                <div class="form-group">
+                    <label><i class="fas fa-sort-numeric-up"></i> परिवारमा स्थानः:</label>
+                    <select id="editPosition">
+                        <option value="">छान्नुहोस्</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label><i class="fas fa-map-pin"></i> हालको/अन्तिम स्थायी ठेगानाः</label>
                     <input type="text" id="editAddress" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-phone"></i> मोबाइल नम्बरः</label>
+                    <label><i class="fas fa-phone"></i> मोबाइल नम्बरः:</label>
                     <input type="tel" id="editMobile" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> इमेल ठेगानाः</label>
+                    <label><i class="fas fa-envelope"></i> इमेल ठेगानाः:</label>
                     <input type="email" id="editEmail" />
                 </div>
                 <div class="form-group">
@@ -328,15 +360,15 @@
                     <input type="text" id="editDob" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-child"></i> छोराहरूः</label>
+                    <label><i class="fas fa-child"></i> छोराहरूः:</label>
                     <input type="text" id="editSons" placeholder="छोराहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-child"></i> छोरीहरूः</label>
+                    <label><i class="fas fa-child"></i> छोरीहरूः:</label>
                     <input type="text" id="editDaughters" placeholder="छोरीहरूको नाम अल्पविराम (,) ले छुट्याउनुहोस्" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-briefcase"></i> ब्यवशायः</label>
+                    <label><i class="fas fa-briefcase"></i> ब्यवशायः:</label>
                     <input type="text" id="editProfession" />
                 </div>
                 <div class="form-group">
@@ -344,15 +376,11 @@
                     <input type="text" id="editQualification" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-sort-numeric-up"></i> परिवारमा स्थानः</label>
-                    <input type="text" id="editPosition" />
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-home"></i> विस्तृत ठेगानाः</label>
+                    <label><i class="fas fa-home"></i> विस्तृत ठेगानाः:</label>
                     <textarea id="editDetailAddress" rows="2"></textarea>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-tools"></i> विस्तृत व्यवशायः</label>
+                    <label><i class="fas fa-tools"></i> विस्तृत व्यवशायः:</label>
                     <textarea id="editDetailProfession" rows="2"></textarea>
                 </div>
                 <div class="form-group">

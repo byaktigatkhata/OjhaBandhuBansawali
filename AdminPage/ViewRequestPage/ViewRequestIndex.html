@@ -58,7 +58,7 @@
     </div>
 
     <!-- ============================================================
-         EDIT MODAL: Edit Suggestion Data
+         EDIT MODAL
          ============================================================ -->
     <div id="editModal" class="modal">
         <div class="modal-content">
@@ -132,6 +132,10 @@
                         <label><i class="fas fa-sort-numeric-up"></i> परिवारमा स्थान</label>
                         <input type="text" id="editPosition" />
                     </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-users"></i> दाजु/दिदीको संख्या</label>
+                        <input type="text" id="editElderCount" />
+                    </div>
                     <div class="form-group full-width">
                         <label><i class="fas fa-home"></i> विस्तृत ठेगाना</label>
                         <textarea id="editDetailAddress" rows="2"></textarea>
@@ -143,10 +147,6 @@
                     <div class="form-group full-width">
                         <label><i class="fas fa-book-open"></i> जीवन कथा</label>
                         <textarea id="editLifeStory" rows="2"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-hourglass-end"></i> मृत्यु मिति / उमेर</label>
-                        <input type="text" id="editDodAge" />
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-image"></i> फोटो</label>
@@ -171,7 +171,7 @@
     </div>
 
     <!-- ============================================================
-         VIEW MODAL: All submitted data + 4 action buttons
+         VIEW MODAL
          ============================================================ -->
     <div id="viewModal" class="modal">
         <div class="modal-content view-modal-content">
@@ -180,11 +180,8 @@
                 <span class="close" id="closeViewModal" title="बन्द गर्नुहोस्">&times;</span>
             </div>
 
-            <div id="viewModalBody" class="view-modal-body">
-                <!-- Filled dynamically by JS -->
-            </div>
+            <div id="viewModalBody" class="view-modal-body"></div>
 
-            <!-- 4 action buttons -->
             <div class="view-modal-actions btn-group">
                 <button type="button" id="viewActionEdit" class="btn-action btn-action-edit" title="यो सुझाव सम्पादन गर्नुहोस्">
                     <i class="fas fa-edit"></i> सम्पादन गर्नुहोस्

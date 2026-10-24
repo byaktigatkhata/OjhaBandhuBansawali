@@ -989,9 +989,7 @@ body {
         white-space: normal;
     }
 
-    /* Per-column minimum widths.
-       Adjust the nth-child numbers to match your actual <th> order.
-       Typical order: #, Name, Email, Role, Status, Actions. */
+    /* Per-column minimum widths. */
     #adminTable th:nth-child(1),
     #adminTable td:nth-child(1) { min-width: 48px; }
 

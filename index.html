@@ -5,41 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ओझा वंशावली</title>
     <link rel="icon" type="image/x-icon" href="ojhag.png">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="HomeStyle.css">
-    <link rel="manifest" href="manifest.json">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="HomeStyle.css?v=20261017">
+    
+    <!-- PWA & Icons -->
+    <link rel="manifest" href="manifest.json?v=20261017">
     <meta name="theme-color" content="#0a6b3e">
-    <link rel="stylesheet" href="HomeStyle.css?v=20261009">
-    <link rel="manifest" href="manifest.json?v=20261009">
-    <meta name="theme-color" content="#0a6b3e">
-    <link rel="apple-touch-icon" href="icon-192.png?v=20261009">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png?v=20261017">
+
+    <!-- jsPDF & AutoTable (Keep these) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <div id="MainBody">
+        <!-- Header Section -->
         <div id="MainHeadBox">
             <img src="ojhag.png" alt="ओझा बन्धु वंशावली">
             <div class="MainHead">ओझा बन्धु वंशावली</div>
         </div>
-        <div id="MainDescription">ओझा बन्धुहरूको वंशावली संकलन तथा विवरण हेर्ने, खोज्ने सुविधाको लागि यो सफ्टवेयर तयार पारिएको हो ।
-             यस सम्बन्धमा तपाइँको प्रतिक्रिया र सुझावहरू तलको इमेल ठेगानामा पठाएर सहयोग गर्नुहुनेछ भन्ने विस्वास सहित यो सफ्टवेयर तयार पारिएको हो ।
-              तपाइँका सबै किसिमका सहयोगहरूलाई हामी सदा स्वागत गर्नेछौं ।</div>
+        
+        <!-- Description -->
+        <div id="MainDescription">
+            ओझा बन्धुहरूको वंशावली संकलन तथा विवरण हेर्ने, खोज्ने सुविधाको लागि यो सफ्टवेयर तयार पारिएको हो ।
+            यस सम्बन्धमा तपाइँको प्रतिक्रिया र सुझावहरू तलको इमेल ठेगानामा पठाएर सहयोग गर्नुहुनेछ भन्ने विस्वास सहित यो सफ्टवेयर तयार पारिएको हो ।
+            तपाइँका सबै किसिमका सहयोगहरूलाई हामी सदा स्वागत गर्नेछौं ।
+        </div>
               
+        <!-- Buttons Grid (Fixed CSS layout applied) -->
         <div id="buttonBox">
             <button onclick="location.href='SearchPage/SearchIndex.html'">आफुलाई खोज्नुहोस्</button>
             <button onclick="location.href='RequestPage/RequestIndex.html'">तथ्य र विवरण सिफारिस</button>
             <button onclick="location.href='DonationPage/DonationIndex.html'">डोनेसन गर्नुहोस्</button>
+            <button id="btnFindRelation"><i class="fas fa-users-viewfinder"></i> नाता पत्ता लगाउनुहोस्</button>
+            <button id="btnSaveBansawali"><i class="fas fa-file-pdf"></i> वंशावली PDF</button>
         </div>
-        <!-- ============================================================
-        NOTICE SECTION
-        ============================================================ -->
+        
+        <!-- Notice Section -->
         <section id="noticeSection">
             <h2><i class="fas fa-bullhorn"></i> सूचना तथा समाचार</h2>
-            <div id="noticeGrid">
-                <!-- Notices will be loaded here by JavaScript -->
-            </div>
+            <div id="noticeGrid"></div>
 
-            <!-- Pagination Controls -->
             <div id="paginationControls" style="display: none;">
                 <button id="prevPageBtn" class="page-nav-btn" aria-label="Previous page">
                     <i class="fas fa-chevron-left"></i> अघिल्लो
@@ -49,28 +59,43 @@
                     पछिल्लो <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
-
             <div id="pageInfo" class="page-info"></div>
         </section>        
     </div>   
 
-    <!-- ============================================================
-    NOTICE POPUP
-    ============================================================ -->
-    <div id="noticePopup" class="notice-popup" style="display: none;">
-        <div class="popup-content">
-            <button class="popup-close" id="closePopup"><i class="fas fa-times"></i></button>
-            <div id="popupMedia" class="popup-media"></div>
-            <div class="popup-body">
-                <h2 id="popupTitle"></h2>
-                <div id="popupContent" class="popup-text"></div>
-                <div class="popup-meta">
-                    <span id="popupDate"><i class="far fa-calendar-alt"></i></span>
-                    <span id="popupAuthor"><i class="fas fa-user"></i></span>
+    <!-- Relation Finder Modal -->
+    <div id="relationModal" class="relation-modal" style="display: none;">
+        <div class="relation-dialog">
+            <div class="relation-header">
+                <h3><i class="fas fa-users-viewfinder"></i> नाता पत्ता लगाउनुहोस्</h3>
+                <button class="relation-close" id="closeRelationModal">&times;</button>
+            </div>
+            <div class="relation-body">
+                <div class="relation-select-group">
+                    <label for="personA">पहिलो व्यक्ति छान्नुहोस् (व्यक्तिगत कोड):</label>
+                    <div class="combobox" id="comboA">
+                        <input type="text" id="personA" placeholder="कोड टाइप गर्नुहोस्..." autocomplete="off">
+                        <div class="combobox-results" id="resultsA" hidden></div>
+                    </div>
+                </div>
+                <div class="relation-select-group">
+                    <label for="personB">दोस्रो व्यक्ति छान्नुहोस् (व्यक्तिगत कोड):</label>
+                    <div class="combobox" id="comboB">
+                        <input type="text" id="personB" placeholder="कोड टाइप गर्नुहोस्..." autocomplete="off">
+                        <div class="combobox-results" id="resultsB" hidden></div>
+                    </div>
+                </div>
+                <div class="relation-result-box" id="relationResultBox">
+                    <p class="relation-placeholder">नाता पत्ता लगाउन दुबै व्यक्ति छान्नुहोस्।</p>
                 </div>
             </div>
+            <div class="relation-footer">
+                <button id="btnFindRelationNow" class="btn-primary">नाता पत्ता लगाउनुहोस्</button>
+            </div>
         </div>
-    </div>    
+    </div>
+
+    <!-- Footer Section -->
     <div id="FooterBox">
         <div id="FooterLinks">
             <a href="SearchPage/SearchIndex.html">खोज्नुहोस्</a>
@@ -87,26 +112,15 @@
         </div>
     </div>
 
+    <!-- Core Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="SupabaseConfig.js"></script>
-    <script src="DocumentReader.js"></script>
-    <script src="HomeScript.js"></script>
-    <!-- PWA Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker
-                    .register('/OjhaBandhuBansawali/service-worker.js')
-                    .then((reg) => console.log('✅ SW registered, scope:', reg.scope))
-                    .catch((err) => console.warn('SW registration failed:', err));
-            });
-        }
-    </script>
-    <!-- Facebook SDK for Page Plugin -->
+    <script src="SupabaseConfig.js?v=20261017"></script>
+    <script src="DocumentReader.js?v=20261017"></script>
+    <script src="RelationCalculator.js?v=20261017"></script>
+    <script src="HomeScript.js?v=20261017"></script>
+    
+    <!-- Facebook SDK -->
     <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0" nonce="randomNonce"></script>
-    <script src="SupabaseConfig.js?v=20261009"></script>
-    <script src="DocumentReader.js?v=20261009"></script>
-    <script src="HomeScript.js?v=20261009"></script>
 </body>
 </html>

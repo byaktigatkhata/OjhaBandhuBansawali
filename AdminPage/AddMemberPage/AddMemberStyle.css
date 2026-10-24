@@ -18,23 +18,15 @@ body {
 }
 
 /* ============================================================
-   TOP BAR — dropdowns + action buttons (NOT sticky anymore)
-   Scrolls with the page so it doesn't cover form fields
+   TOP BAR — dropdowns + action buttons
    ============================================================ */
 .sticky-top-bar {
-    /* No position: sticky — flows normally with the page */
     background: #bbb;
-    padding: 12px 0 10px;
-    margin: 0 0 1rem 0;
+    padding: 16px 0;
+    margin: 0 0 1.5rem 0;
     border-bottom: 2px solid #b8864b;
 }
 
-/* Make sure the dropdown-row inside doesn't double-pad */
-.sticky-top-bar .dropdown-row {
-    margin-bottom: 8px;
-}
-
-/* Hide the top bar only if it has no generations */
 .sticky-top-bar.is-empty {
     display: none;
 }
@@ -72,10 +64,10 @@ h1 i {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
     border: 2px solid #000;
     border-radius: 12px;
-    padding: 4px;
+    padding: 12px;
     margin: 4px 0;
     background: linear-gradient(135deg, #797, #575);
 }
@@ -111,29 +103,33 @@ h1 i {
     min-height: 60px;
 }
 .inline-hint {
-    font-size: 0.75rem;
-    color: #7b6b5a;
+    font-size: 0.9rem;
+    color: #2c3e4e;
     margin-top: 2px;
+    font-weight: 500;
 }
+
+/* ============================================================
+   GENERATION DROPDOWNS
+   ============================================================ */
 .dropdown-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px 16px;
+    gap: 16px;
     background: #f9f6f0;
-    padding: 20px 20px;
+    padding: 20px;
     border-radius: 20px;
-    margin-bottom: 6px;
+    margin-bottom: 12px;
     border: 1px solid #e8dfd4;
 }
 .dropdown-row .gen-select {
-    flex: 1 0 100px;
-    min-width: 400px;
+    flex: 1 1 250px;
 }
 .gen-select label {
     font-size: 1.4rem;
     color: #333;
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     font-weight: 600;
     text-align: center;
 }
@@ -154,6 +150,10 @@ h1 i {
     background: #fff;
     box-shadow: 0 0 0 3px rgba(184,134,75,0.15);
 }
+
+/* ============================================================
+   PHOTO UPLOAD
+   ============================================================ */
 .photo-upload-area {
     display: flex;
     flex-wrap: wrap;
@@ -161,10 +161,6 @@ h1 i {
     gap: 16px;
 }
 .photo-upload-area input[type="file"] { flex: 1; }
-
-/* ============================================================
-   BASE PHOTO PREVIEW
-   ============================================================ */
 .photo-preview {
     width: 120px;
     height: 160px;
@@ -177,20 +173,17 @@ h1 i {
 }
 
 /* ============================================================
-   ACTION BUTTONS (top of page)
+   ✅ ACTION BUTTONS (Perfectly arranged grid)
    ============================================================ */
 #ActionButtonBox {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-evenly;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 12px;
-    margin-top: 12px;
+    margin-top: 16px;
+    width: 100%;
 }
 
 .action-btn {
-    flex: 1 1 200px;
     padding: 12px 18px;
     font-size: 1.3rem;
     font-weight: bold;
@@ -204,6 +197,7 @@ h1 i {
     gap: 8px;
     transition: all 0.2s ease;
     font-family: inherit;
+    white-space: nowrap;
 }
 
 .action-btn-magenta {
@@ -214,7 +208,6 @@ h1 i {
     color: #ff0;
     transform: scale(1.02);
 }
-
 .action-btn-green {
     background: linear-gradient(180deg, #070, #090, #070);
 }
@@ -223,7 +216,6 @@ h1 i {
     color: #ff0;
     transform: scale(1.02);
 }
-
 .action-btn-blue {
     background: linear-gradient(180deg, #007, #009, #007);
 }
@@ -232,17 +224,9 @@ h1 i {
     color: #ff0;
     transform: scale(1.02);
 }
-
-/* Cyan button for "Add Generation" */
 .action-btn-cyan {
-    background: linear-gradient(180deg, #077, #099, #077);
+    display: none !important; /* Hidden per requirement */
 }
-.action-btn-cyan:hover {
-    background: linear-gradient(180deg, #055, #077, #055);
-    color: #ff0;
-    transform: scale(1.02);
-}
-
 .action-btn.active {
     background: linear-gradient(180deg, #b8864b, #daa520, #b8864b);
     color: #fff;
@@ -255,32 +239,28 @@ h1 i {
 .inline-panel {
     display: none;
     margin-top: 20px;
-    padding: 20px 24px;
+    padding: 24px;
     background: #f9f6f0;
     border: 2px solid #b8864b;
     border-radius: 16px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     animation: panelSlideIn 0.25s ease;
 }
-
 .inline-panel.is-active {
     display: block;
 }
-
 @keyframes panelSlideIn {
     from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
-
 .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-bottom: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     border-bottom: 2px solid #d4c9b8;
 }
-
 .panel-header h2 {
     margin: 0;
     color: #0000aa;
@@ -291,12 +271,10 @@ h1 i {
     align-items: center;
     gap: 10px;
 }
-
 .panel-header h2 i {
     color: #b8864b;
     text-shadow: 2px 2px 3px #000;
 }
-
 .panel-close-btn {
     background: linear-gradient(180deg, #700, #900, #700);
     color: #fff;
@@ -312,7 +290,6 @@ h1 i {
     transition: all 0.2s ease;
     flex-shrink: 0;
 }
-
 .panel-close-btn:hover {
     background: linear-gradient(180deg, #500, #700, #500);
     color: #ff0;
@@ -370,13 +347,14 @@ h1 i {
    PHOTO SELECT / UPLOAD BUTTONS
    ============================================================ */
 #uploadToCloudinaryBtn{
-    padding: 10px;
+    padding: 10px 20px;
     background: linear-gradient(180deg, #070, #090, #070);
     color: #fff;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: bold;
     border-radius: 20px;
     cursor: pointer;
+    border: none;
 }
 #uploadToCloudinaryBtn:hover{
     background: linear-gradient(180deg, #050, #070, #050);
@@ -384,7 +362,7 @@ h1 i {
 }
 .photo-select-btn {
     padding: 10px 20px;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: bold;
     background: linear-gradient(180deg, #770, #990, #770);
     color: #fff;
@@ -397,7 +375,7 @@ h1 i {
     color: #ff0;
 }
 .photo-file-name {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 500;
     color: #333;
     background: #ede7de;
@@ -475,9 +453,10 @@ h1 i {
     justify-content: space-evenly;
     padding: 10px 0;
     gap: 12px;
+    margin-top: 20px;
 }
 #btnReset{
-    padding: 10px 20px;
+    padding: 12px 20px;
     background: linear-gradient(180deg, #007, #009, #007);
     color: #fff;
     border-radius: 20px;
@@ -491,7 +470,7 @@ h1 i {
     color: #ff0;
 }
 #btnAddMember{
-    padding: 10px 20px;
+    padding: 12px 20px;
     background: linear-gradient(180deg, #070, #090, #070);
     color: #fff;
     border-radius: 20px;
@@ -1099,6 +1078,56 @@ h1 i {
 #removeRootPanel #removeRootMemberCount {
     color: #1e2a3a;
     font-weight: 700;
+}
+
+/* ============================================================
+   ✅ ElderCount group
+   ============================================================ */
+#ElderCountGroup {
+    animation: elderCountFadeIn 0.25s ease;
+}
+@keyframes elderCountFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+#ElderCountGroup select {
+    background: #fff;
+    font-weight: 600;
+}
+#ElderCountGroup .inline-hint {
+    color: #2c3e4e;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+#ElderCountGroup select:disabled {
+    background: #ede7de;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   ✅ स्थान dropdown — dynamic per gender
+   ============================================================ */
+#position {
+    background: #fff;
+    font-weight: 600;
+}
+#positionHint {
+    color: #2c3e4e;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+/* ============================================================
+   ✅ Position Dropdown in Edit Modal
+   ============================================================ */
+#editPosition {
+    background: #fff;
+    font-weight: 600;
+}
+#editPosition:disabled {
+    background: #ede7de;
+    color: #666;
+    cursor: not-allowed;
 }
 
 /* ============================================================

@@ -1,5 +1,7 @@
-// RequestScript.js - Public suggestion form (v7)
-// Dynamic gender + Family Position dropdown based on relation.
+// RequestScript.js - Public suggestion form (v10)
+// Fixed: escapeRegex missing error
+// Fixed: newFullName incorrectly prefilled with connected member's name
+// Added: Spouse duplicate detection rules
 
 (function() {
     'use strict';
@@ -65,6 +67,21 @@
         'अन्तरी छोरी', 'जन्तरी छोरी', 'मन्तरी छोरी', 'लखन्तरी छोरी',
         'बखन्तरी छोरी', 'पानी मन्तरी छोरी', 'एघारन्तरी छोरी', 'बारन्तरी छोरी',
         'तेरन्तरी छोरी', 'चौधन्तरी छोरी', 'पन्द्रन्तरी छोरी', 'कान्छी छोरी'
+    ];
+
+    // Spouse-side options (बुहारी / ज्वाइँ)
+    const MALE_SPOUSE_POSITIONS = [
+        'जेठो ज्वाइँ', 'माइलो ज्वाइँ', 'साइँलो ज्वाइँ', 'काइँलो ज्वाइँ',
+        'अन्तरे ज्वाइँ', 'जन्तरे ज्वाइँ', 'मन्तरे ज्वाइँ', 'लखन्तरे ज्वाइँ',
+        'बखन्तरे ज्वाइँ', 'पानी मन्तरे ज्वाइँ', 'एघारन्तरे ज्वाइँ', 'बारन्तरे ज्वाइँ',
+        'तेरन्तरे ज्वाइँ', 'चौधन्तरे ज्वाइँ', 'पन्द्रन्तरे ज्वाइँ', 'कान्छा ज्वाइँ'
+    ];
+
+    const FEMALE_SPOUSE_POSITIONS = [
+        'जेठी बुहारी', 'माइली बुहारी', 'साइँली बुहारी', 'काइँली बुहारी',
+        'अन्तरी बुहारी', 'जन्तरी बुहारी', 'मन्तरी बुहारी', 'लखन्तरी बुहारी',
+        'बखन्तरी बुहारी', 'पानी मन्तरी बुहारी', 'एघारन्तरी बुहारी', 'बारन्तरी बुहारी',
+        'तेरन्तरी बुहारी', 'चौधन्तरी बुहारी', 'पन्द्रन्तरी बुहारी', 'कान्छी बुहारी'
     ];
 
     // ------------------------------------------------------------
@@ -139,7 +156,7 @@
         'गुप्ता': ['gupta'], 'यादव': ['yadav'], 'बन्जरा': ['banjra'], 'ढकाल': ['dhakal'],
         'न्यौपाने': ['nyoupane'], 'नेउपाने': ['neupane'], 'अचार्ज': ['acharj'], 'अर्याल': ['aryal'],
         'बाँसकोटा': ['bansakota', 'basakota'], 'बाँस्कोटा': ['banskota'], 'बाँस्तोला': ['bansatola'],
-        'बाँसतोला': ['basatola'], 'पौडेल': ['paudel', 'poudel'], 'शिवाकोटी': ['shivakoti', 'shiwakoti'],
+        'बाँसतोला': ['basatola'], 'शिवाकोटी': ['shivakoti', 'shiwakoti'],
         'प्रसाइँ': ['prasaain', 'prasain'], 'पर्साइँ': ['parsain'], 'चुडाल': ['chudal'],
         'चुँडाल': ['chundal'], 'भट्टराई': ['bhattarai'], 'भटराई': ['bhatrai'], 'भण्डारी': ['bhandari'],
         'गुरागाइँ': ['guragain'], 'चापागाइँ': ['chhapagain'], 'उप्रेती': ['upreti'], 'राउत': ['raut'],
@@ -149,7 +166,7 @@
         'सिक्तेल': ['siktel'], 'सिटौला': ['sitaula'], 'महत': ['mahat'], 'महत्तो': ['mahatto'],
         'राई': ['rai'], 'लिम्बु': ['limbu'], 'मैनाली': ['mainali'], 'वस्ती': ['vasti'],
         'ओस्ती': ['osthi'], 'ओली': ['oli'], 'थपलिया': ['thapliya'], 'तिवारी': ['tivari'],
-        'तियारी': ['tiyari'], 'गौतम': ['gautam'], 'गोतामे': ['gotame'], 'रिजाल': ['rizal'],
+        'तियारी': ['tiyari'], 'गोतामे': ['gotame'], 'रिजाल': ['rizal'],
         'क्षेत्री': ['kshetri'], 'पराजुली': ['parajuli'], 'ढुंगेल': ['dungel'], 'ढुङ्गेल': ['dungel'],
         'नेपाल': ['nepal'], 'रिसेल': ['risel'], 'रिमाल': ['rimal'], 'घिमिरे': ['ghimire'],
         'कार्की': ['karki'], 'थापा': ['thapa'], 'बस्नेत': ['basnet'], 'रावल': ['raval'],
@@ -248,6 +265,11 @@
         if (el) el.checked = !!value;
     }
 
+    // ✅ FIX: escapeRegex was missing
+    function escapeRegex(s) {
+        return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
     function updateExistingSubmitVisibility() {
         const chk = $('exConsentCheck');
         const btn = $('exBtnSubmit');
@@ -308,6 +330,114 @@
     }
 
     // ------------------------------------------------------------
+    // 4b. derive the personal code a new child WOULD get.
+    // ------------------------------------------------------------
+    function getPartnerCode(code) {
+        if (!code) return '';
+        return String(code).trim().replace(/m+$/, '');
+    }
+    function getBaseCode(code) {
+        if (!code) return '';
+        let clean = String(code).trim();
+        if (/^[A-Z]$/.test(clean)) return clean;
+        if (/m+$/.test(clean)) return getBaseCode(clean.replace(/m+$/, ''));
+        clean = clean.replace(/\.([MFN])(\d+)$/g, '.$2');
+        return clean;
+    }
+    function getGenderIndex(code) {
+        if (!code) return 0;
+        const m = String(code).match(GENDER_BLOCK_REGEX);
+        return m ? parseInt(m[2], 10) : 0;
+    }
+    function getNextGenderIndex(branchCode, gender) {
+        const g = (gender === 'O') ? 'N' : gender;
+        if (g !== 'M' && g !== 'F' && g !== 'N') return 1;
+        const prefix = branchCode + '.' + g;
+        let maxIdx = 0;
+        allMembers.forEach(m => {
+            if (m && m.PersonalCode && String(m.PersonalCode).startsWith(prefix)) {
+                const idx = getGenderIndex(m.PersonalCode);
+                if (idx > maxIdx) maxIdx = idx;
+            }
+        });
+        return maxIdx + 1;
+    }
+
+    function computeSuggestedPersonalCode(connectedCode, gender, elderCountOverride) {
+        if (!connectedCode) return '';
+        const parentCode = getPartnerCode(connectedCode);
+        const branch = getBaseCode(parentCode);
+        const g = (gender === 'O') ? 'N' : (gender || 'M');
+        if (g !== 'M' && g !== 'F' && g !== 'N') return '';
+
+        if (elderCountOverride !== '' && elderCountOverride !== null && elderCountOverride !== undefined) {
+            const n = parseInt(elderCountOverride, 10);
+            if (!isNaN(n) && n >= 0) return branch + '.' + g + (n + 1);
+        }
+        return branch + '.' + g + getNextGenderIndex(branch, g);
+    }
+
+    function checkNewChildSlot(connectedCode, gender, elderCountOverride, fullName) {
+        if (!connectedCode) return { blocked: false };
+        if (!(gender === 'M' || gender === 'F' || gender === 'N')) return { blocked: false };
+
+        const targetCode = computeSuggestedPersonalCode(connectedCode, gender, elderCountOverride);
+        if (!targetCode) return { blocked: false };
+
+        const clash = allMembers.find(
+            m => String(m.PersonalCode || '').trim() === targetCode
+        );
+        if (clash) {
+            return {
+                blocked: true,
+                reason: `यो स्थान पहिले नै भरिएको छ।\n\n` +
+                        `कोड: ${clash.PersonalCode}\n` +
+                        `नाम: ${clash.FullName || '(नाम अज्ञात)'}\n\n` +
+                        `कृपया विद्यमान सदस्यको विवरण सुधार्नुहोस् वा अर्को स्थान छान्नुहोस्।`,
+                clashCode: clash.PersonalCode,
+                clashName: clash.FullName || ''
+            };
+        }
+
+        const fatherRaw = String(connectedCode).trim();
+        const fatherMember = allMembers.find(m => String(m.PersonalCode || '').trim() === fatherRaw);
+        const fatherFullName = fatherMember
+            ? (fatherMember.FullName || '')
+            : fatherRaw;
+
+        const nameTrim = String(fullName || '').trim();
+        if (nameTrim) {
+            const sameName = allMembers.find(m => {
+                if (!m || !m.FullName) return false;
+                if (m.PersonalCode === targetCode) return false;
+                if (String(m.FullName).trim() !== nameTrim) return false;
+                const mFather = String(m.Father || '').trim();
+                if (!mFather) return false;
+                if (mFather === fatherFullName || mFather === fatherRaw) return true;
+                if (mFather.includes(fatherFullName) && fatherFullName) return true;
+                if (mFather.includes(fatherRaw)) return true;
+                return false;
+            });
+            if (sameName) {
+                return {
+                    blocked: false,
+                    warning: {
+                        message: `⚠️ यही नाम र बाबु भएको सदस्य पहिले नै अवस्थित छ:\n\n` +
+                                 `कोड: ${sameName.PersonalCode}\n` +
+                                 `नाम: ${sameName.FullName}\n` +
+                                 `बाबु: ${sameName.Father || '—'}\n\n` +
+                                 `के तपाईं साँच्चै नयाँ सदस्य थप्न चाहनुहुन्छ?`,
+                        code: sameName.PersonalCode,
+                        name: sameName.FullName
+                    }
+                };
+            }
+        }
+
+        return { blocked: false };
+    }
+
+    // ------------------------------------------------------------
     // 5. Feedback / errors
     // ------------------------------------------------------------
     function showFeedback(msg, kind) {
@@ -317,7 +447,7 @@
         el.innerHTML = msg;
         setTimeout(() => {
             if (el.innerHTML === msg) { el.className = ''; el.innerHTML = ''; }
-        }, 5000);
+        }, 7000);
     }
     function clearFeedback() {
         const el = $('formFeedback');
@@ -583,7 +713,6 @@
             </div>
             <div class="preview-rows">
                 ${row('जन्म मिति', m.DOB)}
-                ${row('मृत्यु मिति / उमेर', m.DOD_Age)}
                 ${row('बाबु', m.Father)}
                 ${row('आमा', m.Mother)}
                 ${row('श्रीमान/श्रीमती', m.Spouse)}
@@ -623,6 +752,80 @@
         const idx = existingCurrentResults.findIndex(x => x.PersonalCode === member.PersonalCode);
         openPreviewModal('existing', existingCurrentResults, Math.max(0, idx));
     }
+
+    function getExistingPositionOptions(member) {
+        if (!member) return { list: [], label: 'परिवारमा स्थान' };
+        const code = String(member.PersonalCode || '').trim();
+        const gender = getGenderOfMember(member);
+        const spouse = isSpouseCode(code);
+
+        if (spouse) {
+            if (gender === 'F') return { list: FEMALE_SPOUSE_POSITIONS, label: 'कुन बुहारी?' };
+            if (gender === 'M') return { list: MALE_SPOUSE_POSITIONS, label: 'कुन ज्वाइँ?' };
+            return { list: FEMALE_SPOUSE_POSITIONS, label: 'कुन बुहारी?' };
+        }
+
+        if (gender === 'F') return { list: FEMALE_POSITIONS, label: 'कुन छोरी?' };
+        if (gender === 'M' || gender === 'N') return { list: MALE_POSITIONS, label: 'कुन छोरा?' };
+        return { list: [], label: 'परिवारमा स्थान' };
+    }
+
+    function populateExistingPositionDropdown(member, currentValue) {
+        const dropdown = $('exPositionDropdown');
+        const helper = $('exPositionHelper');
+        if (!dropdown) return;
+
+        const savedValue = (currentValue == null) ? '' : String(currentValue).trim();
+        const { list, label } = getExistingPositionOptions(member);
+
+        dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+
+        let finalList = Array.isArray(list) ? list.slice() : [];
+        let savedIsCustom = false;
+
+        if (savedValue && !finalList.includes(savedValue)) {
+            savedIsCustom = true;
+            finalList = [savedValue, ...finalList];
+        }
+
+        if (finalList.length > 0) {
+            finalList.forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt;
+                o.textContent = opt;
+                if (savedIsCustom && opt === savedValue) {
+                    o.textContent = opt + ' (पहिले सुरक्षित)';
+                    o.dataset.custom = '1';
+                }
+                dropdown.appendChild(o);
+            });
+            dropdown.disabled = false;
+
+            if (helper) {
+                if (savedIsCustom) {
+                    helper.textContent = `पहिले सुरक्षित मान "${savedValue}" देखाइएको छ। तपाईं चाहनुहुन्छ भने परिवर्तन गर्न सक्नुहुन्छ।`;
+                } else {
+                    helper.textContent = `${label} छान्नुहोस्।`;
+                }
+            }
+        } else {
+            if (savedValue) {
+                const o = document.createElement('option');
+                o.value = savedValue;
+                o.textContent = savedValue + ' (पहिले सुरक्षित)';
+                o.dataset.custom = '1';
+                dropdown.appendChild(o);
+                dropdown.disabled = false;
+                if (helper) helper.textContent = `पहिले सुरक्षित मान "${savedValue}" देखाइएको छ।`;
+            } else {
+                dropdown.disabled = true;
+                if (helper) helper.textContent = 'यो सदस्यको लागि स्थान विकल्प उपलब्ध छैन।';
+            }
+        }
+
+        if (savedValue) dropdown.value = savedValue;
+    }
+
     function acceptExistingMember(member) {
         selectedExistingMember = member;
         const input = $('ExistingMemberSearch');
@@ -647,13 +850,11 @@
         setSafeVal('exFullName', m.FullName || '');
         setSafeVal('exGender', normalizeGender(m.Gender) || 'M');
         setSafeVal('exDob', m.DOB || '');
-        setSafeVal('exDodAge', m.DOD_Age || '');
         setSafeVal('exFather', m.Father || '');
         setSafeVal('exMother', m.Mother || '');
         setSafeVal('exSpouse', m.Spouse || '');
         setSafeVal('exSonsInput', m.Sons || '');
         setSafeVal('exDaughtersInput', m.Daughters || '');
-        setSafeVal('exPosition', m.Position || '');
         setSafeVal('exAddress', m.Address || '');
         setSafeVal('exMobile', m.Mobile || '');
         setSafeVal('exEmail', m.Email || '');
@@ -664,6 +865,9 @@
         setSafeVal('exLifeStory', m.LifeStory || '');
         setSafeVal('exPhotoUrl', m.PhotoUrl || '');
         setSafeVal('exPublicId', m.PublicId || '');
+
+        populateExistingPositionDropdown(m, m.Position || '');
+
         const photo = $('exPhotoPreview');
         const fileName = $('exPhotoFileNameDisplay');
         if (photo) {
@@ -685,28 +889,25 @@
         const fileName = $('exPhotoFileNameDisplay'); if (fileName) fileName.textContent = 'कुनै फोटो छानिएको छैन';
         const status = $('exUploadStatus'); if (status) status.innerHTML = '';
         setSafeVal('exPhotoUrl', ''); setSafeVal('exPublicId', '');
+        const dropdown = $('exPositionDropdown');
+        if (dropdown) { dropdown.innerHTML = '<option value="">छान्नुहोस्</option>'; dropdown.disabled = false; }
+        const helper = $('exPositionHelper');
+        if (helper) helper.textContent = 'लिङ्ग र व्यक्तिगत कोड अनुसार विकल्पहरू देखिनेछन्।';
         clearAllFieldErrorsInForm('existingMemberForm');
         updateExistingSubmitVisibility();
     }
 
     // ------------------------------------------------------------
-    // 10. New Member flow — DYNAMIC gender + family position
+    // 10. New Member flow
     // ------------------------------------------------------------
-
-    /** Auto-select gender based on relation */
     function applyGenderForRelation(relation) {
         const genderSel = $('newGender');
         if (!genderSel) return;
-        if (relation === 'श्रीमान') {
-            genderSel.value = 'F';   // husband connected → new member is wife
-        } else if (relation === 'श्रीमती') {
-            genderSel.value = 'M';   // wife connected → new member is husband
-        } else {
-            genderSel.value = '';    // बाबु or empty → no default
-        }
+        if (relation === 'श्रीमान') genderSel.value = 'F';
+        else if (relation === 'श्रीमती') genderSel.value = 'M';
+        else genderSel.value = '';
     }
 
-    /** Populate FamilyPositionDropdown based on gender + relation */
     function populateFamilyPosition() {
         const group = $('FamilyPositionGroup');
         const dropdown = $('FamilyPositionDropdown');
@@ -714,10 +915,11 @@
         const label = $('familyPositionLabel');
         if (!group || !dropdown) return;
 
-        // Only visible when relation is बाबु
         if (newRelation !== 'बाबु') {
             group.style.display = 'none';
             dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+            const ecGroup = $('ElderCountGroup');
+            if (ecGroup) ecGroup.style.display = 'none';
             return;
         }
 
@@ -739,7 +941,6 @@
             labelText = 'कुन छोरी?';
             helperText = 'कृपया छोरीको परिवारमा स्थान छान्नुहोस्।';
         } else {
-            // No gender chosen yet
             labelText = 'कुन छोरा/छोरी?';
             helperText = 'कृपया पहिले माथि लिङ्ग छान्नुहोस्।';
         }
@@ -747,7 +948,6 @@
         if (label) label.textContent = labelText;
         if (helper) helper.textContent = helperText;
 
-        // Preserve previous selection if still valid
         const previous = dropdown.value;
 
         dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
@@ -760,9 +960,90 @@
             });
             if (previous && options.includes(previous)) dropdown.value = previous;
         }
+
+        populateElderCount();
     }
 
-    /** When user picks from FamilyPositionDropdown → auto-fill newPosition */
+    function populateElderCount() {
+        const group = $('ElderCountGroup');
+        const dropdown = $('ElderCountDropdown');
+        const label = $('elderCountLabel');
+        const helper = $('elderCountHelper');
+        if (!group || !dropdown) return;
+
+        if (newRelation !== 'बाबु') {
+            group.style.display = 'none';
+            dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+            return;
+        }
+
+        const fpDropdown = $('FamilyPositionDropdown');
+        const fpValue = fpDropdown ? fpDropdown.value : '';
+        const isKancho = (fpValue === 'कान्छो छोरा' || fpValue === 'कान्छी छोरी');
+
+        if (!isKancho) {
+            group.style.display = 'none';
+            dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+            return;
+        }
+
+        group.style.display = 'flex';
+
+        const genderSel = $('newGender');
+        const g = genderSel ? genderSel.value : '';
+
+        if (g === 'F') {
+            if (label) label.textContent = 'दिदीको संख्या';
+            if (helper) helper.textContent = 'कृपया कान्छी भन्दा अघिका दिदीहरूको संख्या छान्नुहोस्।';
+        } else {
+            if (label) label.textContent = 'दाजुको संख्या';
+            if (helper) helper.textContent = 'कृपया कान्छो भन्दा अघिका दाजुहरूको संख्या छान्नुहोस्।';
+        }
+
+        const previous = dropdown.value;
+
+        dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+        for (let i = 0; i <= 15; i++) {
+            const o = document.createElement('option');
+            o.value = String(i);
+            o.textContent = String(i);
+            dropdown.appendChild(o);
+        }
+        if (previous !== '' && dropdown.querySelector(`option[value="${previous}"]`)) {
+            dropdown.value = previous;
+        }
+    }
+
+    function updateElderCountValue() {
+        const hidden = $('newElderCount');
+        if (!hidden) return;
+
+        if (newRelation !== 'बाबु') {
+            hidden.value = '';
+            return;
+        }
+
+        const fpDropdown = $('FamilyPositionDropdown');
+        const fpValue = fpDropdown ? fpDropdown.value : '';
+        if (!fpValue) {
+            hidden.value = '';
+            return;
+        }
+
+        const genderSel = $('newGender');
+        const g = genderSel ? genderSel.value : '';
+        const optionsList = (g === 'F') ? FEMALE_POSITIONS : MALE_POSITIONS;
+
+        if (fpValue === 'कान्छो छोरा' || fpValue === 'कान्छी छोरी') {
+            const ecDropdown = $('ElderCountDropdown');
+            hidden.value = ecDropdown && ecDropdown.value !== '' ? ecDropdown.value : '';
+            return;
+        }
+
+        const index = optionsList.indexOf(fpValue);
+        hidden.value = index >= 0 ? String(index) : '';
+    }
+
     function onFamilyPositionChange() {
         const dropdown = $('FamilyPositionDropdown');
         const posInput = $('newPosition');
@@ -777,17 +1058,23 @@
             posInput.value = '';
             if (helper) helper.style.display = 'none';
         }
+
+        populateElderCount();
+        updateElderCountValue();
     }
 
-    /** When gender changes and relation is बाबु → reload positions */
     function onNewGenderChange() {
         if (newRelation === 'बाबु') {
             populateFamilyPosition();
-            // Clear the position input when gender changes
             const dropdown = $('FamilyPositionDropdown');
             const posInput = $('newPosition');
             if (dropdown) dropdown.value = '';
             if (posInput) posInput.value = '';
+            const helper = $('newPositionHelper');
+            if (helper) helper.style.display = 'none';
+            const ecDropdown = $('ElderCountDropdown');
+            if (ecDropdown) ecDropdown.value = '';
+            updateElderCountValue();
         }
     }
 
@@ -801,9 +1088,10 @@
         const confirmBox = $('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
         const form = $('newMemberForm'); if (form) form.style.display = 'none';
 
-        // Reset family position group first
         const group = $('FamilyPositionGroup');
         if (group) group.style.display = 'none';
+        const ecGroup = $('ElderCountGroup');
+        if (ecGroup) ecGroup.style.display = 'none';
 
         if (!newRelation) {
             const box = $('NewConnectedMemberBox'); if (box) box.style.display = 'none';
@@ -860,25 +1148,29 @@
         updateNewSubmitVisibility();
         setTimeout(() => form?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
+    
+    // ✅ FIX: Ensure newFullName is cleared and NOT filled with connectedName
     function prefillNewForm(connected, relation) {
         if (!connected) return;
         const connectedName = connected.FullName || '';
         const connectedCode = connected.PersonalCode || '';
+        
+        // Only set the father/spouse fields
         setSafeVal('newFather', '');
         setSafeVal('newSpouse', '');
         if (relation === 'बाबु') setSafeVal('newFather', `${connectedName} (${connectedCode})`);
         else if (relation === 'श्रीमान') setSafeVal('newSpouse', `${connectedName} (${connectedCode})`);
         else if (relation === 'श्रीमती') setSafeVal('newSpouse', `${connectedName} (${connectedCode})`);
 
-        // ✅ Auto-select gender based on relation
+        // Explicitly clear the new member's name so it doesn't auto-fill with the connected member's name
+        setSafeVal('newFullName', '');
+
         applyGenderForRelation(relation);
-
-        // ✅ Populate FamilyPositionDropdown if relation is बाबु
         populateFamilyPosition();
-
         setChecked('newConsentCheck', false);
         updateNewSubmitVisibility();
     }
+    
     function resetNewFlow() {
         newRelation = ''; selectedConnectedMember = null;
         setSafeVal('newConnectedRelation', ''); setSafeVal('NewConnectedMemberSearch', '');
@@ -891,10 +1183,12 @@
         const status = $('newUploadStatus'); if (status) status.innerHTML = '';
         setSafeVal('newPhotoUrl', ''); setSafeVal('newPublicId', '');
         clearAllFieldErrorsInForm('newMemberForm');
-        // Reset family position group
         const group = $('FamilyPositionGroup'); if (group) group.style.display = 'none';
         const dropdown = $('FamilyPositionDropdown'); if (dropdown) dropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
         const helper = $('newPositionHelper'); if (helper) helper.style.display = 'none';
+        const ecGroup = $('ElderCountGroup'); if (ecGroup) ecGroup.style.display = 'none';
+        const ecDropdown = $('ElderCountDropdown'); if (ecDropdown) ecDropdown.innerHTML = '<option value="">छान्नुहोस्</option>';
+        setSafeVal('newElderCount', '');
         updateNewSubmitVisibility();
     }
 
@@ -1256,9 +1550,9 @@
                 MemberAddress: safeVal('exAddress'), MemberMobile: safeVal('exMobile'), MemberEmail: safeVal('exEmail'),
                 MemberFather: safeVal('exFather'), MemberMother: safeVal('exMother'), MemberSpouse: safeVal('exSpouse'),
                 MemberDOB: safeVal('exDob'), MemberSons: safeVal('exSonsInput'), MemberDaughters: safeVal('exDaughtersInput'),
-                MemberQualification: safeVal('exQualification'), MemberPlace: safeVal('exPosition'),
+                MemberQualification: safeVal('exQualification'), MemberPlace: safeVal('exPositionDropdown'),
                 MemberDetailAddress: safeVal('exDetailAddress'), MemberDetailProfession: safeVal('exDetailProfession'),
-                MemberLifeStory: safeVal('exLifeStory'), MemberDOD: safeVal('exDodAge'),
+                MemberLifeStory: safeVal('exLifeStory'), MemberDOD: '',
                 MemberPhotoUrl: photoUrl, MemberProfession: safeVal('exProfession'),
                 ConnectedRelation: '', ConnectedName: '', ConnectedCode: '', RequestType: 'Edit'
             };
@@ -1270,6 +1564,7 @@
             showFeedback(`<i class="fas fa-exclamation-circle"></i> त्रुटि: ${escapeHtml(err.message)}`, 'error');
         } finally { setButtonLoading(submitBtn, false); existingSubmitting = false; }
     }
+
     async function submitNew(e) {
         e.preventDefault();
         if (newSubmitting) return;
@@ -1277,7 +1572,6 @@
         if (!newRelation) { showFeedback('<i class="fas fa-exclamation-circle"></i> कृपया सम्बन्ध छान्नुहोस्।', 'error'); return; }
         if (!selectedConnectedMember) { showFeedback('<i class="fas fa-exclamation-circle"></i> कृपया जोडिने सदस्य छान्नुहोस्।', 'error'); return; }
         if (!validateForm('new', 'newFullName')) return;
-        // If relation is बाबु, require FamilyPositionDropdown selection
         if (newRelation === 'बाबु') {
             const fp = $('FamilyPositionDropdown');
             if (!fp || !fp.value) {
@@ -1285,7 +1579,68 @@
                 $('FamilyPositionGroup')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
+            if (fp.value === 'कान्छो छोरा' || fp.value === 'कान्छी छोरी') {
+                const ec = $('ElderCountDropdown');
+                if (!ec || ec.value === '') {
+                    showFeedback('<i class="fas fa-exclamation-circle"></i> कृपया दाजु/दिदीको संख्या छान्नुहोस्।', 'error');
+                    $('ElderCountGroup')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+            }
         }
+
+        // ✅ Duplicate / Spouse check
+        const elderCountValue = safeVal('newElderCount');
+        const genderForCode = normalizeGender(safeSelectVal('newGender', 'M')) || 'M';
+        const fullNameForCheck = safeVal('newFullName');
+        const connectedCode = selectedConnectedMember.PersonalCode || '';
+
+        // 1. Relationship-specific checks
+        if (newRelation === 'बाबु') {
+            // A) Father: check the derived child slot
+            const slot = checkNewChildSlot(connectedCode, genderForCode, elderCountValue, fullNameForCheck);
+            if (slot.blocked) {
+                showFeedback('<i class="fas fa-exclamation-circle"></i> ' + escapeHtml(slot.reason).replace(/\n/g, '<br>'), 'error');
+                return;
+            }
+            if (slot.warning) {
+                if (!window.confirm(slot.warning.message)) return;
+            }
+        } else if (newRelation === 'श्रीमान') {
+            // B) Husband: warn if he already has a wife
+            const existingWives = allMembers.filter(m => {
+                if (!m || !m.PersonalCode) return false;
+                const pattern = new RegExp('^' + escapeRegex(connectedCode) + 'm+$');
+                return pattern.test(String(m.PersonalCode).trim());
+            });
+
+            if (existingWives.length > 0) {
+                const wifeNames = existingWives.map(w => w.FullName || '(नाम अज्ञात)').join(', ');
+                const msg = `⚠️ यो श्रीमानको पहिले नै श्रीमती दर्ता भइसकेको छ:\n\n` +
+                            `श्रीमती: ${wifeNames}\n\n` +
+                            `के यो नयाँ सदस्य उनको अर्को श्रीमती हो? (Yes थिच्नुहोस् यदि एक भन्दा बढी श्रीमती छन् भने)`;
+                if (!window.confirm(msg)) return;
+            }
+        } else if (newRelation === 'श्रीमती') {
+            // C) Wife: block if she already has a husband
+            const existingHusbands = allMembers.filter(m => {
+                if (!m || !m.PersonalCode) return false;
+                const pattern = new RegExp('^' + escapeRegex(connectedCode) + 'm+$');
+                return pattern.test(String(m.PersonalCode).trim());
+            });
+
+            if (existingHusbands.length > 0) {
+                const husbandNames = existingHusbands.map(h => h.FullName || '(नाम अज्ञात)').join(', ');
+                showFeedback(
+                    `<i class="fas fa-exclamation-circle"></i> यो श्रीमतीको पहिले नै श्रीमान दर्ता भइसकेको छ:<br><br>` +
+                    `श्रीमान: ${escapeHtml(husbandNames)}<br><br>` +
+                    `एक महिलाको एक भन्दा बढी श्रीमान हुन सक्दैन। कृपया अर्को सदस्य छान्नुहोस्।`,
+                    'error'
+                );
+                return;
+            }
+        }
+
         newSubmitting = true;
         const submitBtn = $('newBtnSubmit');
         setButtonLoading(submitBtn, true, 'पठाउँदै...');
@@ -1295,7 +1650,6 @@
                 const r = await uploadToImgBB(photoUrl, safeVal('newFullName') || 'member', 'new');
                 if (r.success) photoUrl = r.url; else photoUrl = '';
             }
-            // Use family position value if provided, else manual newPosition
             let placeValue = safeVal('newPosition');
             if (newRelation === 'बाबु') {
                 const fp = $('FamilyPositionDropdown');
@@ -1303,16 +1657,18 @@
             }
             const payload = {
                 MemberFullName: safeVal('newFullName'), MemberCode: '',
-                MemberGender: normalizeGender(safeSelectVal('newGender', 'M')) || 'M',
+                MemberGender: genderForCode,
                 MemberAddress: safeVal('newAddress'), MemberMobile: safeVal('newMobile'), MemberEmail: safeVal('newEmail'),
                 MemberFather: safeVal('newFather'), MemberMother: safeVal('newMother'), MemberSpouse: safeVal('newSpouse'),
                 MemberDOB: safeVal('newDob'), MemberSons: safeVal('newSonsInput'), MemberDaughters: safeVal('newDaughtersInput'),
                 MemberQualification: safeVal('newQualification'), MemberPlace: placeValue,
                 MemberDetailAddress: safeVal('newDetailAddress'), MemberDetailProfession: safeVal('newDetailProfession'),
-                MemberLifeStory: safeVal('newLifeStory'), MemberDOD: safeVal('newDodAge'),
+                MemberLifeStory: safeVal('newLifeStory'), MemberDOD: '',
                 MemberPhotoUrl: photoUrl, MemberProfession: safeVal('newProfession'),
                 ConnectedRelation: newRelation, ConnectedName: selectedConnectedMember.FullName || '',
-                ConnectedCode: selectedConnectedMember.PersonalCode || '', RequestType: 'New'
+                ConnectedCode: selectedConnectedMember.PersonalCode || '',
+                ElderCount: elderCountValue,
+                RequestType: 'New'
             };
             const { error } = await supabase.from('MemberSuggestionTable').insert([payload]);
             if (error) throw error;
@@ -1362,17 +1718,21 @@
             const confirmBox = $('NewConnectedConfirmBox'); if (confirmBox) confirmBox.style.display = 'none';
             const selectBox = $('NewConnectedMemberBox'); if (selectBox) selectBox.style.display = 'flex';
             const form = $('newMemberForm'); if (form) form.style.display = 'none';
-            // Hide family position group
             const group = $('FamilyPositionGroup'); if (group) group.style.display = 'none';
+            const ecGroup = $('ElderCountGroup'); if (ecGroup) ecGroup.style.display = 'none';
             updateNewSubmitVisibility(); input?.focus();
         });
         $('newConnectedRelation')?.addEventListener('change', onRelationChange);
-
-        // ✅ New: gender change → update family position dropdown
         $('newGender')?.addEventListener('change', onNewGenderChange);
-
-        // ✅ New: family position change → auto-fill newPosition
         $('FamilyPositionDropdown')?.addEventListener('change', onFamilyPositionChange);
+        $('ElderCountDropdown')?.addEventListener('change', updateElderCountValue);
+
+        $('exGender')?.addEventListener('change', () => {
+            if (selectedExistingMember) {
+                const currentVal = safeVal('exPositionDropdown');
+                populateExistingPositionDropdown(selectedExistingMember, currentVal);
+            }
+        });
 
         $('exConsentCheck')?.addEventListener('change', updateExistingSubmitVisibility);
         $('newConsentCheck')?.addEventListener('change', updateNewSubmitVisibility);

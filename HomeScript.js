@@ -1,4 +1,4 @@
-// HomeScript.js - Public Home Page with Notices (Paginated)
+// HomeScript.js - Public Home Page with Notices, PDF Export, and Relation Finder
 
 (function() {
     'use strict';
@@ -22,6 +22,11 @@
     let currentPage = 1;
     const NOTICES_PER_PAGE = 10;
     let isLoading = false;
+    
+    // Cache for PDF and Relation Finder
+    let allMembers = [];
+    let selectedMemberA = null;
+    let selectedMemberB = null;
 
     // ------------------------------------------------------------
     // 3. DOM References
@@ -40,8 +45,16 @@
 
     async function init() {
         console.log('🚀 Initializing Home page...');
+        
+        // Load data for the new features
+        await loadMembersCache();
+        
+        // Load notices
         await loadNotices();
+        
+        // Setup listeners
         setupEventListeners();
+        setupNewFeatureListeners();
 
         if (window.FB) {
             window.FB.XFBML.parse();
@@ -86,14 +99,28 @@
     }
 
     // ------------------------------------------------------------
-    // 6. Get Total Pages
+    // 6. Cache Members for PDF & Relation Finder
+    // ------------------------------------------------------------
+    async function loadMembersCache() {
+        try {
+            const { data, error } = await supabase.from('MemberDataTable').select('*');
+            if (error) throw error;
+            allMembers = data || [];
+            console.log(`✅ Cached ${allMembers.length} members for PDF & Relation.`);
+        } catch (err) {
+            console.warn('⚠️ Could not load members cache:', err);
+        }
+    }
+
+    // ------------------------------------------------------------
+    // 7. Get Total Pages
     // ------------------------------------------------------------
     function getTotalPages() {
         return Math.ceil(allNotices.length / NOTICES_PER_PAGE);
     }
 
     // ------------------------------------------------------------
-    // 7. Render Notices for Current Page
+    // 8. Render Notices for Current Page
     // ------------------------------------------------------------
     function renderNotices() {
         if (allNotices.length === 0) {
@@ -116,12 +143,10 @@
             const card = createNoticeCard(notice);
             noticeGrid.appendChild(card);
         });
-
-        console.log(`📊 Page ${currentPage}/${getTotalPages()} — showing notices ${start + 1}–${Math.min(end, allNotices.length)} of ${allNotices.length}`);
     }
 
     // ------------------------------------------------------------
-    // 8. Create Notice Card
+    // 9. Create Notice Card
     // ------------------------------------------------------------
     function createNoticeCard(notice) {
         const card = document.createElement('div');
@@ -159,7 +184,6 @@
             let imgSrc;
             if (mediaType === 'text_image') {
                 imgSrc = notice.media_url || notice.thumbnail_url;
-                imgSrc = stripSupabaseTransform(imgSrc);
             } else {
                 imgSrc = notice.thumbnail_url || notice.media_url;
             }
@@ -237,32 +261,6 @@
         card.addEventListener('click', () => openMediaDirectly(notice));
 
         return card;
-    }
-
-    // ------------------------------------------------------------
-    // 9. Strip Supabase transform params
-    // ------------------------------------------------------------
-    function stripSupabaseTransform(url) {
-        if (!url) return url;
-        if (!url.includes('/storage/v1/')) return url;
-
-        try {
-            const u = new URL(url);
-
-            if (u.pathname.includes('/storage/v1/render/image/')) {
-                u.pathname = u.pathname.replace(
-                    '/storage/v1/render/image/',
-                    '/storage/v1/object/public/'
-                );
-            }
-
-            const paramsToRemove = ['width', 'height', 'resize', 'quality', 'format'];
-            paramsToRemove.forEach(p => u.searchParams.delete(p));
-
-            return u.toString();
-        } catch (e) {
-            return url.split('?')[0];
-        }
     }
 
     // ------------------------------------------------------------
@@ -524,8 +522,6 @@
             const fbUrl = notice.media_url;
             const isVideo = fbUrl.includes('/videos/') || fbUrl.includes('/video/');
 
-            // Scrollable container so the post is never clipped, even if
-            // Facebook renders wider/taller than the popup viewport.
             if (isVideo) {
                 popupHTML += `
                     <div class="fb-scroll-box">
@@ -623,7 +619,7 @@
     }
 
     // ------------------------------------------------------------
-    // 23. Setup Event Listeners
+    // 23. Setup Event Listeners (Notice Pagination)
     // ------------------------------------------------------------
     function setupEventListeners() {
         prevPageBtn.addEventListener('click', () => {
@@ -635,6 +631,257 @@
             if (isLoading) return;
             goToPage(currentPage + 1);
         });
+    }
+
+    // ============================================================
+    // NEW FEATURES: PDF EXPORT & RELATION FINDER
+    // ============================================================
+
+    function setupNewFeatureListeners() {
+        document.getElementById('btnSaveBansawali')?.addEventListener('click', downloadBansawaliPDF);
+        document.getElementById('btnFindRelation')?.addEventListener('click', openFindRelationModal);
+        
+        // Modal close events
+        document.getElementById('closeRelationModal')?.addEventListener('click', closeFindRelationModal);
+        document.getElementById('relationModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeFindRelationModal();
+        });
+        
+        // Relation Finder Buttons
+        document.getElementById('btnFindRelationNow')?.addEventListener('click', calculateAndDisplayRelation);
+        
+        // Setup comboboxes inside modal
+        setupRelationComboboxes();
+    }
+
+    // ------------------------------------------------------------
+    // 24. PDF EXPORT (Chunked Pages to avoid html2pdf bug)
+    // ------------------------------------------------------------
+    async function downloadBansawaliPDF() {
+        if (allMembers.length === 0) {
+            alert('सदस्यहरूको डाटा लोड हुँदैछ, कृपया केही सेकेन्ड पर्खनुहोस्।');
+            return;
+        }
+
+        const btn = document.getElementById('btnSaveBansawali');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> बन्दैछ...';
+        btn.disabled = true;
+
+        try {
+            const sortedMembers = [...allMembers].sort((a, b) => {
+                const codeA = String(a.PersonalCode || '').trim();
+                const codeB = String(b.PersonalCode || '').trim();
+                
+                if (codeA.length !== codeB.length) {
+                    return codeA.length - codeB.length;
+                }
+                return codeA.localeCompare(codeB);
+            });
+
+            // Off-screen container setup
+            const printContainer = document.createElement('div');
+            printContainer.style.width = '794px'; // Fixed 96 DPI A4 width
+            printContainer.style.background = '#ffffff';
+            printContainer.style.color = '#000000';
+            printContainer.style.fontFamily = "'Sanskrit-Text', 'MySanskritFont', sans-serif";
+            printContainer.style.boxSizing = 'border-box';
+
+            // Increased rows per page from 18 to 25 to fill standard A4 vertical space
+            const rowsPerPage = 25;
+            const chunks = [];
+            for (let i = 0; i < sortedMembers.length; i += rowsPerPage) {
+                chunks.push(sortedMembers.slice(i, i + rowsPerPage));
+            }
+
+            // Generate HTML for each page with balanced margins and 6 equal columns
+            let pagesHtml = '';
+            chunks.forEach((chunk, index) => {
+                let rowsHtml = chunk.map(m => `
+                    <tr>
+                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; text-align:center; word-break:break-word; width:16.66%;">${m.PersonalCode || ''}</td>
+                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.FullName || ''}</td>
+                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.Father || ''}</td>
+                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.Mother || ''}</td>
+                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.Spouse || ''}</td>
+                        <td style="border:1px solid #ddd; padding:5px 4px; font-size:11px; word-break:break-word; width:16.66%;">${m.Address || m.Thegana || ''}</td>
+                    </tr>
+                `).join('');
+
+                pagesHtml += `
+                    <div class="pdf-page" style="
+                        width: 794px; 
+                        min-height: 1080px; 
+                        padding: 30px; 
+                        box-sizing: border-box; 
+                        background: #ffffff; 
+                        page-break-after: always; 
+                        ${index === chunks.length - 1 ? 'page-break-after: auto;' : ''}
+                    ">
+                        <h1 style="text-align:center; color:#0a6b3e; margin:0 0 5px 0; font-size: 22px;">ओझा बन्धु वंशावली</h1>
+                        <p style="text-align:center; margin:0 0 15px 0; color:#555; font-size:11px;">मिति: ${new Date().toLocaleDateString('ne-NP')} (पृष्ठ ${index + 1} / ${chunks.length})</p>
+                        <table style="width:100%; border-collapse:collapse; table-layout: fixed; border:1px solid #ddd;">
+                            <thead>
+                                <tr style="background:#0a6b3e; color:#fff;">
+                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; text-align:center; width:16.66%;">कोड</th>
+                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">पुरा नाम</th>
+                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">बाबुको नाम</th>
+                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">आमाको नाम</th>
+                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">श्रीमान/श्रीमती</th>
+                                    <th style="border:1px solid #ddd; padding:7px 4px; font-size:11px; width:16.66%;">ठेगाना</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            });
+
+            printContainer.innerHTML = pagesHtml;
+
+            const opt = {
+                margin:       0,
+                filename:     'Ojha_Bandhu_Bansawali.pdf',
+                image:        { type: 'jpeg', quality: 1 }, 
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    scrollY: 0,
+                    scrollX: 0,
+                    windowWidth: 794,
+                    width: 794
+                },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['css', 'legacy'] } 
+            };
+
+            await html2pdf().set(opt).from(printContainer).save();
+
+        } catch (err) {
+            console.error('PDF Error:', err);
+            alert('PDF बनाउन सकिएन। कृपया पुनः प्रयास गर्नुहोस्।');
+        } finally {
+            btn.innerHTML = orig;
+            btn.disabled = false;
+        }
+    }
+
+    // ------------------------------------------------------------
+    // 25. SYSTEMATIC RELATION FINDER
+    // ------------------------------------------------------------
+    function openFindRelationModal() {
+        document.getElementById('relationModal').style.display = 'flex';
+        document.getElementById('personA').value = '';
+        document.getElementById('personB').value = '';
+        document.getElementById('relationResultBox').innerHTML = '<p class="relation-placeholder">नाता पत्ता लगाउन दुबै व्यक्ति छान्नुहोस्।</p>';
+        selectedMemberA = null;
+        selectedMemberB = null;
+    }
+
+    function closeFindRelationModal() {
+        document.getElementById('relationModal').style.display = 'none';
+    }
+
+    function setupRelationComboboxes() {
+        const inputA = document.getElementById('personA');
+        const resultsA = document.getElementById('resultsA');
+        const inputB = document.getElementById('personB');
+        const resultsB = document.getElementById('resultsB');
+
+        if (!inputA || !inputB) return;
+
+        function filterMembersLocal(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) return allMembers.slice(0, 30);
+            return allMembers.filter(m => (m.FullName || '').toLowerCase().includes(q) || (m.PersonalCode || '').toLowerCase().includes(q)).slice(0, 50);
+        }
+
+        function renderResults(el, results, inputEl, isA) {
+            if (results.length === 0) {
+                el.innerHTML = '<div class="combo-empty">कुनै सदस्य भेटिएन</div>';
+                el.hidden = false;
+                return;
+            }
+            el.innerHTML = results.map(m => `
+                <div class="combo-item" data-id="${m.PersonalCode}">
+                    <span class="combo-code">${m.PersonalCode}</span>
+                    <span class="combo-name">${m.FullName}</span>
+                </div>
+            `).join('');
+            el.hidden = false;
+
+            el.querySelectorAll('.combo-item').forEach(item => {
+                item.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    const code = item.dataset.id;
+                    const member = allMembers.find(m => m.PersonalCode === code);
+                    if (member) {
+                        inputEl.value = `${member.FullName} (${member.PersonalCode})`;
+                        if (isA) selectedMemberA = member;
+                        else selectedMemberB = member;
+                        el.hidden = true;
+                    }
+                });
+            });
+        }
+
+        inputA.addEventListener('focus', () => renderResults(resultsA, filterMembersLocal(inputA.value), inputA, true));
+        inputA.addEventListener('input', () => renderResults(resultsA, filterMembersLocal(inputA.value), inputA, true));
+        inputB.addEventListener('focus', () => renderResults(resultsB, filterMembersLocal(inputB.value), inputB, false));
+        inputB.addEventListener('input', () => renderResults(resultsB, filterMembersLocal(inputB.value), inputB, false));
+
+        document.addEventListener('click', (e) => {
+            if (!inputA.contains(e.target) && !resultsA.contains(e.target)) resultsA.hidden = true;
+            if (!inputB.contains(e.target) && !resultsB.contains(e.target)) resultsB.hidden = true;
+        });
+    }
+
+    function calculateAndDisplayRelation() {
+        if (!selectedMemberA || !selectedMemberB) {
+            alert('कृपया दुबै व्यक्ति छान्नुहोस्।');
+            return;
+        }
+        if (selectedMemberA.PersonalCode === selectedMemberB.PersonalCode) {
+            document.getElementById('relationResultBox').innerHTML = `<p class="relation-highlight">यी दुबै एउटै व्यक्ति हुन्।</p>`;
+            return;
+        }
+
+        // Call the RelationCalculator
+        const result = RelationCalculator.calculateRelation(selectedMemberA, selectedMemberB, allMembers);
+
+        if (!result.success) {
+            document.getElementById('relationResultBox').innerHTML = `<p class="relation-highlight">${result.message}</p>`;
+            return;
+        }
+
+        const nameA = selectedMemberA.FullName;
+        const nameB = selectedMemberB.FullName;
+
+        const html = `
+            <div class="relation-card">
+                <div class="relation-person"><strong>${nameA}</strong><br><small>${selectedMemberA.PersonalCode}</small></div>
+                <div class="relation-link-icon"><i class="fas fa-link"></i></div>
+                <div class="relation-person"><strong>${nameB}</strong><br><small>${selectedMemberB.PersonalCode}</small></div>
+            </div>
+            
+            <div class="relation-text-container" style="text-align: center; margin-top: 15px;">
+                <p style="margin-bottom: 5px; font-size: 1rem; color: #333;">
+                    <strong>${nameA} र ${nameB} बिचको सम्बन्ध:</strong>
+                </p>
+                <p class="relation-highlight" style="font-size: 1.2rem; margin-bottom: 5px;">
+                    ${result.message}
+                </p>
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">
+                    <strong>पुस्ता अन्तर:</strong> ${result.genDiff}
+                </p>
+            </div>
+            
+            <p class="relation-lca"><strong>साझा पुर्खा:</strong> ${result.lcaName} (${result.lcaCode})</p>
+        `;
+
+        document.getElementById('relationResultBox').innerHTML = html;
     }
 
 })();

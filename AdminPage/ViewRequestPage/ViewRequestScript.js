@@ -165,6 +165,12 @@
         return item.MemberPhotoUrl || item.PhotoUrl || item.photoUrl || '';
     }
 
+    function getElderCount(item) {
+        if (!item) return '';
+        const v = item.ElderCount;
+        return (v === null || v === undefined) ? '' : String(v);
+    }
+
     // ------------------------------------------------------------
     // 6. Load Suggestions
     // ------------------------------------------------------------
@@ -340,7 +346,6 @@
             const itemId = getSuggestionId(item);
             const hasPhoto = !!getPhotoUrl(item);
 
-            // Common cell fragments
             const cellIndex = `<td>${globalIndex}</td>`;
             const cellName  = `<td>${escapeHtml(item.MemberFullName || '-')}</td>`;
             const cellFather = `<td>${escapeHtml(item.MemberFather || '-')}</td>`;
@@ -375,9 +380,6 @@
             `;
 
             if (usingAddLayout) {
-                // 12 columns:
-                // क्र.सं., नाम, जोडिएको व्यक्ति, जोडिएको सम्बन्ध, जोडिएको कोड,
-                // बाबुको नाम, आमाको नाम, फोन, इमेल, प्रकार, मिति, कार्य
                 const cellConnName = `<td>${escapeHtml(item.ConnectedName || '-')}</td>`;
                 const cellConnRel  = `<td>${escapeHtml(item.ConnectedRelation || '-')}</td>`;
                 const cellConnCode = `<td>${escapeHtml(item.ConnectedCode || '-')}</td>`;
@@ -399,8 +401,6 @@
                     </tr>
                 `;
             } else {
-                // 10 columns:
-                // क्र.सं., नाम, कोड, बाबुको नाम, आमाको नाम, फोन, इमेल, प्रकार, मिति, कार्य
                 const cellCode = `<td>${escapeHtml(item.MemberCode || '-')}</td>`;
                 html += `
                     <tr>
@@ -421,7 +421,6 @@
 
         tableBody.innerHTML = html;
 
-        // Reattach listeners
         document.querySelectorAll('.btn-action-view').forEach(btn => {
             btn.addEventListener('click', function () {
                 const s = findSuggestionById(this.dataset.id);
@@ -547,10 +546,10 @@
             Profession: suggestion.MemberProfession || '',
             Qualification: suggestion.MemberQualification || '',
             Position: suggestion.MemberPlace || '',
+            ElderCount: getElderCount(suggestion),
             DetailAddress: suggestion.MemberDetailAddress || '',
             DetailProfession: suggestion.MemberDetailProfession || '',
             LifeStory: suggestion.MemberLifeStory || '',
-            DOD_Age: suggestion.MemberDOD || '',
             PhotoUrl: getPhotoUrl(suggestion),
             SuggestionId: id,
 
@@ -588,10 +587,10 @@
         document.getElementById('editProfession').value   = suggestion.MemberProfession || '';
         document.getElementById('editQualification').value = suggestion.MemberQualification || '';
         document.getElementById('editPosition').value     = suggestion.MemberPlace || '';
+        document.getElementById('editElderCount').value   = getElderCount(suggestion);
         document.getElementById('editDetailAddress').value = suggestion.MemberDetailAddress || '';
         document.getElementById('editDetailProfession').value = suggestion.MemberDetailProfession || '';
         document.getElementById('editLifeStory').value    = suggestion.MemberLifeStory || '';
-        document.getElementById('editDodAge').value       = suggestion.MemberDOD || '';
 
         const photoUrl = getPhotoUrl(suggestion);
         document.getElementById('editPhotoUrl').value = photoUrl;
@@ -628,6 +627,7 @@
 
         const type = getRequestType(suggestion);
         const hasPhoto = !!getPhotoUrl(suggestion);
+        const elderCount = getElderCount(suggestion);
 
         const row = (label, value) => {
             const v = (value === null || value === undefined || String(value).trim() === '')
@@ -656,7 +656,6 @@
                     ${row('पुरा नाम (नेपाली)', suggestion.MemberFullName)}
                     ${row('लिङ्ग', getGenderLabel(suggestion.MemberGender))}
                     ${row('जन्म मिति', suggestion.MemberDOB)}
-                    ${row('मृत्यु मिति / उमेर', suggestion.MemberDOD)}
                 </div>`;
 
         html += `<div class="view-section">
@@ -667,6 +666,7 @@
                     ${row('छोराहरू', suggestion.MemberSons)}
                     ${row('छोरीहरू', suggestion.MemberDaughters)}
                     ${row('परिवारमा स्थान', suggestion.MemberPlace)}
+                    ${row('दाजु/दिदीको संख्या', elderCount)}
                 </div>`;
 
         html += `<div class="view-section">
@@ -789,8 +789,6 @@
         console.log('🔎 Updating MemberDataTable where PersonalCode =', JSON.stringify(memberCode));
         console.log('   Payload keys:', Object.keys(memberPayload));
 
-        // ✅ CRITICAL: .select() makes Supabase return the updated rows,
-        //    so we can detect a 0-match (silent failure).
         const { data, error, status, statusText } = await supabase
             .from('MemberDataTable')
             .update(memberPayload)
@@ -807,8 +805,6 @@
 
         const matched = Array.isArray(data) ? data.length : 0;
         if (matched === 0) {
-            // The query ran but matched no rows.
-            // Verify the code really exists first, so we can report accurately.
             console.warn('⚠️ 0 rows updated. Verifying if the code exists...');
             const { data: check, error: checkErr } = await supabase
                 .from('MemberDataTable')
@@ -822,7 +818,6 @@
             if (!check || check.length === 0) {
                 return { ok: false, matched: 0, codeNotFound: true };
             }
-            // Row exists but update matched 0 — this shouldn't happen, but report it
             return { ok: false, matched: 0, error: 'Row exists but update matched 0 rows' };
         }
 
@@ -877,7 +872,8 @@
         let gender = document.getElementById('editGender').value;
         if (gender === 'O') gender = 'N';
 
-        // Suggestion payload (all columns including MemberQualification)
+        const elderCountValue = document.getElementById('editElderCount').value.trim();
+
         const suggestionPayload = {
             MemberCode:             document.getElementById('editMemberCode').value.trim(),
             MemberFullName:         fullName,
@@ -894,14 +890,13 @@
             MemberProfession:       document.getElementById('editProfession').value.trim(),
             MemberQualification:    document.getElementById('editQualification').value.trim(),
             MemberPlace:            document.getElementById('editPosition').value.trim(),
+            ElderCount:             elderCountValue,
             MemberDetailAddress:    document.getElementById('editDetailAddress').value.trim(),
             MemberDetailProfession: document.getElementById('editDetailProfession').value.trim(),
             MemberLifeStory:        document.getElementById('editLifeStory').value.trim(),
-            MemberDOD:              document.getElementById('editDodAge').value.trim(),
             MemberPhotoUrl:         photoUrl
         };
 
-        // Preserve Connected* fields
         if (currentEditingSuggestion) {
             if (currentEditingSuggestion.ConnectedName !== undefined) {
                 suggestionPayload.ConnectedName = currentEditingSuggestion.ConnectedName;
@@ -914,7 +909,6 @@
             }
         }
 
-        // Flip RequestType to 'edited'
         const originalType = getRequestType(currentEditingSuggestion);
         if (originalType === 'edit' || originalType === 'edited') {
             suggestionPayload.RequestType = 'edited';
@@ -931,6 +925,7 @@
             console.log('✅ MemberSuggestionTable updated');
 
             // ---- 2) Save to MemberDataTable (mapped columns) ----
+            // NOTE: No DOD_Age column in MemberDataTable, so it is not sent.
             const memberCode = String(suggestionPayload.MemberCode || '').trim();
             let memberUpdateResult = { ok: false, matched: 0 };
 
@@ -953,7 +948,6 @@
                     DetailAddress:    suggestionPayload.MemberDetailAddress,
                     DetailProfession: suggestionPayload.MemberDetailProfession,
                     LifeStory:        suggestionPayload.MemberLifeStory,
-                    DOD_Age:          suggestionPayload.MemberDOD,
                     PhotoUrl:         suggestionPayload.MemberPhotoUrl
                 };
 

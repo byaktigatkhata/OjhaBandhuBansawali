@@ -20,6 +20,7 @@
     // 2. Authentication & Authorization
     // ------------------------------------------------------------
     const LOGIN_PAGE_URL = '../LoginPage/LoginIndex.html';
+    const DASHBOARD_PAGE_URL = '../AdminDashboardPage/AdminDashboardIndex.html';
     
     // SPECIAL ADMIN ACCOUNTS - Hardcoded for bypass (NOT displayed in list)
     const SPECIAL_ADMINS = {
@@ -76,10 +77,19 @@
             }
             
             // Check if user has admin privileges in the table - lowercase columns
-            const hasAccess = await checkAdminAccess(currentUser.id);
-            if (!hasAccess) {
-                alert('⛔ Access Denied: You do not have administrator privileges.');
-                redirectToLogin();
+            const accessResult = await checkAdminAccess(currentUser.id);
+            
+            if (!accessResult.allowed) {
+                if (accessResult.reason === 'not_admin') {
+                    alert('⛔ Access Denied: You do not have administrator privileges.');
+                    redirectToLogin();
+                } else if (accessResult.reason === 'inactive') {
+                    alert('⛔ Access Denied: Your account is inactive.');
+                    redirectToLogin();
+                } else if (accessResult.reason === 'not_manager') {
+                    console.log('🚫 User is an AdminEditor. Redirecting to Dashboard.');
+                    window.location.replace(DASHBOARD_PAGE_URL);
+                }
                 return false;
             }
             
@@ -114,42 +124,48 @@
                     console.log('ℹ️ User not found in admins table, checking special admins...');
                     if (currentUser && isSpecialAdminAccount(currentUser.email)) {
                         console.log('✅ User is a special admin');
-                        return true;
+                        return { allowed: true };
                     }
-                    return false;
+                    return { allowed: false, reason: 'not_admin' };
                 }
                 console.error('Error checking admin access:', error);
-                return false;
+                return { allowed: false, reason: 'error' };
             }
 
             if (!data) {
                 // Check special admins
                 if (currentUser && isSpecialAdminAccount(currentUser.email)) {
                     console.log('✅ User is a special admin');
-                    return true;
+                    return { allowed: true };
                 }
                 console.log('🚫 User is not an admin');
-                return false;
+                return { allowed: false, reason: 'not_admin' };
             }
 
             if (data.is_active !== 'true') {
                 console.log('🚫 Admin account is inactive');
-                return false;
+                return { allowed: false, reason: 'inactive' };
+            }
+
+            // ✅ STRICT ROLE CHECK: Only AdminManager allowed here
+            if (data.admin_role !== 'AdminManager') {
+                console.log('🚫 Admin is not a Manager. Role:', data.admin_role);
+                return { allowed: false, reason: 'not_manager' };
             }
 
             currentUserRole = data.admin_role;
-            console.log('✅ Admin role:', currentUserRole);
+            console.log('✅ Admin role verified as AdminManager');
             
-            // Store role for UI
+            // Update UI
             const roleIndicator = document.getElementById('currentUserRole');
             if (roleIndicator) {
                 roleIndicator.textContent = `Role: ${currentUserRole}`;
             }
 
-            return true;
+            return { allowed: true };
         } catch (error) {
             console.error('Admin check error:', error);
-            return false;
+            return { allowed: false, reason: 'error' };
         }
     }
 
