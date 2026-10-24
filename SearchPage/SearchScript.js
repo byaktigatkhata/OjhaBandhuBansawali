@@ -1004,7 +1004,7 @@
         if (outputs.email) outputs.email.textContent = selectedMember.Email || '-';
         if (outputs.spouse) outputs.spouse.textContent = selectedMember.Spouse || '-';
         if (outputs.occupation) outputs.occupation.textContent = selectedMember.Profession || '-';
-        if (outputs.education) outputs.education.textContent = selectedMember.Education || '-';
+        if (outputs.education) outputs.education.textContent = selectedMember.Qualification || '-';
         if (outputs.position) outputs.position.textContent = selectedMember.Position || '-';
         if (outputs.sons) {
             const v = selectedMember.Sons;
