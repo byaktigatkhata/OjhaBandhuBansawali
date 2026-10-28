@@ -1,4 +1,8 @@
-// RelationCalculator.js
+/**
+ * RelationCalculator.js
+ * 
+ * नेपाली वंशीय नाता सम्बन्ध गणना गर्ने पूर्ण सुध्रिएको कोड (Rules A to L)
+ */
 
 const RelationCalculator = (function() {
     'use strict';
@@ -11,25 +15,82 @@ const RelationCalculator = (function() {
         return String(code).trim().replace(/m+$/, '');
     }
 
-    // Strictly follows Rule D to find gender
     function getGenderFromCode(code) {
+        const rawCode = String(code).trim();
+        const base = getBaseCode(rawCode);
+        const spouse = isSpouse(rawCode);
+
+        let baseGender = 'M';
+        if (!base.includes('.')) {
+            baseGender = 'M'; // मूल पुरुष सधैं पुरुष हुन्छन्
+        } else {
+            const lastBlock = base.split('.').pop();
+            const letter = lastBlock.charAt(0).toUpperCase();
+            baseGender = (letter === 'F') ? 'F' : 'M';
+        }
+
+        return spouse ? (baseGender === 'M' ? 'F' : 'M') : baseGender;
+    }
+
+    function getGeneration(code) {
         const base = getBaseCode(code);
-        if (/^[A-Z]$/.test(base)) return 'M'; // Root is male
-        
-        const lastBlock = base.split('.').pop();
-        const letter = lastBlock.charAt(0).toUpperCase();
-        
-        let g = (letter === 'F') ? 'F' : 'M';
-        if (isSpouse(code)) g = (g === 'M') ? 'F' : 'M'; 
-        
-        return g;
+        return (base.match(/\./g) || []).length;
+    }
+
+    function getFatherCode(code) {
+        const rawCode = String(code).trim();
+        if (isSpouse(rawCode)) return null;
+
+        const base = getBaseCode(rawCode);
+        const parts = base.split('.');
+        if (parts.length <= 1) return null;
+
+        parts.pop();
+
+        if (parts.length === 1) {
+            return parts[0];
+        }
+
+        const lastIdx = parts.length - 1;
+        const numPart = parts[lastIdx].replace(/^[MF]/i, '');
+        parts[lastIdx] = 'M' + numPart;
+
+        return parts.join('.');
+    }
+
+    function getAncestorsChain(code) {
+        const chain = [getBaseCode(code)];
+        let curr = getBaseCode(code);
+        while (curr) {
+            const father = getFatherCode(curr);
+            if (!father || chain.includes(father)) break;
+            chain.push(father);
+            curr = father;
+        }
+        return chain;
+    }
+
+    function isDirectAncestor(seniorBaseCode, juniorBaseCode) {
+        const chain = getAncestorsChain(juniorBaseCode);
+        return chain.includes(seniorBaseCode);
     }
 
     function getGenPrefix(diff) {
         const prefixes = {
-            2: 'हजुर', 3: 'जिजु', 4: 'कुप्री',
-            5: 'पाँच', 6: 'छ', 7: 'सात', 8: 'आठ', 9: 'नौ',
-            10: 'दश', 11: 'एघार', 12: 'बाह्र', 13: 'तेह्र', 14: 'चौध', 15: 'पन्द्र'
+            2: 'हजुर',
+            3: 'जिजु',
+            4: 'कुप्री',
+            5: 'पाँच',
+            6: 'छ',
+            7: 'सात',
+            8: 'आठ',
+            9: 'नौ',
+            10: 'दश',
+            11: 'एघार',
+            12: 'बाह्र',
+            13: 'तेह्र',
+            14: 'चौध',
+            15: 'पन्द्र'
         };
         return prefixes[diff] || `${diff}`;
     }
@@ -42,9 +103,8 @@ const RelationCalculator = (function() {
 
         let commonCount = 0;
         for (let i = 0; i < Math.min(partsA.length, partsB.length); i++) {
-            // Strip M/F from the block for structural comparison
-            const blockA = partsA[i].replace(/^[MF]/, '');
-            const blockB = partsB[i].replace(/^[MF]/, '');
+            const blockA = partsA[i].replace(/^[MF]/i, '');
+            const blockB = partsB[i].replace(/^[MF]/i, '');
             if (blockA === blockB) {
                 commonCount++;
             } else {
@@ -60,8 +120,8 @@ const RelationCalculator = (function() {
     }
 
     function calculateRelation(memberA, memberB, allMembers) {
-        const codeA = String(memberA.PersonalCode).trim();
-        const codeB = String(memberB.PersonalCode).trim();
+        const codeA = String(memberA.PersonalCode || '').trim();
+        const codeB = String(memberB.PersonalCode || '').trim();
 
         if (codeA === codeB) {
             return { success: false, message: 'यी दुबै एउटै व्यक्ति हुन्।' };
@@ -71,263 +131,239 @@ const RelationCalculator = (function() {
         const baseB = getBaseCode(codeB);
         const spouseA = isSpouse(codeA);
         const spouseB = isSpouse(codeB);
-
-        const pindaData = calculatePindaAntar(codeA, codeB);
         const genderA = getGenderFromCode(codeA);
         const genderB = getGenderFromCode(codeB);
 
-        // Same base code -> Husband/Wife or Co-wives
+        const pindaData = calculatePindaAntar(codeA, codeB);
+
         if (baseA === baseB) {
             if (spouseA && spouseB) {
                 if (genderA === 'F' && genderB === 'F') {
-                    return { success: true, message: 'सौता', lcaName: memberA.FullName, lcaCode: baseA, genDiff: 0, ...pindaData };
+                    return { success: true, message: 'सौता', genDiff: 0, ...pindaData };
                 }
-                return { success: true, message: 'श्रीमान र श्रीमती', lcaName: memberA.FullName, lcaCode: baseA, genDiff: 0, ...pindaData };
+                return { success: true, message: 'श्रीमान र श्रीमती', genDiff: 0, ...pindaData };
             }
-            return { success: true, message: 'श्रीमान र श्रीमती', lcaName: memberA.FullName, lcaCode: baseA, genDiff: 0, ...pindaData };
+            return { success: true, message: 'श्रीमान र श्रीमती', genDiff: 0, ...pindaData };
         }
 
-        // --- Find LCA (Lowest Common Ancestor) structurally ---
-        const partsA = baseA.split('.');
-        const partsB = baseB.split('.');
-        
-        let commonLength = 0;
-        for (let i = 0; i < Math.min(partsA.length, partsB.length); i++) {
-            const blockA = partsA[i].replace(/^[MF]/, '');
-            const blockB = partsB[i].replace(/^[MF]/, '');
-            if (blockA === blockB) {
-                commonLength++;
-            } else {
-                break;
-            }
-        }
-        
-        // Direct Line check: Senior's structural blocks are an exact prefix of Junior's structural blocks
-        const isDirectLine = (commonLength === Math.min(partsA.length, partsB.length));
+        const genA = getGeneration(codeA);
+        const genB = getGeneration(codeB);
+        const genDiff = Math.abs(genA - genB);
 
-        let seniorIsA = false;
-        let seniorBase = "", juniorBase = "", seniorGen = "", juniorGen = "", seniorSpouse = false, juniorSpouse = false;
+        let senior = (genA <= genB) ? { code: codeA, base: baseA, gen: genA, spouse: spouseA, gender: genderA }
+                                   : { code: codeB, base: baseB, gen: genB, spouse: spouseB, gender: genderB };
+        let junior = (genA <= genB) ? { code: codeB, base: baseB, gen: genB, spouse: spouseB, gender: genderB }
+                                   : { code: codeA, base: baseA, gen: genA, spouse: spouseA, gender: genderA };
 
-        if (isDirectLine) {
-            // Senior is the one with fewer structural blocks
-            seniorIsA = partsA.length <= partsB.length;
-            seniorBase = seniorIsA ? baseA : baseB;
-            juniorBase = seniorIsA ? baseB : baseA;
-            seniorGen = seniorIsA ? genderA : genderB;
-            juniorGen = seniorIsA ? genderB : genderA;
-            seniorSpouse = seniorIsA ? spouseA : spouseB;
-            juniorSpouse = seniorIsA ? spouseB : spouseA;
-        } else {
-            // If not direct line, assign based on generation length or string comparison
-            seniorIsA = partsA.length < partsB.length || (partsA.length === partsB.length && partsA.join('.') < partsB.join('.'));
-            seniorBase = seniorIsA ? baseA : baseB;
-            juniorBase = seniorIsA ? baseB : baseA;
-            seniorGen = seniorIsA ? genderA : genderB;
-            juniorGen = seniorIsA ? genderB : genderA;
-            seniorSpouse = seniorIsA ? spouseA : spouseB;
-            juniorSpouse = seniorIsA ? spouseB : spouseA;
-        }
-
-        const genDiff = Math.abs(partsA.length - partsB.length);
         let relationText = '';
-        const prefix = getGenPrefix(genDiff);
 
         // ============================================================
-        // SAME GENERATION (Rule E)
+        // RULE E: समान जेनेरेसन (genDiff === 0)
         // ============================================================
         if (genDiff === 0) {
-            if (!spouseA && !spouseB && genderA === 'M' && genderB === 'M') {
-                relationText = 'दाजु र भाइ';
-            } else if (!spouseA && !spouseB && genderA === 'F' && genderB === 'F') {
-                relationText = 'दिदी र बहिनी';
-            } else if (!spouseA && !spouseB && genderA !== genderB) {
-                relationText = 'दाजु र बहिनी वा दिदी र भाइ';
-            } else if (spouseA !== spouseB) {
-                const mGender = spouseA ? genderA : genderB; 
-                const otherGender = spouseA ? genderB : genderA;
-                
-                if (mGender === 'F' && otherGender === 'M') {
-                    relationText = 'जेठाजु र बुहारी वा देवर र भाउजु';
-                } else if (mGender === 'M' && otherGender === 'M') {
-                    relationText = 'जेठान र ज्वाइँ वा सालो र भिनाजु';
-                } else if (mGender === 'F' && otherGender === 'F') {
-                    relationText = 'नन्द र भाउजु वा आमाजु र बुहारी';
-                } else {
-                    relationText = 'जेठीसासु र ज्वाइँ वा साली र भिनाजु';
-                }
+            if (!spouseA && !spouseB) {
+                if (genderA === 'M' && genderB === 'M') relationText = 'दाजु र भाइ';
+                else if (genderA === 'F' && genderB === 'F') relationText = 'दिदी र बहिनी';
+                else relationText = 'दाजु र बहिनी वा दिदी र भाइ';
+            } else if ((!spouseA && spouseB) || (spouseA && !spouseB)) {
+                const nonSpouseGen = !spouseA ? genderA : genderB;
+                const spouseGen = spouseA ? genderA : genderB;
+
+                if (nonSpouseGen === 'M' && spouseGen === 'F') relationText = 'जेठाजु र बुहारी वा देवर र भाउजु';
+                else if (nonSpouseGen === 'M' && spouseGen === 'M') relationText = 'जेठान र ज्वाइँ वा सालो र भिनाजु';
+                else if (nonSpouseGen === 'F' && spouseGen === 'F') relationText = 'नन्द र भाउजु वा आमाजु र बुहारी';
+                else if (nonSpouseGen === 'F' && spouseGen === 'M') relationText = 'जेठीसासु र ज्वाइँ वा साली र भिनाजु';
             } else {
-                if (genderA === 'M' && genderB === 'M') {
-                    relationText = 'साढु दाजु र साढु भाइ'; 
-                } else if (genderA === 'F' && genderB === 'F') {
-                    relationText = 'जेठानी र देउरानी'; 
-                } else {
-                    relationText = 'जेठानी दिदी र नन्दे भाइ वा आमाजु दाजु र साली बहिनी'; 
-                }
+                if (genderA === 'M' && genderB === 'M') relationText = 'साढु दाजु र साढु भाइ';
+                else if (genderA === 'F' && genderB === 'F') relationText = 'जेठानी र देउरानी';
+                else relationText = 'जेठानी दिदी र नन्दे भाइ वा आमाजु दाजु र साली बहिनी';
             }
-            return { success: true, message: relationText, lcaName: '', lcaCode: '', genDiff, ...pindaData };
+            return { success: true, message: relationText, genDiff, ...pindaData };
         }
 
         // ============================================================
-        // DIRECT LINE
+        // जेनेरेसन अन्तर >= 1 (RULES F, G, H, I, J, K)
         // ============================================================
-        if (isDirectLine) {
-            let sTitle = '', jTitle = '';
-            if (genDiff === 1) {
-                sTitle = seniorGen === 'M' ? 'बुबा' : 'आमा';
-                jTitle = juniorGen === 'M' ? 'छोरा' : 'छोरी';
-            } else if (genDiff === 2) {
-                sTitle = seniorGen === 'M' ? 'हजुरबुबा' : 'हजुरआमा';
-                jTitle = juniorGen === 'M' ? 'नाती' : 'नातिनी';
-            } else if (genDiff === 3) {
-                sTitle = seniorGen === 'M' ? 'जिजुबुबा' : 'जिजुआमा';
-                jTitle = juniorGen === 'M' ? 'पनाती' : 'पनातिनी';
-            } else if (genDiff === 4) {
-                sTitle = seniorGen === 'M' ? 'कुप्राबुबा' : 'कुप्रीआमा';
-                jTitle = juniorGen === 'M' ? 'जनाती' : 'जनातिनी';
-            } else {
-                sTitle = seniorGen === 'M' ? `${prefix}बुबा` : `${prefix}आमा`;
-                jTitle = juniorGen === 'M' ? `${prefix}नाती` : `${prefix}नातिनी`;
-            }
+        const isDirect = isDirectAncestor(senior.base, junior.base);
+        const seniorLastBlock = senior.base.split('.').pop();
+        const isPhupuLine = seniorLastBlock.toUpperCase().startsWith('F');
+        const prefix = getGenPrefix(genDiff);
+        const prefixMale = (genDiff === 4) ? 'कुप्रा' : prefix;
 
-            if (!seniorSpouse && !juniorSpouse) {
-                relationText = `${sTitle} र ${jTitle}`;
-            } else if (!seniorSpouse && juniorSpouse) {
+        // जुनियर वंशज नाता निर्धारण (नाती / नातिनी / पनाती / पनातिनी आदि)
+        let juniorBloodTerm = '';
+        if (genDiff === 1) {
+            juniorBloodTerm = junior.gender === 'M' ? 'छोरा' : 'छोरी';
+        } else if (genDiff === 2) {
+            juniorBloodTerm = junior.gender === 'M' ? 'नाती' : 'नातिनी';
+        } else if (genDiff === 3) {
+            juniorBloodTerm = junior.gender === 'M' ? 'पनाती' : 'पनातिनी';
+        } else if (genDiff === 4) {
+            juniorBloodTerm = junior.gender === 'M' ? 'जनाती' : 'जनातिनी';
+        } else {
+            juniorBloodTerm = junior.gender === 'M' ? `${prefix}नाती` : `${prefix}नातिनी`;
+        }
+
+        // जुनियर ज्वाइँ/बुहारी नाता निर्धारण (ज्वाइँ सधैं नातिनी/पनातिनी मार्फत जोडिने हुनाले)
+        let juniorSpouseTerm = '';
+        if (genDiff === 1) {
+            juniorSpouseTerm = junior.gender === 'M' ? 'ज्वाइँ' : 'बुहारी';
+        } else if (genDiff === 2) {
+            juniorSpouseTerm = junior.gender === 'M' ? 'नातिनी ज्वाइँ' : 'नातिनी बुहारी';
+        } else if (genDiff === 3) {
+            juniorSpouseTerm = junior.gender === 'M' ? 'पनातिनी ज्वाइँ' : 'पनातिनी बुहारी';
+        } else if (genDiff === 4) {
+            juniorSpouseTerm = junior.gender === 'M' ? 'जनातिनी ज्वाइँ' : 'जनातिनी बुहारी';
+        } else {
+            juniorSpouseTerm = junior.gender === 'M' ? `${prefix}नातिनी ज्वाइँ` : `${prefix}नातिनी बुहारी`;
+        }
+
+        // ------------------------------------------------------------
+        // १. प्रत्यक्ष वंश (Direct Lineage)
+        // ------------------------------------------------------------
+        if (isDirect) {
+            if (!senior.spouse && !junior.spouse) {
                 if (genDiff === 1) {
-                    if (seniorGen === 'M') relationText = juniorGen === 'M' ? 'ससुरा र ज्वाइँ' : 'ससुरा र बुहारी';
-                    else relationText = juniorGen === 'M' ? 'सासु र ज्वाइँ' : 'सासु र बुहारी';
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? 'बुबा र छोरा' : 'बुबा र छोरी')
+                        : (junior.gender === 'M' ? 'आमा र छोरा' : 'आमा र छोरी');
                 } else if (genDiff === 2) {
-                    if (seniorGen === 'M') relationText = juniorGen === 'M' ? 'बुढाससुरा र नातिनी ज्वाइँ' : 'बुढाससुरा र नातिनी बुहारी';
-                    else relationText = juniorGen === 'M' ? 'हजुरसासु र नातिनी ज्वाइँ' : 'हजुरसासु र नातिनी बुहारी';
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? 'हजुरबुबा र नाती' : 'हजुरबुबा र नातिनी')
+                        : (junior.gender === 'M' ? 'हजुरआमा र नाती' : 'हजुरआमा र नातिनी');
+                } else if (genDiff === 3) {
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? 'जिजुबुबा र पनाती' : 'जिजुबुबा र पनातिनी')
+                        : (junior.gender === 'M' ? 'जिजुआमा र पनाती' : 'जिजुआमा र पनातिनी');
+                } else if (genDiff === 4) {
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? 'कुप्राबुबा र जनाती' : 'कुप्राबुबा र जनातिनी')
+                        : (junior.gender === 'M' ? 'कुप्रीआमा र जनाती' : 'कुप्रीआमा र जनातिनी');
                 } else {
-                    const anc = seniorGen === 'M' ? `${prefix}ससुरा` : `${prefix}सासु`;
-                    relationText = `${anc} र ${jTitle} ${juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी'}`;
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? `${prefixMale}बुबा र ${prefix}नाती` : `${prefixMale}बुबा र ${prefix}नातिनी`)
+                        : (junior.gender === 'M' ? `${prefix}आमा र ${prefix}नाती` : `${prefix}आमा र ${prefix}नातिनी`);
                 }
-            } else if (seniorSpouse && !juniorSpouse) {
-                relationText = `${sTitle} र ${jTitle}`;
+            } else if (!senior.spouse && junior.spouse) {
+                if (genDiff === 1) {
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? 'ससुरा र ज्वाइँ' : 'ससुरा र बुहारी')
+                        : (junior.gender === 'M' ? 'सासु र ज्वाइँ' : 'सासु र बुहारी');
+                } else if (genDiff === 2) {
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? 'हजुर ससुरा र नातिनी ज्वाइँ' : 'हजुर ससुरा र नातिनी बुहारी')
+                        : (junior.gender === 'M' ? 'हजुरसासु र नातिनी ज्वाइँ' : 'हजुरसासु र नातिनी बुहारी');
+                } else if (genDiff === 3) {
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? 'जिजुससुरा र पनातिनी ज्वाइँ' : 'जिजुससुरा र पनातिनी बुहारी')
+                        : (junior.gender === 'M' ? 'जिजुसासु र पनातिनी ज्वाइँ' : 'जिजुसासु र पनातिनी बुहारी');
+                } else if (genDiff === 4) {
+                    relationText = senior.gender === 'M' 
+                        ? (junior.gender === 'M' ? 'कुप्राससुरा र जनातिनी ज्वाइँ' : 'कुप्राससुरा र जनातिनी बुहारी')
+                        : (junior.gender === 'M' ? 'कुप्रीसासु र जनातिनी ज्वाइँ' : 'कुप्रीसासु र जनातिनी बुहारी');
+                } else {
+                    const sTitle = senior.gender === 'M' ? `${prefixMale}ससुरा` : `${prefix}सासु`;
+                    relationText = `${sTitle} र ${juniorSpouseTerm}`;
+                }
+            } else if (senior.spouse && !junior.spouse) {
+                const sTitle = senior.gender === 'M' ? `${prefixMale}बुबा` : `${prefix}आमा`;
+                relationText = `${sTitle} र ${juniorBloodTerm}`;
             } else {
                 if (genDiff === 1) {
-                    if (seniorGen === 'F' && juniorGen === 'F') relationText = 'सासु र बुहारी';
-                    else if (seniorGen === 'F' && juniorGen === 'M') relationText = 'सासु र ज्वाइँ';
-                    else relationText = `${sTitle} र ${jTitle}`;
+                    relationText = senior.gender === 'F'
+                        ? (junior.gender === 'F' ? 'सासु र बुहारी' : 'सासु र ज्वाइँ')
+                        : 'ससुरा र बुहारी';
                 } else if (genDiff === 2) {
-                    relationText = juniorGen === 'M' ? 'हजुरसासु र नातिनी ज्वाइँ' : 'हजुरसासु र नातिनी बुहारी';
+                    relationText = senior.gender === 'F'
+                        ? (junior.gender === 'F' ? 'हजुरसासु र नातिनी बुहारी' : 'हजुरसासु र नातिनी ज्वाइँ')
+                        : 'हजुर ससुरा र नातिनी बुहारी';
                 } else {
-                    relationText = `${prefix}सासु र ${jTitle} ${juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी'}`;
+                    const sTitle = senior.gender === 'F' ? `${prefix}सासु` : `${prefixMale}ससुरा`;
+                    relationText = `${sTitle} र ${juniorSpouseTerm}`;
                 }
             }
-            return { success: true, message: relationText, lcaName: '', lcaCode: '', genDiff, ...pindaData };
+            return { success: true, message: relationText, genDiff, ...pindaData };
         }
 
-        // ============================================================
-        // SIBLING BRANCHES (Phupu / Kaka lines)
-        // ============================================================
-        let isPhupuLine = false;
-        if (commonLength < Math.min(partsA.length, partsB.length)) {
-            const branchBlock = partsA[commonLength]; // Child of the LCA
-            if (branchBlock && branchBlock.toUpperCase().startsWith('F')) {
-                isPhupuLine = true;
-            }
-        }
-
-        // -------- PHUPU LINE --------
+        // ------------------------------------------------------------
+        // २. फुपु लाइन (Phupu Line)
+        // ------------------------------------------------------------
         if (isPhupuLine) {
-            let phupuTitle, phupuJwaiTitle, phupuSasuTitle;
-            if (genDiff === 1) {
-                phupuTitle = 'फुपु'; phupuJwaiTitle = 'फुपाजु'; phupuSasuTitle = 'फुपु सासु';
-            } else if (genDiff === 2) {
-                phupuTitle = 'हजुरफुपु'; phupuJwaiTitle = 'हजुरफुपाजु'; phupuSasuTitle = 'हजुरफुपु सासु';
-            } else if (genDiff === 3) {
-                phupuTitle = 'जिजुफुपु'; phupuJwaiTitle = 'जिजुफुपाजु'; phupuSasuTitle = 'जिजुफुपु सासु';
-            } else if (genDiff === 4) {
-                phupuTitle = 'कुप्रीफुपु'; phupuJwaiTitle = 'कुप्रीफुपाजु'; phupuSasuTitle = 'कुप्रीफुपु सासु';
+            let phupuTitle = genDiff === 1 ? 'फुपु' : `${prefix}फुपु`;
+            let phupuJwaiTitle = genDiff === 1 ? 'फुपाजु' : `${prefix}फुपाजु`;
+            let phupuSasuTitle = genDiff === 1 ? 'फुपु सासु' : `${prefix}फुपु सासु`;
+            let phupajuSasuroTitle = genDiff === 1 ? 'फुपाजु ससुरो' : `${prefix}फुपाजु ससुरो`;
+
+            let juniorTitle = genDiff === 1 
+                ? (junior.gender === 'M' ? 'भदो' : 'भदै')
+                : (junior.gender === 'M' ? `भदो ${prefix}नाती` : `भदै ${juniorBloodTerm}`);
+
+            if (!senior.spouse && !junior.spouse) {
+                relationText = `${phupuTitle} र ${juniorTitle}`;
+            } else if (!senior.spouse && junior.spouse) {
+                const jSpouseTitle = genDiff === 1 
+                    ? (junior.gender === 'M' ? 'भदै ज्वाइँ' : 'भदै बुहारी')
+                    : `भदै ${juniorSpouseTerm}`;
+                relationText = `${phupuSasuTitle} र ${jSpouseTitle}`;
+            } else if (senior.spouse && !junior.spouse) {
+                const jSaloTitle = genDiff === 1 
+                    ? (junior.gender === 'M' ? 'भदो सालो' : 'भदै साली')
+                    : `भदो ${prefix}नाती ${junior.gender === 'M' ? 'सालो' : 'साली'}`;
+                relationText = `${phupuJwaiTitle} र ${jSaloTitle}`;
             } else {
-                phupuTitle = `${prefix}फुपु`; phupuJwaiTitle = `${prefix}फुपाजु`; phupuSasuTitle = `${prefix}फुपु सासु`;
+                const jSpouseTitle = genDiff === 1 
+                    ? (junior.gender === 'M' ? 'भदै ज्वाइँ' : 'भदै बुहारी')
+                    : `भदै ${juniorSpouseTerm}`;
+                relationText = `${phupajuSasuroTitle} र ${jSpouseTitle}`;
             }
 
-            let bhadoTitle, bhadiTitle, bhadoSaloTitle, bhadiSaliTitle;
-            if (genDiff === 1) {
-                bhadoTitle = 'भदो'; bhadiTitle = 'भदै'; bhadoSaloTitle = 'भदो सालो'; bhadiSaliTitle = 'भदै साली';
-            } else {
-                bhadoTitle = `भदो ${prefix}नाती`; bhadiTitle = `भदै ${prefix}नातिनी`;
-                bhadoSaloTitle = `भदो ${prefix}नाती सालो`; bhadiSaliTitle = `भदै ${prefix}नातिनी साली`;
-            }
-
-            if (!seniorSpouse && !juniorSpouse) {
-                relationText = juniorGen === 'M' ? `${phupuTitle} र ${bhadoTitle}` : `${phupuTitle} र ${bhadiTitle}`;
-            } else if (!seniorSpouse && juniorSpouse) {
-                if (genDiff === 1) relationText = juniorGen === 'M' ? 'फुपु सासु र भदै ज्वाइँ' : 'फुपु सासु र भदै बुहारी';
-                else relationText = juniorGen === 'M' ? `${phupuSasuTitle} र ${bhadiTitle} ज्वाइँ` : `${phupuSasuTitle} र ${bhadiTitle} बुहारी`;
-            } else if (seniorSpouse && !juniorSpouse) {
-                if (genDiff === 1) relationText = juniorGen === 'M' ? 'फुपाजु र भदो सालो' : 'फुपाजु र भदै साली';
-                else relationText = juniorGen === 'M' ? `${phupuJwaiTitle} र ${bhadoSaloTitle}` : `${phupuJwaiTitle} र ${bhadiSaliTitle}`;
-            } else {
-                if (genDiff === 1) relationText = juniorGen === 'M' ? 'फुपाजु ससुरो र भदै ज्वाइँ' : 'फुपाजु ससुरो र भदै बुहारी';
-                else relationText = juniorGen === 'M' ? `${phupuJwaiTitle} ससुरो र ${bhadiTitle} ज्वाइँ` : `${phupuJwaiTitle} ससुरो र ${bhadiTitle} बुहारी`;
-            }
-            return { success: true, message: relationText, lcaName: '', lcaCode: '', genDiff, ...pindaData };
+            return { success: true, message: relationText, genDiff, ...pindaData };
         }
 
-        // -------- KAKA LINE --------
-        let kakaTitle, kakaSasuTitle;
+        // ------------------------------------------------------------
+        // ३. काका / बडाबा लाइन (Kaka / Badaba Line)
+        // ------------------------------------------------------------
+        let kakaTitle = '';
+        let kakaSasuTitle = '';
+
         if (genDiff === 1) {
-            kakaTitle = seniorGen === 'M' ? 'काका र भतिजा वा बडाबा र भतिजा' : 'काकी र भतिजा वा बडिमा र भतिजा';
-            kakaSasuTitle = seniorGen === 'M' ? 'काका ससुरा र बुहारी वा बडाबा ससुरा र बुहारी' : 'काकी सासु र बुहारी वा बडिमा सासु र बुहारी';
+            kakaTitle = senior.gender === 'M' ? 'काका वा बडाबा' : 'काकी वा बडिमा';
+            kakaSasuTitle = senior.gender === 'M' ? 'काका ससुरा वा बडाबा ससुरा' : 'काकी सासु वा बडिमा सासु';
         } else if (genDiff === 2) {
-            kakaTitle = seniorGen === 'M' ? 'हजुरकाका वा हजुरबडाबा' : 'हजुरकाकी वा हजुरबडिमा';
-            kakaSasuTitle = seniorGen === 'M' ? 'हजुरकाका ससुरा वा हजुरबडाबा ससुरा' : 'हजुरकाकी सासु वा हजुरबडिमा सासु';
-        } else if (genDiff === 3) {
-            kakaTitle = seniorGen === 'M' ? 'जिजुकाका वा जिजुबडाबा' : 'जिजुकाकी वा जिजुबडिमा';
-            kakaSasuTitle = seniorGen === 'M' ? 'जिजुकाका ससुरा वा जिजुबडाबा ससुरा' : 'जिजुकाकी सासु वा जिजुबडिमा सासु';
-        } else if (genDiff === 4) {
-            kakaTitle = seniorGen === 'M' ? 'कुप्राकाका वा कुप्राबडाबा' : 'कुप्रीकाकी वा कुप्रीबडिमा';
-            kakaSasuTitle = seniorGen === 'M' ? 'कुप्राकाका ससुरा वा कुप्राबडाबा ससुरा' : 'कुप्रीकाकी सासु वा कुप्रीबडिमा सासु';
+            kakaTitle = senior.gender === 'M' ? 'हजुरकाका वा हजुरबडाबा' : 'हजुरकाकी वा हजुरबडिमा';
+            kakaSasuTitle = senior.gender === 'M' ? 'हजुरकाका ससुरा वा हजुरबडाबा ससुरा' : 'हजुरकाकी सासु वा हजुरबडिमा सासु';
         } else {
-            kakaTitle = seniorGen === 'M' ? `${prefix}काका वा ${prefix}बडाबा` : `${prefix}काकी वा ${prefix}बडिमा`;
-            kakaSasuTitle = seniorGen === 'M' ? `${prefix}काका ससुरा वा ${prefix}बडाबा ससुरा` : `${prefix}काकी सासु वा ${prefix}बडिमा सासु`;
+            kakaTitle = senior.gender === 'M' ? `${prefixMale}काका वा ${prefixMale}बडाबा` : `${prefix}काकी वा ${prefix}बडिमा`;
+            kakaSasuTitle = senior.gender === 'M' ? `${prefixMale}काका ससुरा वा ${prefixMale}बडाबा ससुरा` : `${prefix}काकी सासु वा ${prefix}बडिमा सासु`;
         }
 
-        let bhatijaTitle, bhatijaSpouseTitle;
-        if (genDiff === 1) {
-            bhatijaTitle = juniorGen === 'M' ? 'भतिजा' : 'भतिजी';
-            bhatijaSpouseTitle = juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी';
-        } else if (genDiff === 2) {
-            bhatijaTitle = juniorGen === 'M' ? 'नाती' : 'नातिनी';
-            bhatijaSpouseTitle = juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी';
-        } else if (genDiff === 3) {
-            bhatijaTitle = juniorGen === 'M' ? 'पनाती' : 'पनातिनी';
-            bhatijaSpouseTitle = juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी';
-        } else if (genDiff === 4) {
-            bhatijaTitle = juniorGen === 'M' ? 'जनाती' : 'जनातिनी';
-            bhatijaSpouseTitle = juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी';
-        } else {
-            bhatijaTitle = juniorGen === 'M' ? `${prefix}नाती` : `${prefix}नातिनी`;
-            bhatijaSpouseTitle = juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी';
-        }
+        let bhatijaTitle = genDiff === 1 
+            ? (junior.gender === 'M' ? 'भतिजा' : 'भतिजी')
+            : juniorBloodTerm;
 
-        if (!seniorSpouse && !juniorSpouse) {
-            if (genDiff === 1) {
-                relationText = kakaTitle.replace(/भतिजा/g, juniorGen === 'M' ? 'भतिजा' : 'भतिजी');
-            } else {
-                relationText = `${kakaTitle} र ${bhatijaTitle}`;
-            }
-        } else if (!seniorSpouse && juniorSpouse) {
-            if (genDiff === 1) {
-                relationText = kakaSasuTitle.replace(/बुहारी/g, juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी');
-            } else {
-                relationText = `${kakaSasuTitle} र ${bhatijaSpouseTitle}`;
-            }
-        } else if (seniorSpouse && !juniorSpouse) {
+        if (!senior.spouse && !junior.spouse) {
+            relationText = `${kakaTitle} र ${bhatijaTitle}`;
+        } else if (!senior.spouse && junior.spouse) {
+            relationText = `${kakaSasuTitle} र ${juniorSpouseTerm}`;
+        } else if (senior.spouse && !junior.spouse) {
             relationText = `${kakaTitle} र ${bhatijaTitle}`;
         } else {
-            if (genDiff === 1) {
-                relationText = kakaSasuTitle.replace(/बुहारी/g, juniorGen === 'M' ? 'ज्वाइँ' : 'बुहारी');
-            } else {
-                relationText = `${kakaSasuTitle} र ${bhatijaSpouseTitle}`;
-            }
+            relationText = `${kakaSasuTitle} र ${juniorSpouseTerm}`;
         }
 
-        return { success: true, message: relationText, lcaName: '', lcaCode: '', genDiff, ...pindaData };
+        return { success: true, message: relationText, genDiff, ...pindaData };
     }
 
-    return { calculateRelation };
+    return {
+        calculateRelation,
+        getGenderFromCode,
+        getGeneration,
+        getBaseCode,
+        isSpouse,
+        getFatherCode
+    };
 })();
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = RelationCalculator;
+}

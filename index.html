@@ -18,6 +18,7 @@
     <link rel="apple-touch-icon" href="icon-192.png?v=20261017">
 
     <!-- jsPDF & AutoTable (Keep these) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -42,7 +43,8 @@
             <button onclick="location.href='RequestPage/RequestIndex.html'">तथ्य र विवरण सिफारिस</button>
             <button onclick="location.href='DonationPage/DonationIndex.html'">डोनेसन गर्नुहोस्</button>
             <button id="btnFindRelation"><i class="fas fa-users-viewfinder"></i> नाता पत्ता लगाउनुहोस्</button>
-            <button id="btnSaveBansawali"><i class="fas fa-file-pdf"></i> वंशावली PDF</button>
+            <button id="btnSaveBansawali"><i class="fas fa-file-pdf"></i> प्रिन्ट गर्नुहोस्</button>
+            <button id="btnFilterMembers"><i class="fas fa-filter"></i> सदस्य फिल्टर</button>
         </div>
         
         <!-- Notice Section -->
@@ -94,6 +96,119 @@
             </div>
         </div>
     </div>
+    <!-- Filter Members Modal -->
+    <div id="filterModal" class="filter-modal" style="display: none;">
+        <div class="filter-dialog">
+            <div class="filter-header">
+                <h3><i class="fas fa-filter"></i> सदस्यहरू फिल्टर गर्नुहोस्</h3>
+                <button class="filter-close" id="closeFilterModal">&times;</button>
+            </div>
+            <div class="filter-body">
+                <!-- Row 1: Country & Area -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="filter-group">
+                        <label><i class="fas fa-globe"></i> देश</label>
+                        <select id="filterCountry" class="filter-select">
+                            <option value="">-- सबै देश --</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-city"></i> क्षेत्र</label>
+                        <select id="filterArea" class="filter-select">
+                            <option value="">-- सबै क्षेत्र --</option>
+                            <option value="Kathmandu Valley">काठमाडौं उपत्यका</option>
+                            <option value="Outside Valley">उपत्यका बाहिर</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 2: Province & District -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="filter-group">
+                        <label><i class="fas fa-map"></i> प्रदेश</label>
+                        <select id="filterProvince" class="filter-select">
+                            <option value="">-- सबै प्रदेश --</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-map-pin"></i> जिल्ला</label>
+                        <select id="filterDistrict" class="filter-select">
+                            <option value="">-- सबै जिल्ला --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 3: Generation & Category -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="filter-group">
+                        <label><i class="fas fa-layer-group"></i> पुस्ता</label>
+                        <select id="filterGeneration" class="filter-select">
+                            <option value="">-- सबै पुस्ता --</option>
+                            <option value="0">पुस्ता ० (Gen 0)</option>
+                            <option value="1">पुस्ता १ (Gen 1)</option>
+                            <option value="2">पुस्ता २ (Gen 2)</option>
+                            <option value="3">पुस्ता ३ (Gen 3)</option>
+                            <option value="4">पुस्ता ४ (Gen 4)</option>
+                            <option value="5">पुस्ता ५ (Gen 5)</option>
+                            <option value="6">पुस्ता ६ (Gen 6)</option>
+                            <option value="7">पुस्ता ७ (Gen 7)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-sitemap"></i> वर्ग (Category)</label>
+                        <select id="filterCategory" class="filter-select">
+                            <option value="">-- सबै वर्ग --</option>
+                            <option value="Son">ओझाका छोराहरू</option>
+                            <option value="Daughter">ओझाका छोरीहरू</option>
+                            <option value="SonInLaw">ओझाका ज्वाइँहरू</option>
+                            <option value="DaughterInLaw">ओझाका बुहारीहरू</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 4: Profession -->
+                <div class="filter-group">
+                    <label><i class="fas fa-briefcase"></i> पेशा (जस्तै: खेती, शिक्षण, व्यापार)</label>
+                    <select id="filterProfession" class="filter-select">
+                        <option value="">-- सबै पेशा --</option>
+                        <option value="Teaching">शिक्षण</option>
+                        <option value="Business">व्यापार</option>
+                        <option value="Agriculture">कृषि</option>
+                        <option value="Public Servant">सरकारी सेवा</option>
+                        <option value="Private Employee">निजी कर्मचारी</option>
+                        <option value="Doctor">डाक्टर</option>
+                        <option value="Engineer">इन्जिनियर</option>
+                        <option value="Lawyer">वकिल</option>
+                        <option value="Student">विद्यार्थी</option>
+                        <option value="Retired">अवकाश प्राप्त</option>
+                    </select>
+                </div>
+
+                <!-- Search Text -->
+                <div class="filter-group">
+                    <label><i class="fas fa-search"></i> नाम/कोड खोज्नुहोस्</label>
+                    <input type="text" id="filterSearchText" class="filter-input" placeholder="नाम वा कोड टाइप गर्नुहोस्...">
+                </div>
+
+                <!-- Filter Summary -->
+                <div class="filter-summary" id="filterSummary">
+                    <span id="filterCount">कुल सदस्य: 0</span>
+                </div>
+
+                <!-- Results List -->
+                <div class="filter-results" id="filterResults">
+                    <p class="filter-placeholder">फिल्टर लागू गर्न माथिका विकल्पहरू छान्नुहोस्।</p>
+                </div>
+            </div>
+            <div class="filter-footer" style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="btnResetFilter" class="btn-secondary">रिसेट</button>
+                <button id="btnSaveFilterJPG" class="btn-success" style="background: #007bff; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-image"></i> Save as JPG
+                </button>
+                <button id="btnApplyFilter" class="btn-primary">लागू गर्नुहोस् (Apply)</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer Section -->
     <div id="FooterBox">
@@ -118,6 +233,7 @@
     <script src="SupabaseConfig.js?v=20261017"></script>
     <script src="DocumentReader.js?v=20261017"></script>
     <script src="RelationCalculator.js?v=20261017"></script>
+    <script src="MemberSearch.js?v=20261017"></script>
     <script src="HomeScript.js?v=20261017"></script>
     
     <!-- Facebook SDK -->

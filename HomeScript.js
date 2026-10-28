@@ -652,6 +652,513 @@
         
         // Setup comboboxes inside modal
         setupRelationComboboxes();
+
+        // NEW: Filter Members
+        setupFilterFeature();
+    }
+    // ------------------------------------------------------------
+    // NEW: FILTER MEMBERS FEATURE (Dynamic Dropdowns & Address Parser)
+    // ------------------------------------------------------------
+    const filterState = {
+        country: '',
+        district: '',
+        province: '',
+        area: '',
+        generation: '',
+        profession: '',
+        category: '',
+        searchText: ''
+    };
+
+    const NEPAL_DISTRICTS = {
+        'kathmandu': ['काठमाडौं', 'काठमाडौ', 'काठमाण्डू', 'kathmandu'],
+        'lalitpur': ['ललितपुर', 'ललितपूर', 'पाटन', 'lalitpur', 'patan'],
+        'bhaktapur': ['भक्तपुर', 'भक्तपूर', 'bhaktapur'],
+        'kavrepalanchok': ['काभ्रेपलाञ्चोक', 'काभ्रे', 'kavre', 'kavrepalanchok'],
+        'jhapa': ['झापा', 'jhapa'],
+        'morang': ['मोरङ', 'मोरंग', 'morang'],
+        'sunsari': ['सुनसरी', 'sunsari'],
+        'ilam': ['इलाम', 'ilam'],
+        'dhankuta': ['धनकुटा', 'dhankuta'],
+        'chitwan': ['चितवन', 'चितवन', 'chitwan'],
+        'kaski': ['कास्की', 'kaski', 'पोखरा', 'pokhara'],
+        'rupandehi': ['रुपन्देही', 'rupandehi', 'भैरहवा', 'butwal'],
+        'dhanusha': ['धनुषा', 'dhanusha', 'janakpur'],
+        'bara': ['बारा', 'bara'],
+        'parsa': ['पर्सा', 'parsa', 'birgunj'],
+        'banke': ['बाँके', 'banke', 'nepalgunj'],
+        'kailali': ['कैलाली', 'kailali', 'dhangadhi'],
+        'kanchanpur': ['कञ्चनपुर', 'kanchanpur', 'mahendranagar'],
+        'sarlahi': ['सर्लाही', 'sarlahi'],
+        'mahottari': ['महोत्तरी', 'mahottari'],
+        'saptari': ['सप्तरी', 'saptari'],
+        'siraha': ['सिराहा', 'siraha'],
+        'udayapur': ['उदयपुर', 'udayapur'],
+        'sindhuli': ['सिन्धुली', 'sindhuli'],
+        'dolakha': ['दोलखा', 'dolakha'],
+        'sindhupalchok': ['सिन्धुपाल्चोक', 'sindhupalchok'],
+        'nuwakot': ['नुवाकोट', 'nuwakot'],
+        'dhading': ['धादिङ', 'dhading'],
+        'makwanpur': ['मकवानपुर', 'makwanpur', 'hetauda'],
+        'gorkha': ['गोरखा', 'gorkha'],
+        'lamjung': ['लमजुङ', 'lamjung'],
+        'tanahun': ['तनहुँ', 'tanahun', 'damauli'],
+        'syangja': ['स्याङ्जा', 'syangja'],
+        'parbat': ['पर्वत', 'parbat'],
+        'baglung': ['बागलुङ', 'baglung'],
+        'myagdi': ['म्याग्दी', 'myagdi'],
+        'mustang': ['मुस्ताङ', 'mustang'],
+        'manang': ['मनाङ', 'manang'],
+        'palpa': ['पाल्पा', 'palpa', 'tansen'],
+        'gulmi': ['गुल्मी', 'gulmi'],
+        'arghakhanchi': ['अर्घाखाँची', 'arghakhanchi'],
+        'kapilvastu': ['कपिलवस्तु', 'kapilvastu', 'taulihawa'],
+        'nawalparasi': ['नवलपरासी', 'nawalparasi', 'nawalpur'],
+        'dang': ['दाङ', 'dang', 'ghorahi', 'tulsipur'],
+        'pyuthan': ['प्युठान', 'pyuthan'],
+        'rolpa': ['रोल्पा', 'rolpa'],
+        'rukum': ['रुकुम', 'rukum'],
+        'salyan': ['सल्यान', 'salyan'],
+        'jajarkot': ['जाजरकोट', 'jajarkot'],
+        'dailekh': ['दैलेख', 'dailekh'],
+        'surkhet': ['सुर्खेत', 'surkhet', 'birendranagar'],
+        'bajura': ['बाजुरा', 'bajura'],
+        'bajhang': ['बझाङ', 'bajhang'],
+        'achham': ['अछाम', 'achham'],
+        'doti': ['डोटी', 'doti'],
+        'dadeldhura': ['डडेल्धुरा', 'dadeldhura'],
+        'baitadi': ['बैतडी', 'baitadi'],
+        'darchula': ['दार्चुला', 'darchula'],
+        'terhathum': ['तेह्रथुम', 'terhathum'],
+        'bhojpur': ['भोजपुर', 'bhojpur'],
+        'sankhuwasabha': ['संखुवासभा', 'sankhuwasabha'],
+        'solukhumbu': ['सोलुखुम्बु', 'solukhumbu'],
+        'okhaldhunga': ['ओखलढुङ्गा', 'okhaldhunga'],
+        'khotang': ['खोटाङ', 'khotang'],
+        'panchthar': ['पाँचथर', 'panchthar'],
+        'taplejung': ['ताप्लेजुङ', 'taplejung'],
+        'dolpa': ['डोल्पा', 'dolpa'],
+        'mugu': ['मुगु', 'mugu'],
+        'humla': ['हुम्ला', 'humla'],
+        'jumla': ['जुम्ला', 'jumla'],
+        'kalikot': ['कालीकोट', 'kalikot'],
+        'ramechhap': ['रामेछाप', 'ramechhap'],
+        'rasuwa': ['रसुवा', 'rasuwa'],
+        'rautahat': ['रौतहट', 'rautahat'],
+        'bardiya': ['बर्दिया', 'bardiya', 'gulariya']
+    };
+
+    const VALLEY_DISTRICTS = ['kathmandu', 'lalitpur', 'bhaktapur', 'kavrepalanchok'];
+    
+    const PROVINCES = {
+        'Koshi': ['jhapa', 'morang', 'sunsari', 'ilam', 'dhankuta', 'terhathum', 'bhojpur', 'sankhuwasabha', 'solukhumbu', 'okhaldhunga', 'khotang', 'panchthar', 'taplejung', 'udayapur'],
+        'Madhesh': ['saptari', 'siraha', 'dhanusha', 'mahottari', 'sarlahi', 'bara', 'parsa', 'rautahat'],
+        'Bagmati': ['kathmandu', 'lalitpur', 'bhaktapur', 'kavrepalanchok', 'sindhuli', 'dolakha', 'sindhupalchok', 'nuwakot', 'dhading', 'makwanpur', 'chitwan', 'rasuwa', 'ramechhap'],
+        'Gandaki': ['gorkha', 'lamjung', 'tanahun', 'syangja', 'parbat', 'baglung', 'myagdi', 'mustang', 'manang', 'kaski', 'nawalparasi'],
+        'Lumbini': ['palpa', 'gulmi', 'arghakhanchi', 'kapilvastu', 'rupandehi', 'dang', 'pyuthan', 'rolpa', 'rukum', 'banke', 'bardiya'],
+        'Karnali': ['salyan', 'jajarkot', 'dailekh', 'surkhet', 'bajura', 'bajhang', 'achham', 'doti', 'dolpa', 'mugu', 'humla', 'jumla', 'kalikot'],
+        'Sudurpashchim': ['kailali', 'kanchanpur', 'dadeldhura', 'baitadi', 'darchula']
+    };
+
+    const FOREIGN_COUNTRIES = {
+        'USA': ['america', 'अमेरिका', 'usa', 'us', 'united states'],
+        'UK': ['uk', 'england', 'बेलायत', 'लन्डन', 'london'],
+        'Australia': ['australia', 'अस्ट्रेलिया', 'सिड्नी', 'sydney'],
+        'Japan': ['japan', 'जापान', 'tokyo'],
+        'UAE': ['uae', 'दुबई', 'dubai', 'abu dhabi', 'अबुधाबी'],
+        'Qatar': ['qatar', 'कतार', 'doha'],
+        'Saudi Arabia': ['saudi', 'साउदी', 'riyadh', 'जेद्दा'],
+        'Malaysia': ['malaysia', 'मलेसिया', 'kuala lumpur'],
+        'South Korea': ['korea', 'कोरिया', 'seoul'],
+        'India': ['india', 'भारत', 'दिल्ली', 'delhi', 'mumbai', 'bihar'],
+        'Myanmar': ['myanmar', 'म्यानमार', 'burma', 'बर्मा', 'वर्मा']
+    };
+
+    function getGenerationFromCode(code) {
+        if (!code) return '0';
+        return String((String(code).match(/\./g) || []).length);
+    }
+
+    function getCategoryFromCode(code) {
+        if (!code) return '';
+        const parts = String(code).split('.');
+        const lastBlock = parts[parts.length - 1].trim();
+
+        if (lastBlock.startsWith('M') && !lastBlock.endsWith('m')) return 'Son';
+        if (lastBlock.startsWith('F') && !lastBlock.endsWith('m')) return 'Daughter';
+        if (lastBlock.startsWith('F') && lastBlock.endsWith('m')) return 'SonInLaw';
+        if (lastBlock.startsWith('M') && lastBlock.endsWith('m')) return 'DaughterInLaw';
+        
+        return ''; 
+    }
+
+    function parseAddress(addressStr) {
+        const defaultResult = { country: 'Nepal', district: '', province: '', area: '' };
+        if (!addressStr) return defaultResult;
+
+        const addr = addressStr.toLowerCase().trim();
+        const result = { ...defaultResult };
+
+        for (const [country, keywords] of Object.entries(FOREIGN_COUNTRIES)) {
+            if (keywords.some(k => addr.includes(k))) {
+                result.country = country;
+                return result; 
+            }
+        }
+
+        for (const [key, variations] of Object.entries(NEPAL_DISTRICTS)) {
+            if (variations.some(v => addr.includes(v.toLowerCase()))) {
+                result.district = key.charAt(0).toUpperCase() + key.slice(1); 
+                break;
+            }
+        }
+
+        if (result.district) {
+            if (VALLEY_DISTRICTS.includes(result.district.toLowerCase())) {
+                result.area = 'Kathmandu Valley';
+            } else {
+                result.area = 'Outside Valley';
+            }
+
+            for (const [prov, dists] of Object.entries(PROVINCES)) {
+                if (dists.includes(result.district.toLowerCase())) {
+                    result.province = prov;
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    function matchesProfession(userProfessionStr, filterCategory) {
+        if (!filterCategory) return true;
+        const prof = (userProfessionStr || '').toLowerCase();
+
+        const synonyms = {
+            'Teaching': ['teaching', 'teacher', 'शिक्षक', 'शिक्षण', 'प्राध्यापक', 'professor', 'school', 'college'],
+            'Business': ['business', 'shop', 'व्यापार', 'व्यवसाय', 'पसल', 'trade', 'trader'],
+            'Agriculture': ['agriculture', 'farming', 'कृषि', 'खेती', 'खेतीपाती', 'कृषक', 'farmer', 'कृषि व्यवसाय'],
+            'Public Servant': ['public servant', 'government', 'सरकारी', 'सरकारी सेवा', 'civil servant', 'nepal government'],
+            'Private Employee': ['private employee', 'private job', 'निजी', 'निजी कर्मचारी', 'company', 'staff'],
+            'Doctor': ['doctor', 'डाक्टर', 'चिकित्सक', 'physician', 'surgeon'],
+            'Engineer': ['engineer', 'इन्जिनियर', 'अभियन्ता'],
+            'Lawyer': ['lawyer', 'वकिल', 'अधिवक्ता', 'advocate', 'legal'],
+            'Student': ['student', 'विद्यार्थी', 'अध्ययन', 'studying', 'पढ्दै'],
+            'Retired': ['retired', 'अवकाश', 'अवकाश प्राप्त', 'pension', 'पेन्सन']
+        };
+
+        const keywords = synonyms[filterCategory] || [filterCategory.toLowerCase()];
+        return keywords.some(k => prof.includes(k));
+    }
+
+    function populateFilterDropdowns() {
+        const countries = new Set();
+        const districts = new Set();
+        const provinces = new Set();
+
+        allMembers.forEach(m => {
+            const addrStr = m.Address || m.Thegana || m.PermanentAddress || m.CurrentAddress || '';
+            const parsed = parseAddress(addrStr);
+            
+            if (parsed.country) countries.add(parsed.country);
+            if (parsed.district) districts.add(parsed.district);
+            if (parsed.province) provinces.add(parsed.province);
+        });
+
+        const countrySel = document.getElementById('filterCountry');
+        const prevCountry = countrySel.value;
+        countrySel.innerHTML = '<option value="">-- सबै देश --</option>' + 
+            [...countries].sort().map(c => `<option value="${c}">${c}</option>`).join('');
+        countrySel.value = prevCountry;
+
+        const districtSel = document.getElementById('filterDistrict');
+        const prevDistrict = districtSel.value;
+        districtSel.innerHTML = '<option value="">-- सबै जिल्ला --</option>' + 
+            [...districts].sort().map(d => `<option value="${d}">${d}</option>`).join('');
+        districtSel.value = prevDistrict;
+
+        const provinceSel = document.getElementById('filterProvince');
+        const prevProvince = provinceSel.value;
+        provinceSel.innerHTML = '<option value="">-- सबै प्रदेश --</option>' + 
+            [...provinces].sort().map(p => `<option value="${p}">${p}</option>`).join('');
+        provinceSel.value = prevProvince;
+    }
+
+    function setupFilterFeature() {
+        document.getElementById('btnFilterMembers')?.addEventListener('click', openFilterModal);
+        document.getElementById('closeFilterModal')?.addEventListener('click', closeFilterModal);
+        document.getElementById('filterModal')?.addEventListener('click', function (e) {
+            if (e.target === this) closeFilterModal();
+        });
+        
+        document.getElementById('btnApplyFilter')?.addEventListener('click', applyFilter);
+        document.getElementById('btnResetFilter')?.addEventListener('click', resetFilter);
+        document.getElementById('btnSaveFilterJPG')?.addEventListener('click', downloadFilteredJPG);
+
+        ['filterCountry','filterDistrict','filterProvince','filterArea','filterGeneration','filterProfession','filterCategory'].forEach(id => {
+            document.getElementById(id)?.addEventListener('change', applyFilter);
+        });
+
+        let searchTimer;
+        document.getElementById('filterSearchText')?.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(applyFilter, 300);
+        });
+    }
+
+    // --- यी फंक्शनहरू हराएकोले Error आएको थियो ---
+    function openFilterModal() {
+        if (allMembers.length === 0) {
+            alert('सदस्यहरूको डाटा लोड हुँदैछ, कृपया केही सेकेन्ड पर्खनुहोस्।');
+            return;
+        }
+        populateFilterDropdowns();
+        document.getElementById('filterModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', handleFilterKeydown);
+        applyFilter(); 
+    }
+
+    function closeFilterModal() {
+        document.getElementById('filterModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        document.removeEventListener('keydown', handleFilterKeydown);
+    }
+
+    function handleFilterKeydown(e) {
+        if (e.key === 'Escape') closeFilterModal();
+    }
+
+    function resetFilter() {
+        document.getElementById('filterCountry').value = '';
+        document.getElementById('filterDistrict').value = '';
+        document.getElementById('filterProvince').value = '';
+        document.getElementById('filterArea').value = '';
+        document.getElementById('filterGeneration').value = '';
+        document.getElementById('filterProfession').value = '';
+        document.getElementById('filterCategory').value = '';
+        document.getElementById('filterSearchText').value = '';
+        applyFilter();
+    }
+
+    function applyFilter() {
+        filterState.country = document.getElementById('filterCountry').value;
+        filterState.district = document.getElementById('filterDistrict').value;
+        filterState.province = document.getElementById('filterProvince').value;
+        filterState.area = document.getElementById('filterArea').value;
+        filterState.generation = document.getElementById('filterGeneration').value;
+        filterState.profession = document.getElementById('filterProfession').value;
+        filterState.category = document.getElementById('filterCategory').value;
+        filterState.searchText = document.getElementById('filterSearchText').value.trim().toLowerCase();
+
+        const filtered = allMembers.filter(m => matchesFilter(m));
+        renderFilterResults(filtered);
+        document.getElementById('filterCount').textContent = `फिल्टर गरिएको: ${filtered.length} / ${allMembers.length}`;
+    }
+
+    function matchesFilter(member) {
+        const addressStr = member.Address || member.Thegana || member.PermanentAddress || member.CurrentAddress || '';
+        const parsed = parseAddress(addressStr);
+        
+        const genCode = getGenerationFromCode(member.PersonalCode);
+        const categoryCode = getCategoryFromCode(member.PersonalCode);
+        const profession = member.Profession || member.Occupation || member.Job || '';
+
+        if (filterState.country && parsed.country !== filterState.country) return false;
+        if (filterState.district && parsed.district !== filterState.district) return false;
+        if (filterState.province && parsed.province !== filterState.province) return false;
+        if (filterState.area && parsed.area !== filterState.area) return false;
+        if (filterState.generation && genCode !== filterState.generation) return false;
+        if (filterState.category && categoryCode !== filterState.category) return false;
+        if (filterState.profession && !matchesProfession(profession, filterState.profession)) return false;
+
+        if (filterState.searchText) {
+            const name = (member.FullName || '').toLowerCase();
+            const code = (member.PersonalCode || '').toLowerCase();
+            if (!name.includes(filterState.searchText) && !code.includes(filterState.searchText)) return false;
+        }
+
+        return true;
+    }
+
+    function renderFilterResults(members) {
+        const container = document.getElementById('filterResults');
+        if (!container) return;
+
+        if (!members || members.length === 0) {
+            container.innerHTML = `
+                <div class="filter-empty">
+                    <i class="fas fa-user-slash"></i>
+                    कुनै सदस्य भेटिएन। फिल्टर परिवर्तन गर्नुहोस्।
+                </div>`;
+            return;
+        }
+
+        const sorted = [...members].sort((a, b) => {
+            const ca = String(a.PersonalCode || '');
+            const cb = String(b.PersonalCode || '');
+            if (ca.length !== cb.length) return ca.length - cb.length;
+            return ca.localeCompare(cb);
+        });
+
+        container.innerHTML = sorted.map(m => {
+            const photo = m.PhotoUrl || '';
+            const avatar = photo
+                ? `<img src="${escapeHtml(photo)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<i class=\\'fas fa-user\\'></i>'">`
+                : `<i class="fas fa-user"></i>`;
+
+            const addressStr = m.Address || m.Thegana || m.PermanentAddress || m.CurrentAddress || '';
+            const parsed = parseAddress(addressStr);
+            const genCode = getGenerationFromCode(m.PersonalCode);
+            const category = getCategoryFromCode(m.PersonalCode);
+            const prof = m.Profession || m.Occupation || m.Job || '';
+            
+            const catLabels = { 'Son': 'छोरा', 'Daughter': 'छोरी', 'SonInLaw': 'ज्वाइँ', 'DaughterInLaw': 'बुहारी' };
+            const catLabel = catLabels[category] || '';
+
+            const tagClass = parsed.country === 'Nepal' ? 'tag-nepal' : 'tag-foreign';
+
+            return `
+                <div class="filter-member-item ${tagClass}">
+                    <div class="filter-member-avatar">${avatar}</div>
+                    <div class="filter-member-info">
+                        <div class="filter-member-name">${escapeHtml(m.FullName || 'Unknown')} ${catLabel ? `<span style="font-size:0.75rem; color:#666; font-weight:normal;">(${catLabel})</span>` : ''}</div>
+                        <div class="filter-member-meta">
+                            <span><i class="fas fa-layer-group"></i> पुस्ता ${genCode}</span>
+                            ${prof ? `<span><i class="fas fa-briefcase"></i> ${escapeHtml(prof)}</span>` : ''}
+                            <span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(parsed.country)} ${parsed.district ? '- ' + escapeHtml(parsed.district) : ''}</span>
+                        </div>
+                    </div>
+                    <div class="filter-member-code">${escapeHtml(m.PersonalCode || '')}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function downloadFilteredJPG() {
+        const filteredMembers = allMembers.filter(m => matchesFilter(m));
+        
+        if (filteredMembers.length === 0) {
+            alert('सेभ गर्नको लागि कुनै डाटा भेटिएन। कृपया फिल्टर परिवर्तन गर्नुहोस्।');
+            return;
+        }
+
+        // Check if html2canvas is loaded
+        if (typeof html2canvas === 'undefined') {
+            alert('html2canvas लाइब्रेरी लोड भएको छैन। कृपया पेज रिफ्रेस गर्नुहोस् वा इन्टरनेट चेक गर्नुहोस्।');
+            return;
+        }
+
+        const btn = document.getElementById('btnSaveFilterJPG');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> बन्दैछ...';
+        btn.disabled = true;
+
+        // Create an off-screen container
+        const container = document.createElement('div');
+        container.style.position = 'fixed';
+        container.style.top = '0';
+        container.style.left = '0';
+        container.style.width = '850px'; // Wider for better layout
+        container.style.background = '#ffffff';
+        container.style.padding = '40px';
+        container.style.zIndex = '-9999';
+        container.style.fontFamily = "'Sanskrit-Text', 'MySanskritFont', sans-serif";
+
+        // Build the HTML content for JPG
+        let itemsHtml = '';
+        filteredMembers.sort((a, b) => String(a.PersonalCode).localeCompare(String(b.PersonalCode))).forEach(m => {
+            const addressStr = m.Address || m.Thegana || m.PermanentAddress || m.CurrentAddress || '';
+            const parsed = parseAddress(addressStr);
+            const genCode = getGenerationFromCode(m.PersonalCode);
+            const category = getCategoryFromCode(m.PersonalCode);
+            const prof = m.Profession || m.Occupation || m.Job || '';
+            
+            const catLabels = { 'Son': 'छोरा', 'Daughter': 'छोरी', 'SonInLaw': 'ज्वाइँ', 'DaughterInLaw': 'बुहारी' };
+            const catLabel = catLabels[category] ? `(${catLabels[category]})` : '';
+
+            itemsHtml += `
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 10px 8px; font-weight: bold; width: 15%; color: #0a6b3e;">${escapeHtml(m.PersonalCode || '')}</td>
+                    <td style="padding: 10px 8px; width: 25%; font-weight: bold;">${escapeHtml(m.FullName || 'Unknown')} <span style="font-size: 11px; color: #666; font-weight: normal;">${catLabel}</span></td>
+                    <td style="padding: 10px 8px; width: 15%; font-size: 14px;">पुस्ता ${genCode}</td>
+                    <td style="padding: 10px 8px; width: 20%; font-size: 14px;">${escapeHtml(prof || '-')}</td>
+                    <td style="padding: 10px 8px; width: 25%; font-size: 14px;">${escapeHtml(parsed.country)} ${parsed.district ? '- ' + escapeHtml(parsed.district) : ''}</td>
+                </tr>
+            `;
+        });
+
+        // Get active filters for the header
+        const activeFilters = [];
+        if (filterState.country) activeFilters.push(`देश: ${filterState.country}`);
+        if (filterState.province) activeFilters.push(`प्रदेश: ${filterState.province}`);
+        if (filterState.district) activeFilters.push(`जिल्ला: ${filterState.district}`);
+        if (filterState.area) activeFilters.push(`क्षेत्र: ${filterState.area}`);
+        if (filterState.generation) activeFilters.push(`पुस्ता: ${filterState.generation}`);
+        if (filterState.profession) activeFilters.push(`पेशा: ${filterState.profession}`);
+        if (filterState.category) activeFilters.push(`वर्ग: ${filterState.category}`);
+        
+        const filterText = activeFilters.length > 0 ? activeFilters.join(' | ') : 'सबै सदस्यहरू';
+
+        container.innerHTML = `
+            <div style="text-align: center; margin-bottom: 25px; border-bottom: 3px solid #0a6b3e; padding-bottom: 15px;">
+                <h1 style="color: #0a6b3e; margin: 0 0 10px 0; font-size: 28px;">ओझा बन्धु वंशावली - फिल्टर गरिएको सूची</h1>
+                <p style="margin: 0; color: #555; font-size: 15px;">मिति: ${new Date().toLocaleDateString('ne-NP')} | कुल सदस्य: ${filteredMembers.length}</p>
+                <p style="margin: 8px 0 0 0; color: #d9534f; font-size: 13px; font-weight: bold;">फिल्टर: ${filterText}</p>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+                <thead>
+                    <tr style="background: #f4f4f4; border-bottom: 2px solid #ccc;">
+                        <th style="padding: 12px 8px; text-align: left; width: 15%;">कोड</th>
+                        <th style="padding: 12px 8px; text-align: left; width: 25%;">नाम</th>
+                        <th style="padding: 12px 8px; text-align: left; width: 15%;">पुस्ता</th>
+                        <th style="padding: 12px 8px; text-align: left; width: 20%;">पेशा</th>
+                        <th style="padding: 12px 8px; text-align: left; width: 25%;">ठेगाना</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsHtml}
+                </tbody>
+            </table>
+            <div style="text-align: center; margin-top: 25px; font-size: 13px; color: #888;">
+                Generated from Ojha Bandhu Bansawali App
+            </div>
+        `;
+
+        document.body.appendChild(container);
+
+        try {
+            // Generate canvas
+            const canvas = await html2canvas(container, {
+                scale: 2, // High quality
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            });
+
+            // Convert canvas to JPG data URL
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+            // Create a temporary link to trigger download
+            const link = document.createElement('a');
+            link.download = `Ojha_Filtered_Members_${Date.now()}.jpg`;
+            link.href = imgData;
+            document.body.appendChild(link); // Required for Firefox
+            link.click();
+            document.body.removeChild(link);
+
+        } catch (error) {
+            console.error('JPG Save Error:', error);
+            alert('JPG फाइल सेभ गर्न सकिएन। कृपया पुनः प्रयास गर्नुहोस्। (Error details in console)');
+        } finally {
+            // Cleanup
+            if (container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
     }
 
     // ------------------------------------------------------------
@@ -831,6 +1338,11 @@
         if (!inputA || !inputB) return;
 
         function filterMembersLocal(query) {
+            // MemberSearch.js मा रहेको स्मार्ट सर्च युटिलिटी प्रयोग गर्ने
+            if (typeof MemberSearch !== 'undefined' && MemberSearch.filterMembers) {
+                return MemberSearch.filterMembers(allMembers, query);
+            }
+            // यदि कुनै कारणले MemberSearch लोड भएको छैन भने Fallback
             const q = query.toLowerCase().trim();
             if (!q) return allMembers.slice(0, 30);
             return allMembers.filter(m => (m.FullName || '').toLowerCase().includes(q) || (m.PersonalCode || '').toLowerCase().includes(q)).slice(0, 50);
@@ -860,7 +1372,7 @@
                         if (isA) selectedMemberA = member;
                         else selectedMemberB = member;
                         el.hidden = true;
-                        inputEl.blur(); // Force close dropdown by blurring input
+                        inputEl.blur(); // ड्रपडाउन बन्द गर्ने
                     }
                 });
             });
