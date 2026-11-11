@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="HomeStyle.css?v=20261017">
+    <link rel="stylesheet" href="HomeStyle.css?v=20261018">
     
     <!-- PWA & Icons -->
     <link rel="manifest" href="manifest.json?v=20261017">
@@ -63,6 +63,50 @@
             </div>
             <div id="pageInfo" class="page-info"></div>
         </section>        
+
+        <!-- ============================================================ -->
+        <!-- MEMBER LIST SECTION (Between Notices and Footer)              -->
+        <!-- ============================================================ -->
+        <section id="memberListSection">
+            <h2><i class="fas fa-users"></i> सदस्यहरूको सूची</h2>
+
+            <!-- Search bar for member list -->
+            <div class="member-list-toolbar">
+                <div class="member-search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="memberListSearch" placeholder="नाम, कोड, वा ठेगानाले खोज्नुहोस्..." autocomplete="off">
+                </div>
+                <div class="member-list-count" id="memberListCount">लोड हुँदैछ...</div>
+            </div>
+
+            <!-- Member Table -->
+            <div class="member-table-wrap">
+                <table class="member-table" id="memberTable">
+                    <thead>
+                        <tr>
+                            <th class="col-sn">क्र.सं.</th>
+                            <th class="col-photo">फोटो</th>
+                            <th class="col-code">कोड</th>
+                            <th class="col-name">पुरा नाम</th>
+                            <th class="col-gen">पुस्ता</th>
+                            <th class="col-address">ठेगाना</th>
+                            <th class="col-father">बाबुको नाम</th>
+                            <th class="col-mother">आमाको नाम</th>
+                            <th class="col-spouse">श्रीमान/श्रीमती</th>
+                            <th class="col-mobile">मोबाइल</th>
+                            <th class="col-email">इमेल</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberTableBody">
+                        <tr>
+                            <td colspan="10" class="member-table-loading">
+                                <i class="fas fa-spinner fa-spin"></i> सदस्यहरू लोड हुँदैछ...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>   
 
     <!-- Relation Finder Modal -->
@@ -210,6 +254,21 @@
         </div>
     </div>
 
+    <!-- ============================================================ -->
+    <!-- MEMBER DETAIL POPUP                                          -->
+    <!-- ============================================================ -->
+    <div id="memberDetailModal" class="member-detail-modal" style="display: none;">
+        <div class="member-detail-dialog">
+            <div class="member-detail-header">
+                <h3><i class="fas fa-id-card"></i> सदस्यको पूर्ण विवरण</h3>
+                <button class="member-detail-close" id="closeMemberDetailModal">&times;</button>
+            </div>
+            <div class="member-detail-body" id="memberDetailBody">
+                <!-- Filled dynamically -->
+            </div>
+        </div>
+    </div>
+
     <!-- Footer Section -->
     <div id="FooterBox">
         <div id="FooterLinks">
@@ -234,7 +293,7 @@
     <script src="DocumentReader.js?v=20261017"></script>
     <script src="RelationCalculator.js?v=20261017"></script>
     <script src="MemberSearch.js?v=20261017"></script>
-    <script src="HomeScript.js?v=20261017"></script>
+    <script src="HomeScript.js?v=20261018"></script>
     
     <!-- Facebook SDK -->
     <div id="fb-root"></div>

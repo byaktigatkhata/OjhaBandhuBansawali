@@ -1,17 +1,4 @@
-/* ============================================================
-   Ojha Bandhu Bansawali — Service Worker
-   ------------------------------------------------------------
-   Strategy:
-     • HTML (navigation)      → network-first, fallback cache
-     • JS / CSS / JSON        → network-first, fallback cache
-     • Images / fonts / icons → cache-first (stale-while-revalidate)
-     • Cross-origin requests  → pass through (Supabase, Facebook, etc.)
-   ------------------------------------------------------------
-   IMPORTANT: Bump CACHE_VERSION on every deployment so the
-   browser installs a fresh service worker and purges stale files.
-   ============================================================ */
-
-const CACHE_VERSION = 'ojha-v8';   // प्रत्येक deployment मा यो version update गर्नुहोस्
+const CACHE_VERSION = 'ojha-v9';   // प्रत्येक deployment मा यो version update गर्नुहोस्
 const SHELL_CACHE    = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE    = `${CACHE_VERSION}-assets`;
 const OFFLINE_URL    = '/OjhaBandhuBansawali/offline.html';

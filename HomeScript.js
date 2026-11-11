@@ -1,5 +1,3 @@
-// HomeScript.js - Public Home Page with Notices, PDF Export, and Relation Finder
-
 (function() {
     'use strict';
 
@@ -23,10 +21,11 @@
     const NOTICES_PER_PAGE = 10;
     let isLoading = false;
     
-    // Cache for PDF and Relation Finder
     let allMembers = [];
     let selectedMemberA = null;
     let selectedMemberB = null;
+
+    let memberListSearchQuery = '';
 
     // ------------------------------------------------------------
     // 3. DOM References
@@ -46,15 +45,12 @@
     async function init() {
         console.log('🚀 Initializing Home page...');
         
-        // Load data for the new features
         await loadMembersCache();
-        
-        // Load notices
         await loadNotices();
-        
-        // Setup listeners
+        renderMemberList();
         setupEventListeners();
         setupNewFeatureListeners();
+        setupMemberListListeners();
 
         if (window.FB) {
             window.FB.XFBML.parse();
@@ -99,14 +95,14 @@
     }
 
     // ------------------------------------------------------------
-    // 6. Cache Members for PDF & Relation Finder
+    // 6. Cache Members
     // ------------------------------------------------------------
     async function loadMembersCache() {
         try {
             const { data, error } = await supabase.from('MemberDataTable').select('*');
             if (error) throw error;
             allMembers = data || [];
-            console.log(`✅ Cached ${allMembers.length} members for PDF & Relation.`);
+            console.log(`✅ Cached ${allMembers.length} members.`);
         } catch (err) {
             console.warn('⚠️ Could not load members cache:', err);
         }
@@ -162,7 +158,6 @@
 
         let thumbnailHtml = '';
 
-        // ---- TEXT ONLY ('none') ----
         if (mediaType === 'none') {
             const titleText = escapeHtml(notice.title || 'Untitled');
             const fullContent = notice.content || '';
@@ -177,7 +172,6 @@
                 </div>
             `;
         }
-        // ---- IMAGE or TEXT_IMAGE ----
         else if ((mediaType === 'image' || mediaType === 'text_image') &&
                  (notice.thumbnail_url || notice.media_url)) {
 
@@ -190,7 +184,6 @@
 
             thumbnailHtml = `<img src="${imgSrc}" alt="${escapeHtml(notice.title)}" loading="lazy">`;
         }
-        // ---- YOUTUBE ----
         else if (mediaType === 'youtube') {
             const videoId = extractYoutubeId(notice.media_url);
             const thumbUrl = notice.thumbnail_url ||
@@ -202,7 +195,6 @@
                 </div>
             `;
         }
-        // ---- PDF ----
         else if (mediaType === 'pdf') {
             thumbnailHtml = `
                 <div class="no-image" style="background: #f8f9fa;">
@@ -210,7 +202,6 @@
                 </div>
             `;
         }
-        // ---- FACEBOOK ----
         else if (mediaType === 'facebook' && notice.media_url) {
             const fbUrl = notice.media_url;
             thumbnailHtml = `
@@ -228,7 +219,6 @@
                 </div>
             `;
         }
-        // ---- Fallback ----
         else {
             thumbnailHtml = `
                 <div class="no-image">
@@ -612,14 +602,14 @@
     }
 
     // ------------------------------------------------------------
-    // 22. Handle Popup Keydown (Escape key)
+    // 22. Handle Popup Keydown
     // ------------------------------------------------------------
     function handlePopupKeydown(e) {
         if (e.key === 'Escape') closePopupFunc();
     }
 
     // ------------------------------------------------------------
-    // 23. Setup Event Listeners (Notice Pagination)
+    // 23. Setup Event Listeners
     // ------------------------------------------------------------
     function setupEventListeners() {
         prevPageBtn.addEventListener('click', () => {
@@ -634,30 +624,292 @@
     }
 
     // ============================================================
-    // NEW FEATURES: PDF EXPORT & RELATION FINDER
+    // MEMBER LIST
+    // ============================================================
+
+    function setupMemberListListeners() {
+        const searchInput = document.getElementById('memberListSearch');
+        if (searchInput) {
+            let debounceTimer;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    memberListSearchQuery = searchInput.value.trim().toLowerCase();
+                    renderMemberList();
+                }, 250);
+            });
+        }
+
+        const modal = document.getElementById('memberDetailModal');
+        const closeBtn = document.getElementById('closeMemberDetailModal');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeMemberDetailModal);
+        }
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) closeMemberDetailModal();
+            });
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const m = document.getElementById('memberDetailModal');
+                if (m && m.style.display !== 'none') closeMemberDetailModal();
+            }
+        });
+    }
+
+    function sortMembersByCodeLength(members) {
+        return [...members].sort((a, b) => {
+            const ca = String(a.PersonalCode || '').trim();
+            const cb = String(b.PersonalCode || '').trim();
+            if (ca.length !== cb.length) return ca.length - cb.length;
+            return ca.localeCompare(cb);
+        });
+    }
+
+    function renderMemberList() {
+        const tbody = document.getElementById('memberTableBody');
+        const countEl = document.getElementById('memberListCount');
+        if (!tbody) return;
+
+        if (!allMembers || allMembers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="11" class="member-table-loading">
+                        <i class="fas fa-user-slash"></i> कुनै सदस्य भेटिएन।
+                    </td>
+                </tr>
+            `;
+            if (countEl) countEl.textContent = 'कुल ० सदस्य';
+            return;
+        }
+
+        let sorted = sortMembersByCodeLength(allMembers);
+
+        if (memberListSearchQuery) {
+            const q = memberListSearchQuery;
+            sorted = sorted.filter(m => {
+                const name = (m.FullName || '').toLowerCase();
+                const code = (m.PersonalCode || '').toLowerCase();
+                const addr = (m.Address || '').toLowerCase();
+                const father = (m.Father || '').toLowerCase();
+                const mother = (m.Mother || '').toLowerCase();
+                const spouse = (m.Spouse || '').toLowerCase();
+                const mobile = (m.Mobile || '').toLowerCase();
+                const email = (m.Email || '').toLowerCase();
+                return name.includes(q) || code.includes(q) || addr.includes(q) ||
+                       father.includes(q) || mother.includes(q) || spouse.includes(q) ||
+                       mobile.includes(q) || email.includes(q);
+            });
+        }
+
+        if (countEl) {
+            countEl.textContent = memberListSearchQuery
+                ? `फिल्टर: ${sorted.length} / ${allMembers.length} सदस्य`
+                : `कुल ${allMembers.length} सदस्य`;
+        }
+
+        if (sorted.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="11" class="member-table-empty">
+                        <i class="fas fa-search"></i> खोजिएको सदस्य भेटिएन।
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        const rowsHtml = sorted.map((m, idx) => {
+            const photo = m.PhotoUrl || '';
+            const photoHtml = photo
+                ? `<img src="${escapeHtml(photo)}" alt="" class="member-photo-thumb" loading="lazy" onerror="this.outerHTML='<span class=\\'member-photo-placeholder\\'><i class=\\'fas fa-user\\'></i></span>'">`
+                : `<span class="member-photo-placeholder"><i class="fas fa-user"></i></span>`;
+
+            // Calculate generation based on dots in PersonalCode
+            const codeStr = String(m.PersonalCode || '');
+            const dotsCount = (codeStr.match(/\./g) || []).length;
+
+            return `
+                <tr data-code="${escapeHtml(m.PersonalCode || '')}">
+                    <td class="cell-sn">${idx + 1}</td>
+                    <td class="cell-photo">${photoHtml}</td>
+                    <td class="cell-code"><span class="code-badge">${escapeHtml(m.PersonalCode || '-')}</span></td>
+                    <td class="cell-name">${escapeHtml(m.FullName || '-')}</td>
+                    <td class="cell-gen"><span class="gen-badge">${dotsCount}</span></td>
+                    <td class="cell-ellipsis" title="${escapeHtml(m.Address || '-')}">${escapeHtml(m.Address || '-')}</td>
+                    <td class="cell-ellipsis" title="${escapeHtml(m.Father || '-')}">${escapeHtml(m.Father || '-')}</td>
+                    <td class="cell-ellipsis" title="${escapeHtml(m.Mother || '-')}">${escapeHtml(m.Mother || '-')}</td>
+                    <td class="cell-ellipsis" title="${escapeHtml(m.Spouse || '-')}">${escapeHtml(m.Spouse || '-')}</td>
+                    <td class="cell-ellipsis" title="${escapeHtml(m.Mobile || '-')}">${escapeHtml(m.Mobile || '-')}</td>
+                    <td class="cell-ellipsis" title="${escapeHtml(m.Email || '-')}">${escapeHtml(m.Email || '-')}</td>
+                </tr>
+            `;
+        }).join('');
+
+        tbody.innerHTML = rowsHtml;
+
+        tbody.querySelectorAll('tr[data-code]').forEach(tr => {
+            tr.addEventListener('click', () => {
+                const code = tr.dataset.code;
+                const member = allMembers.find(x => String(x.PersonalCode || '') === code);
+                if (member) openMemberDetailModal(member);
+            });
+        });
+    }
+
+    // ------------------------------------------------------------
+    // OPEN MEMBER DETAIL POPUP
+    // ------------------------------------------------------------
+    function openMemberDetailModal(member) {
+        const modal = document.getElementById('memberDetailModal');
+        const body = document.getElementById('memberDetailBody');
+        if (!modal || !body) return;
+
+        const photo = member.PhotoUrl || '';
+        const photoHtml = photo
+            ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(member.FullName || '')}" class="member-detail-photo" onerror="this.outerHTML='<div class=\\'member-detail-photo-placeholder\\'><i class=\\'fas fa-user\\'></i></div>'">`
+            : `<div class="member-detail-photo-placeholder"><i class="fas fa-user"></i></div>`;
+
+        const hasValue = v => v !== undefined && v !== null && String(v).trim() !== '';
+
+        function heroFact(iconClass, label, value, opts = {}) {
+            if (!hasValue(value)) return '';
+            let valueHtml;
+            if (opts.link === 'tel') {
+                valueHtml = `<a href="tel:${escapeHtml(value)}">${escapeHtml(value)}</a>`;
+            } else if (opts.link === 'mailto') {
+                valueHtml = `<a href="mailto:${escapeHtml(value)}">${escapeHtml(value)}</a>`;
+            } else {
+                valueHtml = escapeHtml(value);
+            }
+            return `
+                <div class="member-hero-fact">
+                    <i class="${iconClass}"></i>
+                    <div>
+                        <span class="hero-label">${escapeHtml(label)}:</span>
+                        <span class="hero-value">${valueHtml}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        const heroFactsHtml = [
+            heroFact('fas fa-id-badge', 'कोड', member.PersonalCode),
+            heroFact('fas fa-map-marker-alt', 'ठेगाना', member.Address),
+            heroFact('fas fa-phone', 'मोबाइल', member.Mobile, { link: 'tel' }),
+            heroFact('fas fa-birthday-cake', 'जन्म मिति', member.DOB),
+            heroFact('fas fa-venus-mars', 'लिङ्ग', member.Gender),
+            heroFact('fas fa-briefcase', 'पेशा', member.Profession),
+            heroFact('fas fa-envelope', 'इमेल', member.Email, { link: 'mailto' })
+        ].filter(Boolean).join('');
+
+        function row(label, value, opts = {}) {
+            if (!hasValue(value)) return '';
+            let valueHtml;
+            if (opts.link === 'tel') {
+                valueHtml = `<a href="tel:${escapeHtml(value)}">${escapeHtml(value)}</a>`;
+            } else if (opts.link === 'mailto') {
+                valueHtml = `<a href="mailto:${escapeHtml(value)}">${escapeHtml(value)}</a>`;
+            } else {
+                valueHtml = escapeHtml(value);
+            }
+            return `
+                <div class="member-detail-row">
+                    <span class="member-detail-label">${escapeHtml(label)}</span>
+                    <span class="member-detail-value">${valueHtml}</span>
+                </div>
+            `;
+        }
+
+        const personalRows = [
+            row('पुरा नाम (Full Name)', member.FullName),
+            row('लिङ्ग (Gender)', member.Gender),
+            row('जन्म मिति (DOB)', member.DOB),
+            row('व्यक्तिगत कोड (Personal Code)', member.PersonalCode),
+            row('मोबाइल (Mobile)', member.Mobile, { link: 'tel' }),
+            row('इमेल (Email)', member.Email, { link: 'mailto' }),
+            row('ठेगाना (Address)', member.Address),
+            row('विस्तृत ठेगाना (Detail Address)', member.DetailAddress),
+            row('बाबुको नाम (Father)', member.Father),
+            row('आमाको नाम (Mother)', member.Mother),
+            row('श्रीमान/श्रीमती (Spouse)', member.Spouse),
+            row('छोराहरू (Sons)', member.Sons),
+            row('छोरीहरू (Daughters)', member.Daughters)
+        ].filter(Boolean).join('');
+
+        const profRows = [
+            row('पेशा (Profession)', member.Profession),
+            row('विस्तृत पेशा (Detail Profession)', member.DetailProfession),
+            row('योग्यता (Qualification)', member.Qualification),
+            row('पद (Position)', member.Position)
+        ].filter(Boolean).join('');
+
+        const storyHtml = hasValue(member.LifeStory)
+            ? `<div class="member-detail-section">
+                   <h5><i class="fas fa-book-open"></i> जीवन कथा (Life Story)</h5>
+                   <div class="member-detail-story">${escapeHtml(member.LifeStory)}</div>
+               </div>`
+            : '';
+
+        body.innerHTML = `
+            <div class="member-detail-hero">
+                ${photoHtml}
+                <div class="member-detail-hero-info">
+                    <h4 class="member-detail-hero-name">${escapeHtml(member.FullName || 'Unknown')}</h4>
+                    ${heroFactsHtml}
+                </div>
+            </div>
+
+            ${personalRows ? `
+                <div class="member-detail-section">
+                    <h5><i class="fas fa-user-circle"></i> व्यक्तिगत जानकारी</h5>
+                    <div class="member-detail-grid">${personalRows}</div>
+                </div>
+            ` : ''}
+
+            ${profRows ? `
+                <div class="member-detail-section">
+                    <h5><i class="fas fa-graduation-cap"></i> पेशा र योग्यता</h5>
+                    <div class="member-detail-grid">${profRows}</div>
+                </div>
+            ` : ''}
+
+            ${storyHtml}
+        `;
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMemberDetailModal() {
+        const modal = document.getElementById('memberDetailModal');
+        if (modal) modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // ============================================================
+    // NEW FEATURES: PDF EXPORT, RELATION FINDER, & FILTER
     // ============================================================
 
     function setupNewFeatureListeners() {
         document.getElementById('btnSaveBansawali')?.addEventListener('click', downloadBansawaliPDF);
         document.getElementById('btnFindRelation')?.addEventListener('click', openFindRelationModal);
         
-        // Modal close events
         document.getElementById('closeRelationModal')?.addEventListener('click', closeFindRelationModal);
         document.getElementById('relationModal')?.addEventListener('click', function(e) {
             if (e.target === this) closeFindRelationModal();
         });
         
-        // Relation Finder Buttons
         document.getElementById('btnFindRelationNow')?.addEventListener('click', calculateAndDisplayRelation);
         
-        // Setup comboboxes inside modal
         setupRelationComboboxes();
-
-        // NEW: Filter Members
         setupFilterFeature();
     }
+
     // ------------------------------------------------------------
-    // NEW: FILTER MEMBERS FEATURE (Dynamic Dropdowns & Address Parser)
+    // FILTER MEMBERS
     // ------------------------------------------------------------
     const filterState = {
         country: '',
@@ -680,7 +932,7 @@
         'sunsari': ['सुनसरी', 'sunsari'],
         'ilam': ['इलाम', 'ilam'],
         'dhankuta': ['धनकुटा', 'dhankuta'],
-        'chitwan': ['चितवन', 'चितवन', 'chitwan'],
+        'chitwan': ['चितवन', 'chitwan'],
         'kaski': ['कास्की', 'kaski', 'पोखरा', 'pokhara'],
         'rupandehi': ['रुपन्देही', 'rupandehi', 'भैरहवा', 'butwal'],
         'dhanusha': ['धनुषा', 'dhanusha', 'janakpur'],
@@ -907,7 +1159,6 @@
         });
     }
 
-    // --- यी फंक्शनहरू हराएकोले Error आएको थियो ---
     function openFilterModal() {
         if (allMembers.length === 0) {
             alert('सदस्यहरूको डाटा लोड हुँदैछ, कृपया केही सेकेन्ड पर्खनुहोस्।');
@@ -1044,7 +1295,6 @@
             return;
         }
 
-        // Check if html2canvas is loaded
         if (typeof html2canvas === 'undefined') {
             alert('html2canvas लाइब्रेरी लोड भएको छैन। कृपया पेज रिफ्रेस गर्नुहोस् वा इन्टरनेट चेक गर्नुहोस्।');
             return;
@@ -1055,18 +1305,16 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> बन्दैछ...';
         btn.disabled = true;
 
-        // Create an off-screen container
         const container = document.createElement('div');
         container.style.position = 'fixed';
         container.style.top = '0';
         container.style.left = '0';
-        container.style.width = '850px'; // Wider for better layout
+        container.style.width = '850px';
         container.style.background = '#ffffff';
         container.style.padding = '40px';
         container.style.zIndex = '-9999';
         container.style.fontFamily = "'Sanskrit-Text', 'MySanskritFont', sans-serif";
 
-        // Build the HTML content for JPG
         let itemsHtml = '';
         filteredMembers.sort((a, b) => String(a.PersonalCode).localeCompare(String(b.PersonalCode))).forEach(m => {
             const addressStr = m.Address || m.Thegana || m.PermanentAddress || m.CurrentAddress || '';
@@ -1089,7 +1337,6 @@
             `;
         });
 
-        // Get active filters for the header
         const activeFilters = [];
         if (filterState.country) activeFilters.push(`देश: ${filterState.country}`);
         if (filterState.province) activeFilters.push(`प्रदेश: ${filterState.province}`);
@@ -1129,22 +1376,19 @@
         document.body.appendChild(container);
 
         try {
-            // Generate canvas
             const canvas = await html2canvas(container, {
-                scale: 2, // High quality
+                scale: 2,
                 useCORS: true,
                 backgroundColor: '#ffffff',
                 logging: false
             });
 
-            // Convert canvas to JPG data URL
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-            // Create a temporary link to trigger download
             const link = document.createElement('a');
             link.download = `Ojha_Filtered_Members_${Date.now()}.jpg`;
             link.href = imgData;
-            document.body.appendChild(link); // Required for Firefox
+            document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
@@ -1152,7 +1396,6 @@
             console.error('JPG Save Error:', error);
             alert('JPG फाइल सेभ गर्न सकिएन। कृपया पुनः प्रयास गर्नुहोस्। (Error details in console)');
         } finally {
-            // Cleanup
             if (container.parentNode) {
                 container.parentNode.removeChild(container);
             }
@@ -1162,7 +1405,7 @@
     }
 
     // ------------------------------------------------------------
-    // 24. PDF EXPORT (Seamless Page Breaks, No Blank Gaps)
+    // PDF EXPORT
     // ------------------------------------------------------------
     async function downloadBansawaliPDF() {
         if (allMembers.length === 0) {
@@ -1188,7 +1431,6 @@
                 return codeA.localeCompare(codeB);
             });
 
-            // Off-screen container locked to top-left (0,0) with exact A4 pixel width
             wrapper = document.createElement('div');
             wrapper.style.position = 'fixed';
             wrapper.style.left = '0';
@@ -1206,7 +1448,6 @@
             printContainer.style.fontFamily = "'Sanskrit-Text', 'MySanskritFont', sans-serif";
             printContainer.style.boxSizing = 'border-box';
 
-            // 22 rows per page fits comfortably inside standard A4 height with header/footer margins
             const rowsPerPage = 22;
             const chunks = [];
             for (let i = 0; i < sortedMembers.length; i += rowsPerPage) {
@@ -1249,6 +1490,7 @@
                                     <th style="border:1px solid #0a6b3e; padding:6px 2px; font-size:11px; text-align:center; width:4%; box-sizing:border-box;">क्र.सं.</th>
                                     <th style="border:1px solid #0a6b3e; padding:6px 3px; font-size:11px; text-align:center; width:13%; box-sizing:border-box;">कोड</th>
                                     <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:18%; box-sizing:border-box;">पुरा नाम</th>
+                                    <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:18%; box-sizing:border-box;">पुस्ता</th>
                                     <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:17%; box-sizing:border-box;">बाबुको नाम</th>
                                     <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:17%; box-sizing:border-box;">आमाको नाम</th>
                                     <th style="border:1px solid #0a6b3e; padding:6px 4px; font-size:11px; width:15.5%; box-sizing:border-box;">श्रीमान/श्रीमती</th>
@@ -1268,7 +1510,7 @@
             document.body.appendChild(wrapper);
 
             const opt = {
-                margin:       0, // Zero canvas margins since each .pdf-page handles internal A4 padding
+                margin:       0,
                 filename:     'Ojha_Bandhu_Bansawali.pdf',
                 image:        { type: 'jpeg', quality: 1 }, 
                 html2canvas:  { 
@@ -1303,15 +1545,12 @@
         const modal = document.getElementById('relationModal');
         const body = modal.querySelector('.relation-body');
         
-        // Ensure the inputs are wrapped in our new grid
         if (body && !body.querySelector('.relation-inputs-grid')) {
             const groups = body.querySelectorAll('.relation-select-group');
             if (groups.length >= 2) {
                 const grid = document.createElement('div');
                 grid.className = 'relation-inputs-grid';
-                // Insert grid before the first group
                 groups[0].parentNode.insertBefore(grid, groups[0]);
-                // Move the two groups into the grid
                 grid.appendChild(groups[0]);
                 grid.appendChild(groups[1]);
             }
@@ -1338,11 +1577,9 @@
         if (!inputA || !inputB) return;
 
         function filterMembersLocal(query) {
-            // MemberSearch.js मा रहेको स्मार्ट सर्च युटिलिटी प्रयोग गर्ने
             if (typeof MemberSearch !== 'undefined' && MemberSearch.filterMembers) {
                 return MemberSearch.filterMembers(allMembers, query);
             }
-            // यदि कुनै कारणले MemberSearch लोड भएको छैन भने Fallback
             const q = query.toLowerCase().trim();
             if (!q) return allMembers.slice(0, 30);
             return allMembers.filter(m => (m.FullName || '').toLowerCase().includes(q) || (m.PersonalCode || '').toLowerCase().includes(q)).slice(0, 50);
@@ -1372,7 +1609,7 @@
                         if (isA) selectedMemberA = member;
                         else selectedMemberB = member;
                         el.hidden = true;
-                        inputEl.blur(); // ड्रपडाउन बन्द गर्ने
+                        inputEl.blur();
                     }
                 });
             });

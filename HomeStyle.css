@@ -153,12 +153,12 @@ body {
 }
 
 /* ============================================================
-   BUTTONS GRID — 3 per row on desktop, 1 per row on mobile
+   BUTTONS GRID
    ============================================================ */
 #buttonBox {
     margin-top: 3vh;
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     width: 100%;
     max-width: 1000px;
@@ -167,7 +167,6 @@ body {
     padding: 0 20px;
 }
 
-/* Remove the old nth-child span rules */
 #buttonBox button {
     width: 100%;
     font-size: 1.05rem;
@@ -192,9 +191,7 @@ body {
     letter-spacing: 0.2px;
 }
 
-#buttonBox button i {
-    font-size: 1.25rem;
-}
+#buttonBox button i { font-size: 1.25rem; }
 
 #buttonBox button:hover {
     background: linear-gradient(180deg, #0069d9, #0056b3);
@@ -207,7 +204,6 @@ body {
     box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
 }
 
-/* Special green buttons */
 #btnSaveBansawali,
 #btnFindRelation,
 #btnFilterMembers {
@@ -219,51 +215,6 @@ body {
 #btnFilterMembers:hover {
     background: linear-gradient(180deg, #075030, #0a6b3e);
     box-shadow: 0 8px 18px rgba(10, 107, 62, 0.38);
-}
-
-@media (max-width: 768px) {
-    #buttonBox {
-        grid-template-columns: 1fr; /* 1 column on mobile */
-        gap: 12px;
-        padding: 0 10px;
-    }
-    #buttonBox button {
-        grid-column: auto;
-        width: 100%;
-        font-size: 1rem;
-        padding: 15px 12px;
-        min-height: 60px;
-        flex-direction: row;
-        gap: 10px;
-    }
-}
-
-/* ------------------------------------------------------------
-   Mobile: stack 1 button per row, override the spans
-   ------------------------------------------------------------ */
-@media (max-width: 768px) {
-    #buttonBox {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 0 10px;
-    }
-    #buttonBox button,
-    #buttonBox button:nth-child(1),
-    #buttonBox button:nth-child(2),
-    #buttonBox button:nth-child(3),
-    #buttonBox button:nth-child(4),
-    #buttonBox button:nth-child(5) {
-        grid-column: auto;      /* reset spans */
-        width: 100%;
-        font-size: 1rem;
-        padding: 15px 12px;
-        min-height: 60px;
-        flex-direction: row;
-        gap: 10px;
-    }
-    #buttonBox button i {
-        font-size: 1.15rem;
-    }
 }
 
 #FooterBox {
@@ -366,7 +317,6 @@ body {
 
 #noticeSection h2 i { color: #ffc107; }
 
-/* Notice Grid */
 #noticeGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -391,9 +341,6 @@ body {
     border-color: #064b2b;
 }
 
-/* ============================================================
-   NOTICE THUMBNAIL — BASE
-   ============================================================ */
 .notice-thumbnail {
     width: 100%;
     height: 200px;
@@ -414,9 +361,6 @@ body {
 
 .notice-card:hover .notice-thumbnail img { transform: scale(1.05); }
 
-/* ============================================================
-   TEXT + IMAGE THUMBNAIL — SHOW FULL IMAGE (NO CROP)
-   ============================================================ */
 .notice-card.is-text-image .notice-thumbnail {
     height: 220px;
     background: #f1f3f5;
@@ -438,14 +382,10 @@ body {
     transform: scale(1.02);
 }
 
-/* ============================================================
-   IMAGE ONLY — keep cover behavior
-   ============================================================ */
 .notice-card.is-image .notice-thumbnail img {
     object-fit: cover;
 }
 
-/* No Image Placeholder */
 .notice-thumbnail .no-image {
     display: flex;
     flex-direction: column;
@@ -464,7 +404,6 @@ body {
     color: #6c757d;
 }
 
-/* YouTube Thumbnail Overlay */
 .notice-thumbnail .youtube-overlay {
     position: absolute;
     top: 50%;
@@ -488,9 +427,6 @@ body {
     background: rgba(255, 0, 0, 1);
 }
 
-/* ============================================================
-   FACEBOOK THUMBNAIL — Live iframe preview with click overlay
-   ============================================================ */
 .notice-card.is-facebook .notice-thumbnail {
     height: 240px;
     background: #ffffff;
@@ -524,7 +460,6 @@ body {
     background: transparent;
 }
 
-/* Notice Body */
 .notice-body { padding: 16px 18px; }
 
 .notice-body h3 {
@@ -676,7 +611,6 @@ body {
     min-height: 1.2em;
 }
 
-/* No Notices Message */
 #noNotices {
     grid-column: 1 / -1;
     text-align: center;
@@ -798,7 +732,7 @@ body {
 }
 
 /* ============================================================
-   FACEBOOK POPUP — Live post with scrollable container
+   FACEBOOK POPUP
    ============================================================ */
 .popup-content.is-facebook-popup {
     width: auto;
@@ -812,7 +746,6 @@ body {
     padding-top: 0;
 }
 
-/* Header bar inside Facebook popup */
 .fb-popup-header {
     display: flex;
     align-items: center;
@@ -853,11 +786,8 @@ body {
     color: #ffffff;
 }
 
-.fb-popup-header-link i {
-    font-size: 0.8rem;
-}
+.fb-popup-header-link i { font-size: 0.8rem; }
 
-/* The scrollable box: horizontal + vertical scroll both enabled */
 .popup-content.is-facebook-popup .popup-media {
     min-height: 0;
     max-height: none;
@@ -873,7 +803,7 @@ body {
     height: 100%;
     max-height: 78vh;
     background: #f0f2f5;
-    overflow: auto;                 /* both x and y */
+    overflow: auto;
     -webkit-overflow-scrolling: touch;
     padding: 16px;
     display: flex;
@@ -894,29 +824,16 @@ body {
     display: block;
 }
 
-/* Video variant: wider, shorter */
 .fb-scroll-box iframe[src*="video.php"] {
     width: 560px;
     min-width: 560px;
     height: 400px;
 }
 
-/* Optional scrollbar styling for the Facebook box */
-.fb-scroll-box::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-.fb-scroll-box::-webkit-scrollbar-track {
-    background: #e4e6eb;
-    border-radius: 5px;
-}
-.fb-scroll-box::-webkit-scrollbar-thumb {
-    background: #bcc0c4;
-    border-radius: 5px;
-}
-.fb-scroll-box::-webkit-scrollbar-thumb:hover {
-    background: #90949c;
-}
+.fb-scroll-box::-webkit-scrollbar { width: 10px; height: 10px; }
+.fb-scroll-box::-webkit-scrollbar-track { background: #e4e6eb; border-radius: 5px; }
+.fb-scroll-box::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 5px; }
+.fb-scroll-box::-webkit-scrollbar-thumb:hover { background: #90949c; }
 
 /* ============================================================
    PDF / PICTURE VIEWER / OFFICE MODAL
@@ -1236,10 +1153,8 @@ body {
     flex-direction: column;
     overflow: hidden;
     animation: popupSlideIn 0.3s ease;
-    
-    /* ADD THESE TWO LINES */
     max-height: 90vh; 
-    margin: auto; /* Keeps it vertically centered */
+    margin: auto;
 }
 
 .relation-header {
@@ -1275,7 +1190,6 @@ body {
     gap: 16px;    
     overflow-y: auto; 
 }
-
 
 .relation-select-group {
     display: flex;
@@ -1380,9 +1294,6 @@ body {
     transition: background 0.2s;
 }
 .btn-primary:hover { background: #075030; }
-/* ============================================================
-   RELATION FINDER LAYOUT (SIDE-BY-SIDE INPUTS)
-   ============================================================ */
 
 .relation-body {
     display: flex;
@@ -1393,13 +1304,12 @@ body {
     overflow-y: auto; 
 }
 
-/* Side-by-side grid for the two comboboxes */
 .relation-inputs-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
     position: relative;
-    z-index: 50; /* Keeps dropdowns above the result box */
+    z-index: 50;
 }
 
 .relation-select-group {
@@ -1425,15 +1335,14 @@ body {
     box-shadow: 0 0 0 3px rgba(10, 107, 62, 0.1);
 }
 
-/* Limit height so it doesn't push the button away */
 .relation-result-box {
     background: #fff;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     padding: 24px 20px;
     min-height: 250px;
-    max-height: 45vh; /* Prevents it from taking the whole screen */
-    overflow-y: auto; /* Scrolls if content is too long */
+    max-height: 45vh;
+    overflow-y: auto;
     box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     display: flex;
     flex-direction: column;
@@ -1445,7 +1354,6 @@ body {
     z-index: 1;
 }
 
-/* Photos container */
 .relation-photos-wrapper {
     display: flex;
     align-items: center;
@@ -1465,7 +1373,7 @@ body {
 
 .relation-img-box {
     width: 100px;
-    height: 133px; /* 3:4 Ratio */
+    height: 133px;
     border: 3px solid #0a6b3e;
     border-radius: 8px;
     overflow: hidden;
@@ -1505,6 +1413,7 @@ body {
     width: 100%;
     box-sizing: border-box;
 }
+
 /* ============================================================
    FILTER MEMBERS MODAL
    ============================================================ */
@@ -1773,31 +1682,516 @@ body {
     .filter-member-name { font-size: 0.9rem; }
 }
 
-/* Mobile Responsive */
 @media (max-width: 600px) {
-    .relation-inputs-grid {
-        grid-template-columns: 1fr; /* Stack on small screens */
+    .relation-inputs-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .relation-body {
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
 }
 
-/* Responsive: Stack them on top of each other for mobile screens */
-@media (max-width: 768px) {
-    .relation-body {
-        grid-template-columns: 1fr; /* 1 column */
-        gap: 20px;
-    }
+/* ============================================================
+   MEMBER LIST SECTION - NEW STYLES
+   ============================================================ */
+#memberListSection {
+    width: 100%;
+    margin: 30px 0 10px;
+    padding: 0 10px;
+}
+
+#memberListSection h2 {
+    font-size: 2rem;
+    color: #064b2b;
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #064b2b;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+#memberListSection h2 i { color: #0a6b3e; }
+
+.member-list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.member-search-wrap {
+    position: relative;
+    flex: 1 1 320px;
+    max-width: 480px;
+}
+
+.member-search-wrap i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 0.95rem;
+    pointer-events: none;
+}
+
+.member-search-wrap input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 2px solid #ced4da;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    background: #fff;
+}
+
+.member-search-wrap input:focus {
+    border-color: #0a6b3e;
+    box-shadow: 0 0 0 3px rgba(10, 107, 62, 0.12);
+}
+
+.member-list-count {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #064b2b;
+    background: #e6f4ec;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #b7dfc5;
+    white-space: nowrap;
+}
+
+.member-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    background: #fff;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #e2e8f0;
+}
+
+.member-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* THIS FIXES THE WIDTHS */
+    min-width: 1200px;   /* INCREASED so columns don't squeeze together */
+    font-size: 0.9rem;
+}
+
+.member-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #0a6b3e;
+}
+
+.member-table thead th {
+    color: #fff;
+    font-weight: 700;
+    text-align: left;
+    padding: 14px 12px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+}
+
+.member-table thead th.col-sn { width: 55px; text-align: center; }
+.member-table thead th.col-photo { width: 70px; text-align: center; }
+.member-table thead th.col-code { width: 150px; }
+.member-table thead th.col-name { width: 180px; }
+.member-table thead th.col-gen { width: 80px; text-align: center; }
+.member-table thead th.col-address { width: 160px; }
+.member-table thead th.col-father { width: 140px; }
+.member-table thead th.col-mother { width: 140px; }
+.member-table thead th.col-spouse { width: 140px; }
+.member-table thead th.col-mobile { width: 120px; }
+.member-table thead th.col-email { width: 180px; }
+
+.member-table tbody tr {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+    background-color: #fff;
+}
+
+.member-table tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.member-table tbody tr:hover {
+    background-color: #ecfdf5; /* Very light green */
+    transform: scale(1.002);
+    box-shadow: 0 4px 12px rgba(10, 107, 62, 0.08);
+    z-index: 2;
+    position: relative;
+}
+
+.member-table tbody td {
+    padding: 12px;
+    color: #334155;
+    vertical-align: middle;
+    word-break: break-word;
+    line-height: 1.4;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* Truncate long text with ellipsis */
+.member-table tbody td.cell-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.member-table tbody td.cell-sn {
+    text-align: center;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.member-table tbody td.cell-photo {
+    text-align: center;
+}
+
+.member-photo-thumb {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%; /* Make it circular for a cleaner look */
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+    display: inline-block;
+    background: #f1f3f5;
+    vertical-align: middle;
+    transition: border-color 0.2s;
+}
+
+.member-table tbody tr:hover .member-photo-thumb {
+    border-color: #0a6b3e;
+}
+
+.member-photo-placeholder {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 2px solid #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    vertical-align: middle;
+}
+
+.member-table tbody td.cell-code {
+    font-weight: 600;
+}
+
+.code-badge {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.member-table tbody td.cell-name {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.member-table tbody td.cell-gen {
+    text-align: center;
+}
+
+.gen-badge {
+    display: inline-block;
+    background: #fef3c7;
+    color: #b45309;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+    border: 1px solid #fde68a;
+}
+
+.member-table .member-table-loading,
+.member-table .member-table-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+    font-style: italic;
+    font-size: 1rem;
+}
+
+.member-table-loading i {
+    margin-right: 8px;
+    color: #0a6b3e;
+}
+
+/* ============================================================
+   MEMBER DETAIL POPUP
+   ============================================================ */
+.member-detail-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    z-index: 10001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+.member-detail-dialog {
+    background: #fff;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 720px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+    animation: popupSlideIn 0.3s ease;
+    margin: auto;
+}
+
+.member-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #0a6b3e, #075030);
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.member-detail-header h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.member-detail-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.member-detail-close:hover { color: #ffc107; }
+
+.member-detail-body {
+    padding: 22px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Hero card — photo on left, quick info on right */
+.member-detail-hero {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.member-detail-photo {
+    width: 130px;
+    height: 173px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 3px solid #0a6b3e;
+    background: #f1f3f5;
+    flex-shrink: 0;
+}
+
+.member-detail-photo-placeholder {
+    width: 130px;
+    height: 173px;
+    border-radius: 10px;
+    border: 3px solid #ced4da;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+/* Right side of hero — key details as label/value lines */
+.member-detail-hero-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.member-detail-hero-name {
+    font-size: 1.45rem;
+    color: #064b2b;
+    margin: 0 0 2px 0;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.member-detail-code-badge {
+    display: inline-block;
+    align-self: flex-start;
+    background: #e6f4ec;
+    color: #0a6b3e;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 4px 12px;
+    border-radius: 14px;
+    border: 1px solid #b7dfc5;
+    margin-bottom: 4px;
+}
+
+/* Key-fact lines shown next to the photo */
+.member-hero-fact {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #2c2c2c;
+}
+
+.member-hero-fact i {
+    color: #0a6b3e;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+.member-hero-fact .hero-label {
+    font-weight: 700;
+    color: #6c757d;
+    margin-right: 2px;
+}
+
+.member-hero-fact .hero-value {
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.member-hero-fact a {
+    color: #0a6b3e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.member-hero-fact a:hover { text-decoration: underline; }
+
+/* Sections in popup */
+.member-detail-section {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.member-detail-section h5 {
+    font-size: 1rem;
+    color: #0a6b3e;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e6f4ec;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.member-detail-section h5 i { color: #0a6b3e; }
+
+/* SINGLE-COLUMN layout for detail rows */
+.member-detail-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.member-detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.member-detail-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.member-detail-value {
+    font-size: 0.98rem;
+    color: #2c2c2c;
+    font-weight: 500;
+    word-break: break-word;
+    line-height: 1.5;
+}
+
+.member-detail-value a {
+    color: #0a6b3e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.member-detail-value a:hover { text-decoration: underline; }
+
+.member-detail-story {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: #444;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 /* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
-    #MainBody {
-        max-width: 100%;
-        width: 100%;
-        padding: 8px;
-        margin-top: 10px;
-    }
+    #MainBody { max-width: 100%; width: 100%; padding: 8px; margin-top: 10px; }
     #MainHeadBox {
         width: 100%;
         display: flex;
@@ -1808,21 +2202,9 @@ body {
         margin-bottom: 12px;
     }
     .MainHead { font-size: 32px; }
-    #MainHeadBox img {
-        width: 80px;
-        height: auto;
-        margin-right: 0px;
-    }
-    #MainDescription {
-        font-size: 16px;
-        padding: 0 10px;
-        margin-bottom: 20px;
-    }
-    .content {
-        padding: 10px;
-        font-size: 16px;
-        text-indent: 10px;
-    }
+    #MainHeadBox img { width: 80px; height: auto; margin-right: 0px; }
+    #MainDescription { font-size: 16px; padding: 0 10px; margin-bottom: 20px; }
+    .content { padding: 10px; font-size: 16px; text-indent: 10px; }
     #buttonBox {
         grid-template-columns: 1fr; 
         gap: 12px;
@@ -1834,16 +2216,8 @@ body {
         padding: 14px 10px;
         min-height: 70px;
     }
-    #FooterBox {
-        width: 100%;
-        max-width: 100%;
-        padding: 8px;
-        margin-bottom: 12px;
-    }
-    #FooterLinks {
-        display: block;
-        margin-bottom: 8px;
-    }
+    #FooterBox { width: 100%; max-width: 100%; padding: 8px; margin-bottom: 12px; }
+    #FooterLinks { display: block; margin-bottom: 8px; }
     #FooterLinks a {
         color: #00bb00;
         padding: 10px 30px;
@@ -1852,25 +2226,10 @@ body {
         font-weight: bold;
     }
     #FooterHeading { font-size: 24px; }
-    #FooterContacts {
-        margin-top: 20px;
-        display: block;
-    }
-    #FooterContacts a {
-        font-size: 20px;
-        padding: 10px 30px;
-        color: #00bb00;
-        text-decoration: none;
-    }
-    #noticeSection {
-        margin: 10px;
-        padding: 10px;
-    }
-    #noticeSection h2 {
-        font-size: 28px;
-        margin-bottom: 12px;
-        padding-bottom: 10px;
-    }
+    #FooterContacts { margin-top: 20px; display: block; }
+    #FooterContacts a { font-size: 20px; padding: 10px 30px; color: #00bb00; text-decoration: none; }
+    #noticeSection { margin: 10px; padding: 10px; }
+    #noticeSection h2 { font-size: 28px; margin-bottom: 12px; padding-bottom: 10px; }
     #noticeSection h2 i { color: #ffc107; }
     #noticeGrid {
         display: grid;
@@ -1886,34 +2245,38 @@ body {
     .notice-thumbnail .no-image span { font-size: 18px; }
     .notice-popup { padding: 10px; }
     .popup-content { max-width: 600px; }
+    .popup-content.is-facebook-popup { min-width: 0; width: 100%; max-width: 100%; }
+    .fb-popup-header { padding: 10px 14px; font-size: 0.9rem; }
+    .fb-popup-header-link { padding: 5px 10px; font-size: 0.78rem; }
+    .fb-scroll-box { max-height: 72vh; padding: 12px; }
 
-    /* Facebook popup — tablet */
-    .popup-content.is-facebook-popup {
-        min-width: 0;
-        width: 100%;
-        max-width: 100%;
+    #memberListSection { margin: 20px 0 10px; padding: 0 6px; }
+    #memberListSection h2 {
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
     }
-    .fb-popup-header {
-        padding: 10px 14px;
-        font-size: 0.9rem;
-    }
-    .fb-popup-header-link {
-        padding: 5px 10px;
-        font-size: 0.78rem;
-    }
-    .fb-scroll-box {
-        max-height: 72vh;
-        padding: 12px;
-    }
+    .member-list-toolbar { gap: 10px; margin-bottom: 12px; }
+    .member-search-wrap { flex: 1 1 100%; max-width: 100%; }
+    .member-list-count { font-size: 0.82rem; padding: 6px 12px; }
+    .member-table { min-width: 1000px; font-size: 0.82rem; }
+    .member-table thead th { padding: 10px 8px; font-size: 0.78rem; }
+    .member-table tbody td { padding: 10px 8px; }
+
+    .member-detail-modal { padding: 12px; }
+    .member-detail-dialog { max-height: 94vh; }
+    .member-detail-body { padding: 16px; gap: 14px; }
+
+    /* Hero stays side-by-side on tablet until it gets too tight */
+    .member-detail-hero { gap: 14px; padding: 14px; }
+    .member-detail-photo,
+    .member-detail-photo-placeholder { width: 105px; height: 140px; }
+    .member-detail-hero-name { font-size: 1.25rem; }
+    .member-hero-fact { font-size: 0.9rem; }
 }
 
 @media (max-width: 480px) {
-    #MainBody {
-        width: 100%;
-        max-width: 100%;
-        padding: 6px;
-        margin-top: 8px;
-    }
+    #MainBody { width: 100%; max-width: 100%; padding: 6px; margin-top: 8px; }
     #MainHeadBox {
         width: 100%;
         display: flex;
@@ -1924,68 +2287,24 @@ body {
         margin-bottom: 10px;
     }
     .MainHead { font-size: 24px; }
-    #MainHeadBox img {
-        width: 60px;
-        height: auto;
-        margin-right: 0px;
-    }
-    #MainDescription {
-        font-size: 14px;
-        padding: 0 8px;
-        margin-bottom: 12px;
-    }
-    .content {
-        padding: 8px;
-        font-size: 14px;
-        text-indent: 8px;
-    }
-    #buttonBox {
-        margin-top: 20px;
-        grid-template-columns: 1fr;
-    }
-    #buttonBox button {
-        width: 100%;
-        font-size: 18px;
-        padding: 10px 12px;
-        margin: 10px 0;
-    }
-    #FooterBox {
-        width: 100%;
-        padding: 6px;
-        margin-bottom: 10px;
-    }
+    #MainHeadBox img { width: 60px; height: auto; margin-right: 0px; }
+    #MainDescription { font-size: 14px; padding: 0 8px; margin-bottom: 12px; }
+    .content { padding: 8px; font-size: 14px; text-indent: 8px; }
+    #buttonBox { margin-top: 20px; grid-template-columns: 1fr; }
+    #buttonBox button { width: 100%; font-size: 18px; padding: 10px 12px; margin: 10px 0; }
+    #FooterBox { width: 100%; padding: 6px; margin-bottom: 10px; }
     #FooterLinks {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-bottom: 8px;
     }
-    #FooterLinks a {
-        padding: 10px;
-        font-size: 20px;
-    }
+    #FooterLinks a { padding: 10px; font-size: 20px; }
     #FooterHeading { font-size: 24px; }
-    #FooterContacts {
-        margin: 20px 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    #FooterContacts a {
-        font-size: 20px;
-        color: #00bb00;
-        text-decoration: none;
-        padding: 20px 0;
-    }
-    #noticeSection {
-        margin: 10px;
-        padding: 10px;
-    }
-    #noticeSection h2 {
-        font-size: 20px;
-        margin-bottom: 10px;
-        padding-bottom: 8px;
-    }
+    #FooterContacts { margin: 20px 0; display: flex; flex-direction: column; align-items: center; }
+    #FooterContacts a { font-size: 20px; color: #00bb00; text-decoration: none; padding: 20px 0; }
+    #noticeSection { margin: 10px; padding: 10px; }
+    #noticeSection h2 { font-size: 20px; margin-bottom: 10px; padding-bottom: 8px; }
     #noticeGrid {
         display: flex;
         flex-direction: column;
@@ -2002,23 +2321,28 @@ body {
     .notice-thumbnail .no-image span { font-size: 18px; }
     .notice-popup { padding: 8px; }
     .popup-content { max-width: 400px; }
-
-    /* Facebook popup — phone */
     .fb-popup-header {
         padding: 9px 12px;
         font-size: 0.82rem;
         flex-wrap: wrap;
         gap: 6px;
     }
-    .fb-popup-header-title {
-        font-size: 0.82rem;
+    .fb-popup-header-title { font-size: 0.82rem; }
+    .fb-popup-header-link { padding: 4px 9px; font-size: 0.72rem; }
+    .fb-scroll-box { max-height: 68vh; padding: 8px; }
+
+    #memberListSection h2 { font-size: 1.2rem; }
+    .member-detail-body { padding: 12px; }
+    .member-detail-dialog { border-radius: 10px; }
+
+    /* On phones, stack photo above hero info */
+    .member-detail-hero {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 14px;
     }
-    .fb-popup-header-link {
-        padding: 4px 9px;
-        font-size: 0.72rem;
-    }
-    .fb-scroll-box {
-        max-height: 68vh;
-        padding: 8px;
-    }
+    .member-detail-hero-info { align-items: center; width: 100%; }
+    .member-detail-code-badge { align-self: center; }
+    .member-hero-fact { justify-content: center; text-align: left; }
 }
